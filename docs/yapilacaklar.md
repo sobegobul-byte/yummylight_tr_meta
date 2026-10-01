@@ -35,3 +35,4 @@ _Son güncelleme: 2026-10-01_
 - Meta doğrulaması: VALIDATED, hata yok → hesap satın alma optimizasyonuna uygun görünüyor (kesin onay yayınlamada)
 - Bekleyen: kreatifler (kullanıcının yeni videoları + mevcut kütüphane), WhatsApp hazır ilk mesajları, yayın onayı
 - Not: eski **CBO-DM-24.08** (1.000 TL/gün) hâlâ AKTİF. Yeni kampanya yayına girince duraklatılması önerilecek.
+- 02.10 gece: Mesaj kampanyasına 14 reklam (Yıldız 6, Anime 5, Araba 3) + **WEB CBO** kampanyası (3 set, 11 reklam, 3.000 TL/gün) taslak olarak eklendi. Hepsi VALIDATED. Sabah listesi: `docs/sabah-kontrol-listesi-2026-10-02.md`
