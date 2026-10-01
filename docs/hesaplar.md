@@ -45,3 +45,12 @@ _Son güncelleme: 2026-10-01_
 - Kanallar: web sitesi, Instagram DM, WhatsApp
 - Ürünler: yıldız haritası, anime/çizim (Ghibli tarzı), araba lambası vb. hepsi satışta
 - Pixel kalitesi (Yummy Light's pixel): Satın alma eşleşme puanı 8,5/10, **satın almada fbc %21** (düşük); fırsat puanı 93/100
+
+## Kurulum bilgileri (kullanıcı teyidi, 01.10.2026)
+
+- Sayfa: **Yummy Light Store** (112407658485354) · Instagram: **@yummylightstore** (17841459050865595)
+- WhatsApp numarası: **5313352641** (WhatsApp Business uygulaması)
+- WhatsApp "Müşterilerinizin etkinliği" ve Instagram veri paylaşımı: **AÇIK**
+- Ödeme sorunu: **çözüldü**
+- Site altyapısı: **ikas**
+- DM dönüşüm oranı (kullanıcı tahmini): 10 sohbetten 1-2, bazen 4 sipariş (%10-40)

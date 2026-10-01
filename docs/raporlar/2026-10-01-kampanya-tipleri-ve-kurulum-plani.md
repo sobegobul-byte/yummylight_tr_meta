@@ -225,3 +225,28 @@ Birim ekonomisi: 800 TL (KDV ve komisyon dahil), ürün 100 TL + kargo 100 TL �
 > 💡 Kişiye özel lambalarımız **800 TL**, **ücretsiz kargo**, **kapıda ödeme** imkânıyla.
 > 📸 Fotoğrafınızı/tarihinizi buraya gönderin, tasarımınızı hazırlayalım.
 > 🛒 Hemen sipariş için: yummylightstore.com
+
+---
+
+## 7. Güncelleme: kullanıcı kararları ve kreatif ekleme sistemi
+
+**Mesaj bütçesi (kullanıcı):** Araba 500 · Yapay zeka/anime 500 · Yıldız 500 = **1.500 TL/gün**
+
+**DM ekonomisi (kullanıcının %10-20 dönüşümüyle):** 15 TL/sohbet → satış başı **75-150 TL**; 22 TL/sohbet → 110-220 TL. Başa baş 443 TL → **mesaj en kârlı kanal.** Sınırı emek: 1.500 TL ≈ 70-100 sohbet/gün ≈ 10-20 sipariş.
+
+**ABO mu, CBO mu? (Meta resmi bilgileri):**
+- **CBO'ya yeni reklam seti eklemek diğer setlerin öğrenmesini sıfırlamaz.** ([Significant edits](https://www.facebook.com/business/help/316478108955072))
+- **Mevcut sete yeni reklam eklemek o setin öğrenmesini sıfırlar.** Aynı kaynak.
+- **ABO + "reklam seti bütçe paylaşımı":** her set kendi bütçesini korur, %20'si iyi giden sete kayabilir. ([Campaign vs ad set budgets](https://www.facebook.com/business/help/458847204894307))
+- CBO'da ürün başına minimum harcama sınırı konabilir ama Meta az kullanılmasını öneriyor. ([Ad set spend limits](https://www.facebook.com/business/help/454681230514942))
+
+**Karar:**
+- **Mesaj → ABO + bütçe paylaşımı açık** (her ürün 500 TL garantili; CBO geçmişte bütçeyi tek ürüne yığmıştı).
+- **Web satış → CBO ile direkt başlanabilir** (Andromeda ile uyumlu); ürün setleri + yeni kreatifler **yeni reklam seti** olarak eklenir.
+
+**Kreatif ekleme sistemi ("haftalık kreatif günü"):**
+1. Yeni kreatifler biriktirilir, **haftada 1 gün** (ör. pazartesi) toplu eklenir. Her gün eklemek her gün öğrenmeyi sıfırlar.
+2. **CBO (web):** yeni kreatifler → aynı kampanyada **yeni reklam seti** ("Yıldız | Yeni | 07.10"). Eski setler etkilenmez. 7 gün sonra kazanan reklamlar kalır, kaybedenler kapanır.
+3. **ABO (mesaj):** yeni kreatifler ilgili ürün setine haftada 1 kez toplu eklenir. O setin öğrenmesi bir kez sıfırlanır; diğer ürünler etkilenmez.
+4. Her sette **en fazla 6-8 aktif reklam.** Yeni eklerken en kötüleri kapat (reklam kapatmak "önemli düzenleme" sayılmıyor).
+5. Kazanan reklamı başka kampanyaya taşırken **aynı gönderiyi (post ID) kullan.** Beğeni ve yorumlar korunur.
