@@ -23,3 +23,15 @@ _Son güncelleme: 2026-10-01_
 ## Notlar
 
 - Claude, para harcatan hiçbir işlemi (kampanya yayınlama/aktifleştirme, bütçe artırma) açık onay olmadan yapmaz. Yeni kampanyalar DURAKLATILMIŞ oluşturulur.
+
+## Kurulum günlüğü
+
+### 2026-10-01: Mesaj kampanyası (TASLAK, yayında değil)
+- Kampanya `120256305081720309` · **MSG | WhatsApp Satış | CBO | Ürün Bazlı | 01.10.2026** · Satış amacı · CBO 1.500 TL/gün · en yüksek hacim
+- Reklam setleri (hepsi WhatsApp, **mesajlaşma üzerinden satın alma** optimizasyonu, TR, 18-54 öneri, Advantage+ kitle ve yerleşim):
+  - `120256305085090309` · Yıldız Haritası
+  - `120256305092830309` · Yapay Zeka Anime
+  - `120256305092920309` · Araba
+- Meta doğrulaması: VALIDATED, hata yok → hesap satın alma optimizasyonuna uygun görünüyor (kesin onay yayınlamada)
+- Bekleyen: kreatifler (kullanıcının yeni videoları + mevcut kütüphane), WhatsApp hazır ilk mesajları, yayın onayı
+- Not: eski **CBO-DM-24.08** (1.000 TL/gün) hâlâ AKTİF. Yeni kampanya yayına girince duraklatılması önerilecek.
