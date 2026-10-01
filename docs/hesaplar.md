@@ -35,3 +35,13 @@ _Son güncelleme: 2026-10-01_
 - Sektör: E-ticaret · Ev eşyası (dayanıklı)
 - Hedef: Dönüşüm hacmi
 - Huni: Tek aşama ağırlıklı (harcamanın %70+'ı tek aşamada)
+
+## Birim ekonomisi (kullanıcı beyanı, 01.10.2026)
+
+- Satış fiyatı: 800 TL, ücretsiz kargo
+- Ürün maliyeti: 100 TL · Kargo: 100 TL
+- Kapasite: günde 50-60 sipariş (tek kişi)
+- Para akışı: ödeme ertesi gün geliyor
+- Kanallar: web sitesi, Instagram DM, WhatsApp
+- Ürünler: yıldız haritası, anime/çizim (Ghibli tarzı), araba lambası vb. hepsi satışta
+- Pixel kalitesi (Yummy Light's pixel): Satın alma eşleşme puanı 8,5/10, **satın almada fbc %21** (düşük); fırsat puanı 93/100
