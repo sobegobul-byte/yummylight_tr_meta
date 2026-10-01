@@ -14,6 +14,7 @@ Bu repo, Meta (Facebook/Instagram) reklam hesabı üzerindeki analizleri, kararl
 
 ## Raporlar
 
+- [2026-10-01 · Kampanya tipleri araştırması + ürün bazlı kurulum planı](docs/raporlar/2026-10-01-kampanya-tipleri-ve-kurulum-plani.md) — mesaj, profil, ABO/CBO, cost cap, bid cap
 - [2026-10-01 · Dünya geneli rakip analizi + Meta 2026 güncellemeleri](docs/raporlar/2026-10-01-rakip-ve-meta-guncellemeleri.md)
 
 - [2026-10-01 · Tüm zamanlar detaylı analiz](docs/raporlar/2026-10-01-tum-zamanlar-detayli-analiz.md) — yaş, cinsiyet, il, metin, CTA, yerleşim, zaman trendi
