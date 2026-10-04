@@ -77,3 +77,13 @@ _Son güncelleme: 2026-10-01_
 - **Çoklu reklamveren reklamları KAPALI** (contextual_multi_ads OPT_OUT), **Advantage+ kreatif geliştirmeleri KAPALI** (standard_enhancements OPT_OUT)
 - Eski kazananlar artık eski gönderi ID'siyle değil, **aynı videoyla yeni reklam** olarak kuruldu (gönderi kullanınca çoklu reklamveren kapatılamıyor). Sosyal kanıt sıfırdan başlar.
 - Eski metinlerdeki "%40 indirim" doğrulanmadığı için çıkarıldı; yerine kapıda ödeme + ücretsiz kargo.
+
+### 05.10.2026: Kreatifsiz reklam sorunu ve kalıcı çözüm
+- **Sorun:** API'den satır içi (object_story_spec) yazılan video reklamları, Reklam Yöneticisi taslak ekranı açıkken ~1 dk içinde boş "bağlantı reklamı" şablonuna çevrildi (video/metin/link silindi, WhatsApp eki ve çoklu reklamveren yeniden açıldı).
+- **Çözüm:** Önce **kalıcı kreatif** (ads_create_creative, creative_id) oluşturup reklamı ona bağlamak. Kapak görseli image_url değil **image_hash** ile verilmeli (ikisi birden "ObjectStorySpecRedundant" hatası verir).
+- Tüm Advantage+ kreatif geliştirmeleri bu kreatiflerde varsayılan **KAPALI** (taslak çıktısında hepsi OPT_OUT görünüyor).
+- Güncel reklamlar (hepsi hatasız):
+  - Spotify set `120256339789880309`: `...862430309` (1), `...908040309` (2), `...908140309` (3), `...908200309` (4), `...908250309` (5)
+  - Araç set `120256339789930309`: yeni `...908340309`, `...908400309`, `...908440309`; eski kazanan `...908480309`, `...908570309`, `...908620309`
+- Önceki bozuk + geçici reklamlar DELETED işaretli; Reklam Yöneticisi'nde hâlâ görünürlerse elle silinecek.
+- **Kural:** Bundan sonra her reklam creative_id yöntemiyle kurulacak.
