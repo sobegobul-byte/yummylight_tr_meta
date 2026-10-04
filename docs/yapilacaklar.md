@@ -36,3 +36,14 @@ _Son güncelleme: 2026-10-01_
 - Bekleyen: kreatifler (kullanıcının yeni videoları + mevcut kütüphane), WhatsApp hazır ilk mesajları, yayın onayı
 - Not: eski **CBO-DM-24.08** (1.000 TL/gün) hâlâ AKTİF. Yeni kampanya yayına girince duraklatılması önerilecek.
 - 02.10 gece: Mesaj kampanyasına 14 reklam (Yıldız 6, Anime 5, Araba 3) + **WEB CBO** kampanyası (3 set, 11 reklam, 3.000 TL/gün) taslak olarak eklendi. Hepsi VALIDATED. Sabah listesi: `docs/sabah-kontrol-listesi-2026-10-02.md`
+
+### 04.10.2026: Temiz başlangıç
+- Eski taslaklar (MSG 01.10 + WEB 02.10) API ile silinemedi ("yeni kampanyalar aktif ya da duraklatılmış olmalı" hatası). **Kullanıcı Reklam Yöneticisi'nden "taslağı at" ile silecek.**
+- Yeni **WEB | Satış | CBO | Ürün Bazlı | 04.10.2026** (`120256339583750309`) · 5.000 TL/gün · en yüksek hacim · TASLAK
+  - Set 1: **Spotify Fotoğraflı Gece Lambası** (`120256339585830309`) · link: /spotify-kodlu-fotografli-gece-lambasi-sevgiliye-ese · 5 reklam (1-5_FS_Hazır)
+    - 1: "Kodu okuttu… sonra bu oldu" · başlık "Şarkınızı Lambaya Dönüştürün 🎵" (sevgili sürprizi)
+    - 2: "Düğünümüzde ilk dansımızı…" · "Yıl Dönümünüz İçin Şarkınız Işıkta 💍" (eş / yıl dönümü)
+    - 3: "O gece köprüde bu şarkıyı…" · "Şarkın + Fotoğrafın Işığa Dönüşsün ✨" (anı)
+    - 4: "Mumlar üflendi… hediyesini açınca yüzü" · "Doğum Günü Hediyesi: Şarkınız Işıkta 🎂"
+    - 5: "Kankamın doğum günü… Tepkisine bakın!" · "Arkadaşına En Anlamlı Hediye 🎵" (arkadaş)
+  - Sıradaki setler: Anime, Yıldız, Araç, Fotoğraflı, Çocuk (videolar gelince)
