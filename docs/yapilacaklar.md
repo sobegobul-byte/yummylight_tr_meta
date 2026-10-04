@@ -48,9 +48,9 @@ _Son güncelleme: 2026-10-01_
     - 5: "Kankamın doğum günü… Tepkisine bakın!" · "Arkadaşına En Anlamlı Hediye 🎵" (arkadaş)
   - Set 2: **Araç Fotoğraflı Gece Lambası** (`120256339673870309`) · link: /arac-fotografli-gece-lambasi-otomobil · hedef 6 reklam (3 eski kazanan + 3 yeni)
     - Eski kazananlar **mevcut gönderi ID'siyle** eklendi (beğeni/yorum korunur, metin orijinal):
-      - `120256339679010309` · 1-Araba-Video · 118 satış, CPA 147, ROAS 2,52 · post 262719013454987
-      - `120256339679200309` · Araç tutkunlarına 3D · 54 satış, CPA 104, ROAS 3,87 · post 448631734863713
-      - `120256339679260309` · Araba v1 · 42 satış, CPA 156, ROAS 4,04 · post 546882868371932
+      - `120256339715200309` · 1-Araba-Video · 118 satış, CPA 147, ROAS 2,52 · post 262719013454987
+      - `120256339715330309` · Araç tutkunlarına 3D · 54 satış, CPA 104, ROAS 3,87 · post 448631734863713
+      - `120256339715600309` · Araba v1 · 42 satış, CPA 156, ROAS 4,04 · post 546882868371932
     - Yedek (eklenmedi): araba 22 (63 satış, CPA 203), Tır 1, Proshce 2 seslendirmeli; mtor2 (motor) motor ürününe ait
     - Yeni videolar (izlenip yazıldı, link /arac-fotografli-gece-lambasi-otomobil, CTA Alışverişe Başla):
       - `120256339694560309` · 1_Araba_Hazır · "Babamın 30 yıllık ilk arabası… sadece bu fotoğrafta kalmıştı" · başlık "Babanın İlk Arabası Işıkta Yaşasın 🚗" (baba / duygusal)
@@ -58,3 +58,12 @@ _Son güncelleme: 2026-10-01_
       - `120256339694660309` · 3_Araba_Hazır · "Yurtdışına taşındım… en çok onu özledim. Hayır, sevgilimi değil… ARABAMI!" · "Aracını Işığa Dönüştür ✨" (araba tutkunu / kendine)
     - Kontrol: eski gönderilerin linki güncel ürün sayfasına gidiyor mu, fiyat/indirim ifadesi güncel mi?
   - Sıradaki setler: Anime, Yıldız, Fotoğraflı, Çocuk (videolar gelince)
+
+### 04.10.2026 akşam: Katalog sorunu ve yeniden kurulum
+- Kampanyaya IYZADS kataloğu bağlı olduğu için Reklam Yöneticisi 8 reklamı (5 Spotify + 3 eski araç gönderisi) **katalog karuseline çevirdi**; videolar ve metinler gitti.
+- Kullanıcı kampanyada kataloğu kapattı → bu da iki setin dönüşüm olayını sildi. Setlere pixel 205661538800855 + PURCHASE API ile geri bağlandı (VALIDATED).
+- 8 bozuk reklam DELETED işaretlendi, aynı video/metin/gönderilerle yeniden kuruldu:
+  - Spotify: `120256339714810309`, `120256339714850309`, `120256339715020309`, `120256339715070309`, `120256339715150309`
+  - Araç eski kazananlar: `120256339715200309`, `120256339715330309`, `120256339715600309`
+- Yeni araç videoları (`120256339694560309`, `120256339694600309`, `120256339694660309`) sağlam kaldı.
+- **Ders:** web video satış kampanyalarında kampanya seviyesinde katalog KAPALI olmalı. Katalog yalnız ayrı retargeting kampanyasında.
