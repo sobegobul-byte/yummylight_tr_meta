@@ -52,6 +52,9 @@ _Son güncelleme: 2026-10-01_
       - `120256339679200309` · Araç tutkunlarına 3D · 54 satış, CPA 104, ROAS 3,87 · post 448631734863713
       - `120256339679260309` · Araba v1 · 42 satış, CPA 156, ROAS 4,04 · post 546882868371932
     - Yedek (eklenmedi): araba 22 (63 satış, CPA 203), Tır 1, Proshce 2 seslendirmeli; mtor2 (motor) motor ürününe ait
-    - Bekleyen: **1/2/3_Araba_Hazır** (videolar 1504614261688577 / 2322235285280743 / 1040718752333867). Meta video sunucusu bu ortamdan indirilemiyor. Kullanıcı videoları sohbete yükleyince izlenip metinleri yazılacak.
+    - Yeni videolar (izlenip yazıldı, link /arac-fotografli-gece-lambasi-otomobil, CTA Alışverişe Başla):
+      - `120256339694560309` · 1_Araba_Hazır · "Babamın 30 yıllık ilk arabası… sadece bu fotoğrafta kalmıştı" · başlık "Babanın İlk Arabası Işıkta Yaşasın 🚗" (baba / duygusal)
+      - `120256339694600309` · 2_Araba_Hazır · "POV: Erkek arkadaşın arabasına senden çok aşık…" · "Sevgilinin Arabası Gece Lambası Oldu 🚗💡" (sevgili / mizah)
+      - `120256339694660309` · 3_Araba_Hazır · "Yurtdışına taşındım… en çok onu özledim. Hayır, sevgilimi değil… ARABAMI!" · "Aracını Işığa Dönüştür ✨" (araba tutkunu / kendine)
     - Kontrol: eski gönderilerin linki güncel ürün sayfasına gidiyor mu, fiyat/indirim ifadesi güncel mi?
   - Sıradaki setler: Anime, Yıldız, Fotoğraflı, Çocuk (videolar gelince)
