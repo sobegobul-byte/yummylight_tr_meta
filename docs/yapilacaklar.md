@@ -67,3 +67,13 @@ _Son güncelleme: 2026-10-01_
   - Araç eski kazananlar: `120256339715200309`, `120256339715330309`, `120256339715600309`
 - Yeni araç videoları (`120256339694560309`, `120256339694600309`, `120256339694660309`) sağlam kaldı.
 - **Ders:** web video satış kampanyalarında kampanya seviyesinde katalog KAPALI olmalı. Katalog yalnız ayrı retargeting kampanyasında.
+
+### 05.10.2026: Sıfırdan temiz kurulum (kullanıcı tüm taslakları sildi)
+- Kampanya **WEB | Satış | CBO | Ürün Bazlı | 05.10.2026** (`120256339788170309`) · Satış · CBO 5.000 TL/gün · en yüksek hacim · **katalog YOK** · TASLAK
+- Setler (ikisi de pixel 205661538800855 + PURCHASE, web, TR 18-54 öneri, Advantage+ kitle/yerleşim):
+  - `120256339789880309` · Spotify Fotoğraflı (5 reklam: `...791810309`, `...801990309`, `...802060309`, `...802100309`, `...802160309`)
+  - `120256339789930309` · Araç Fotoğraflı (6 reklam: yeni 1-2-3 `...802200309`, `...802260309`, `...802340309`; eski kazananlar `...802390309`, `...802440309`, `...802480309`)
+- Tüm reklamlar: video + ana metin + başlık + açıklama + **Alışverişe Başla** + ürün linki
+- **Çoklu reklamveren reklamları KAPALI** (contextual_multi_ads OPT_OUT), **Advantage+ kreatif geliştirmeleri KAPALI** (standard_enhancements OPT_OUT)
+- Eski kazananlar artık eski gönderi ID'siyle değil, **aynı videoyla yeni reklam** olarak kuruldu (gönderi kullanınca çoklu reklamveren kapatılamıyor). Sosyal kanıt sıfırdan başlar.
+- Eski metinlerdeki "%40 indirim" doğrulanmadığı için çıkarıldı; yerine kapıda ödeme + ücretsiz kargo.
