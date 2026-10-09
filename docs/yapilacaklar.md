@@ -101,3 +101,4 @@ _Son güncelleme: 2026-10-01_
   - Set adı "Spotfy" yazım hatası.
   - Min harcama kuralı 4–5. günde gözden geçirilecek; yerleşim değer kuralları 5–7 gün sonra.
   - Yaratıcı ekleme: haftada bir toplu (her eklemede o setin öğrenmesi sıfırlanır).
+- **Öncelikli hedef (kullanıcı, 09.10): ROAS 2.** 800 TL sepette satış başı maliyet ≤ 400 TL; 5.000 TL/gün bütçede ≈ 12,5 satış/gün. Başa baş ~1,8 olduğu için ROAS 2 ince kâr demek; uzun vadeli hedef ≥ 2,7 aynen duruyor.
