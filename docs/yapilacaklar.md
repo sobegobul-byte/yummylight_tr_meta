@@ -87,3 +87,17 @@ _Son güncelleme: 2026-10-01_
   - Araç set `120256339789930309`: yeni `...908340309`, `...908400309`, `...908440309`; eski kazanan `...908480309`, `...908570309`, `...908620309`
 - Önceki bozuk + geçici reklamlar DELETED işaretli; Reklam Yöneticisi'nde hâlâ görünürlerse elle silinecek.
 - **Kural:** Bundan sonra her reklam creative_id yöntemiyle kurulacak.
+
+## 9 Ekim 2026 — "9 Ekim 2026 CBO" YAYINDA (Reklam Yöneticisi'nden elle kuruldu)
+- Kampanya `120256411824600309`: Satış, CBO 5.000 TL/gün, en yüksek hacim. Eski 05.10 API taslağı artık yok.
+- Setler (hepsi Pixel 205661538800855 / Purchase, TR, 18+, Advantage+ kitle, 7g tık + 1g görüntüleme):
+  - Yapay Zeka Anime `120256411824620309`: 7 reklam (1–7_Yz_Hazır), min harcama yok
+  - Spotify Fotoğraflı `120256413855550309`: 5 reklam (1–5_FS_Hazır), min 750 TL/gün
+  - Arabalı Gece Lambası `120256413901370309`: 3 reklam (1–3_Araba_Hazır), min 750 TL/gün
+  - Yıldız Haritası `120256413166180309`: 7 reklam (1,2,3,4,8,9,11_YH_Hazır), min 750 TL/gün
+- Açık konular:
+  - 5_Yz_Hazır metni ve başlığı 1_Yz ile aynı yayına çıktı (nostalji metni girilmemiş).
+  - Eski araç reklamı `120219821195440309` için yayınlanmamış bir taslak değişiklik (katalog karuseli + ürün göz atma) duruyor; atılmalı.
+  - Set adı "Spotfy" yazım hatası.
+  - Min harcama kuralı 4–5. günde gözden geçirilecek; yerleşim değer kuralları 5–7 gün sonra.
+  - Yaratıcı ekleme: haftada bir toplu (her eklemede o setin öğrenmesi sıfırlanır).
