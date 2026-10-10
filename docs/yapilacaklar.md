@@ -102,3 +102,10 @@ _Son güncelleme: 2026-10-01_
   - Min harcama kuralı 4–5. günde gözden geçirilecek; yerleşim değer kuralları 5–7 gün sonra.
   - Yaratıcı ekleme: haftada bir toplu (her eklemede o setin öğrenmesi sıfırlanır).
 - **Öncelikli hedef (kullanıcı, 09.10): ROAS 2.** 800 TL sepette satış başı maliyet ≤ 400 TL; 5.000 TL/gün bütçede ≈ 12,5 satış/gün. Başa baş ~1,8 olduğu için ROAS 2 ince kâr demek; uzun vadeli hedef ≥ 2,7 aynen duruyor.
+
+## 10 Ekim 2026 — ilk müdahale
+- 48 saat: 5.404 TL harcama, 1 satış (11_YH, 799,90 TL), 1 sepet (5_Yz). Kullanıcı ikas'tan doğruladı: sipariş sayısı Meta ile uyuşuyor, ölçüm sorunu yok.
+- Kullanıcı yaptı: 2_Araba, 3_Araba, 4_YH, 8_YH, 1_FS duraklatıldı; Araç setinin 750 TL min. harcaması kaldırıldı.
+- Bekleyen: kampanya bütçesi 5.000 → 2.500 TL (henüz değişmedi); Spotify ve YH min. harcamaları 750 → 500 TL.
+- Plan: Salı (13 Ekim) sabahı yeni kurgular tek seferde (ürün ilk karede, teklif ekranda, 8-10 sn); ilk okuma Cuma-Cumartesi.
+- Kreatif analizi: docs/raporlar/2026-10-10-9ekim-cbo-kreatif-analizi.md + slayt artifact.
