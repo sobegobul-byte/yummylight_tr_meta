@@ -5,7 +5,7 @@
 ## Özet
 | Harcama | Gösterim | CPM | Link tık. | Link CTR | Tık. başı | Siteye ulaşan | Ulaşan başı | Sepet | Satış | ROAS |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 5.210 TL | 66.029 | 79 TL | 210 | **%0,41** | 19 TL | 210 | **24,8 TL** | 1 | 1 (800 TL) | **0,15** |
+| 5.210 TL | 66.029 | 79 TL | 274 | **%0,41** | 19 TL | 210 | **24,8 TL** | 1 | 1 (800 TL) | **0,15** |
 
 ## Tanımlar
 - **Link CTR:** link tıklama / gösterim (Meta'daki "CTR (tümü)" değil).
