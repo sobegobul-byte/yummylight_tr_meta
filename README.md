@@ -4,21 +4,21 @@ Bu repo, Meta (Facebook/Instagram) reklam hesabı üzerindeki analizleri, kararl
 
 ## Yapı
 
-- [`docs/hesaplar.md`](docs/hesaplar.md) — Reklam hesapları, işletmeler, pixel'ler ve kataloglar (referans bilgileri)
-- [`docs/yapilacaklar.md`](docs/yapilacaklar.md) — Açık işler ve öncelik sırası
-- `docs/raporlar/` — Tarihli analiz raporları (`YYYY-MM-DD-konu.md`)
+- [`docs/reklam/hesaplar.md`](docs/reklam/hesaplar.md) — Reklam hesapları, işletmeler, pixel'ler ve kataloglar (referans bilgileri)
+- [`docs/reklam/yapilacaklar.md`](docs/reklam/yapilacaklar.md) — Açık işler ve öncelik sırası
+- `docs/reklam/raporlar/` — Tarihli analiz raporları (`YYYY-MM-DD-konu.md`)
 
 ## 🎯 Aktif plan
 
-- **[Yol Haritası: Batmadan Sevgililer Günü 2027'ye](docs/yol-haritasi-sevgililer-2027.md)**
+- **[Yol Haritası: Batmadan Sevgililer Günü 2027'ye](docs/reklam/yol-haritasi-sevgililer-2027.md)**
 
 ## Raporlar
 
-- [2026-10-01 · Kampanya tipleri araştırması + ürün bazlı kurulum planı](docs/raporlar/2026-10-01-kampanya-tipleri-ve-kurulum-plani.md) — mesaj, profil, ABO/CBO, cost cap, bid cap
-- [2026-10-01 · Dünya geneli rakip analizi + Meta 2026 güncellemeleri](docs/raporlar/2026-10-01-rakip-ve-meta-guncellemeleri.md)
+- [2026-10-01 · Kampanya tipleri araştırması + ürün bazlı kurulum planı](docs/reklam/raporlar/2026-10-01-kampanya-tipleri-ve-kurulum-plani.md) — mesaj, profil, ABO/CBO, cost cap, bid cap
+- [2026-10-01 · Dünya geneli rakip analizi + Meta 2026 güncellemeleri](docs/reklam/raporlar/2026-10-01-rakip-ve-meta-guncellemeleri.md)
 
-- [2026-10-01 · Tüm zamanlar detaylı analiz](docs/raporlar/2026-10-01-tum-zamanlar-detayli-analiz.md) — yaş, cinsiyet, il, metin, CTA, yerleşim, zaman trendi
-- [2026-10-01 · Ana hesap ilk analiz (son 90 gün)](docs/raporlar/2026-10-01-ana-hesap-ilk-analiz.md)
+- [2026-10-01 · Tüm zamanlar detaylı analiz](docs/reklam/raporlar/2026-10-01-tum-zamanlar-detayli-analiz.md) — yaş, cinsiyet, il, metin, CTA, yerleşim, zaman trendi
+- [2026-10-01 · Ana hesap ilk analiz (son 90 gün)](docs/reklam/raporlar/2026-10-01-ana-hesap-ilk-analiz.md)
 
 ## Ana hesap
 
