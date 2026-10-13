@@ -109,3 +109,9 @@ _Son güncelleme: 2026-10-01_
 - Bekleyen: kampanya bütçesi 5.000 → 2.500 TL (henüz değişmedi); Spotify ve YH min. harcamaları 750 → 500 TL.
 - Plan: Salı (13 Ekim) sabahı yeni kurgular tek seferde (ürün ilk karede, teklif ekranda, 8-10 sn); ilk okuma Cuma-Cumartesi.
 - Kreatif analizi: docs/reklam/raporlar/2026-10-10-9ekim-cbo-kreatif-analizi.md + slayt artifact.
+
+## 13 Ekim 2026 — bütçe artışı (kullanıcı onayıyla, API'den)
+- 11-13 Ekim: 7.887 TL harcama, 17 satış, ROAS 1,85. Anime 2,35 · Yıldız 2,02 · Spotify 1,00 (CPM 3 kat) · Araç ~0. Rapor: `raporlar/2026-10-13-gunluk-kontrol.md`.
+- Yapıldı (23:45): kampanya bütçesi **2.500 → 3.500 TL**; Spotify setinin **750 TL min. harcaması kaldırıldı**. Yıldız seti 750 TL min. harcamada kaldı. Canlıdan okunarak doğrulandı.
+- Bekleyen: 7 yeni kurgu (teslim listesi boş), Araç setine video gelince 4 günlük 300 TL min., 13 Ekim tutarsız Spotify satışı ikas kontrolü.
+- Sonraki kontrol: Cuma. 3 gün ROAS ≥ 1,8 → 5.000; < 1,2 → 2.500.
