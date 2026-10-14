@@ -115,3 +115,9 @@ _Son güncelleme: 2026-10-01_
 - Yapıldı (23:45): kampanya bütçesi **2.500 → 3.500 TL**; Spotify setinin **750 TL min. harcaması kaldırıldı**. Yıldız seti 750 TL min. harcamada kaldı. Canlıdan okunarak doğrulandı.
 - Bekleyen: 7 yeni kurgu (teslim listesi boş), Araç setine video gelince 4 günlük 300 TL min., 13 Ekim tutarsız Spotify satışı ikas kontrolü.
 - Sonraki kontrol: Cuma. 3 gün ROAS ≥ 1,8 → 5.000; < 1,2 → 2.500.
+
+## 14 Ekim 2026 — temizlik (Fatih onayı: "kapatılması gereken kreatifleri kapat")
+- Kapatıldı (canlıdan doğrulandı 09:50): 2_Yz, 4_Yz, 6_Yz, 7_Yz, 1_YH, 2_YH, 3_YH, 3_FS.
+- 3_Yz kapatılmadı: Fatih ayrı "Baba" setine kendisi taşıyacak (300 TL min. harcama, 4 gün). Analiz: raporlar/2026-10-14-3yz-analiz.md.
+- Aktif kalan 9 reklam: 1_Yz, 3_Yz, 5_Yz, 9_YH, 11_YH, 2_FS, 4_FS, 5_FS, 1_Araba. Bütçe 3.500 değişmedi.
+- Spotify set adı değişmiyor (Fatih: önemli değil).
