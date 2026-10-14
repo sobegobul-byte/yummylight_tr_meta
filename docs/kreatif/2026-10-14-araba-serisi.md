@@ -36,3 +36,12 @@ Ortak metinler (doğrulanmış teklif):
 - Reklam brifindeki not: Araç seti için günlük en az ~300 TL; altında 4 video öğrenemez.
 - 3. gün: CTR < %0,8 ve 3 sn izlenme oranı en düşük olan kapatılır.
 - 7. gün: satın alma başı maliyeti en iyi olan kalır, kazanan açının v2'si yapılır.
+
+## Video başına reklam metinleri (Fatih'e verilen, 14 Ekim 15:12)
+| Reklam | Metin ilk satır | Başlık | Açıklama |
+|---|---|---|---|
+| 4_Araba_Hazır | Bu fotoğraf… şimdi her gece başucunda yanan bir lamba 🚗✨ | Aracının Fotoğrafı Işıklı Lamba Olsun 🚗 | Ücretsiz kargo · Kapıda ödeme |
+| 5_Araba_Hazır | Motorunu odana park et 🏍️✨ | Motorun Başucunda Işıl Işıl 🏍️ | Ücretsiz kargo · Kapıda ödeme |
+| 6_Araba_Hazır | Babanın ilk arabası… hâlâ aklında mı? 🚗💛 | Babanın Arabası Işıklı Lamba Olsun 💛 | Babana anlamlı hediye · Kapıda ödeme |
+| 7_Araba_Hazır | Direksiyonda geçen yıllar… başucunda ışığı olsun 🚛✨ | Tırın, Kamyonun Işıklı Lamba Olsun 🚛 | Ücretsiz kargo · Kapıda ödeme |
+Hepsinin son satırı: 🚚 Ücretsiz kargo · Kapıda ödeme · Peşin fiyatına 3 taksit 👇 · Buton: Alışveriş Yap → araba lamba ürün sayfası.
