@@ -121,3 +121,4 @@ _Son güncelleme: 2026-10-01_
 - 3_Yz kapatılmadı: Fatih ayrı "Baba" setine kendisi taşıyacak (300 TL min. harcama, 4 gün). Analiz: raporlar/2026-10-14-3yz-analiz.md.
 - Aktif kalan 9 reklam: 1_Yz, 3_Yz, 5_Yz, 9_YH, 11_YH, 2_FS, 4_FS, 5_FS, 1_Araba. Bütçe 3.500 değişmedi.
 - Spotify set adı değişmiyor (Fatih: önemli değil).
+- 11:20: Fatih "Baba Yapay Zeka Anime | Web Satış" setini kurdu (id 120256476659450309): sadece 3_Yz, günlük min. 300 TL. "Babanla Paylaştığın" videosu eklenmedi (Fatih: kalsın). Değerlendirme 18 Ekim: ROAS ≥ 1,8 kalır, tıklama < %0,4 kapanır.
