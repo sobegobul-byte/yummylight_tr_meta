@@ -20,4 +20,6 @@ export const F = {
 	inter: 'Inter',
 	syne: 'Syne',
 	mono: 'IBM Plex Mono',
+	caveat: 'Caveat',
+	fraunces: 'Fraunces',
 };

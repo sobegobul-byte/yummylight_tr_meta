@@ -173,3 +173,56 @@ for tt in [0.85, 6.5]:
     v5 += noise_burst(tt - 0.15, 0.3, amp=0.18, lp=0.3)
 v5 += note(hz(88), 2.9, 0.05, amp=0.08, attack=0.003, release=1.2, kind='pluck') + note(hz(93), 6.75, 0.05, amp=0.12, attack=0.003, release=1.6, kind='pluck')
 master(v5, 'v5')
+
+
+# ---- İkinci seri (gece lambası, önizleme) ----
+def musicbox(seq, start, step, amp=0.08, oct=0):
+    out = np.zeros(N)
+    for i, n in enumerate(seq):
+        if n:
+            out += note(hz(n + oct), start + i * step, 0.05, amp=amp, attack=0.003, release=1.4, kind='pluck')
+    return out
+
+lull = [76, 79, 84, 79, 76, 72, 74, 76, 79, 76, 72, 67]
+
+# V6 Işığı kapat: düğme "klik", karanlık sessizlik, sonra müzik kutusu + sıcak pad
+v6 = click(0.05, amp=0.5, freq=900, length=0.03) + click(0.09, amp=0.3, freq=600, length=0.02)
+v6 += note(hz(36), 0.9, 7.5, amp=0.08, attack=1.0, kind='pad')
+v6 += musicbox(lull, 1.0, 0.33)
+v6 += chords([Fmaj7, Cmaj7, G6], start=2.7, each=2.2, amp=0.05, attack=0.6)
+v6 += noise_burst(6.3, 0.4, amp=0.15) + shimmer(6.6, 1.2)
+master(v6, 'v6')
+
+# V7 Gece saati: sessiz gece pad, kilit ekranı tıkı, bildirim "ding"
+v7 = chords([Am7, Fmaj7, Cmaj7, G6], amp=0.06, kind='pad', attack=0.8)
+v7 += musicbox([72, 0, 76, 0, 79, 0, 76, 0, 74, 0, 72, 0, 71, 0, 72], 0.2, 0.3, amp=0.05)
+v7 += click(0.05, amp=0.25, freq=3000)
+v7 += note(hz(88), 4.72, 0.05, amp=0.12, attack=0.002, release=0.9, kind='pluck') + note(hz(95), 4.82, 0.05, amp=0.1, attack=0.002, release=1.2, kind='pluck')
+v7 += noise_burst(6.5, 0.35, amp=0.14)
+master(v7, 'v7')
+
+# V8 Özlem: piyano-vari pad, her balonda "pop", yazıyor sesi
+v8 = chords([Cmaj7, Am7, Dm9, G6], amp=0.055, kind='pad', attack=0.7)
+for tt in [0.1, 0.75, 1.7, 3.0, 6.67]:
+    v8 += note(hz(84), tt, 0.03, amp=0.12, attack=0.002, release=0.25, kind='sine') + note(hz(91), tt + 0.03, 0.03, amp=0.08, attack=0.002, release=0.2)
+v8 += musicbox([67, 72, 76, 74, 72, 67, 69, 72], 3.3, 0.45, amp=0.06)
+master(v8, 'v8')
+
+# V9 Önizle: film projektörü tıkırtısı + yavaş piyano, ışık yanınca açılan akor
+v9 = np.zeros(N)
+for i in range(int(9 / 0.042)):
+    v9 += click(i * 0.042, amp=0.012, freq=1200, length=0.006)
+v9 += musicbox([64, 0, 67, 0, 72, 0, 71, 0, 67, 0, 64], 0.0, 0.36, amp=0.07)
+v9 += chords([Fmaj7, Cmaj7, G6], start=3.8, each=1.8, amp=0.07, attack=0.15) + shimmer(3.8, 1.0)
+v9 += noise_burst(6.3, 0.35, amp=0.15)
+master(v9, 'v9')
+
+# V10 Galeri: yumuşak lo-fi vuruş, her kelimede hafif tık
+v10 = chords([Am7, Fmaj7, Cmaj7, G6], amp=0.05, kind='pad', attack=0.4)
+for i in range(int(9 / 0.6)):
+    v10 += kick(i * 0.6, amp=0.28)
+w = [2 + i * 7 for i in range(4)] + [72 + i * 7 for i in range(4)] + [132 + i * 5 for i in range(4)] + [196 + i * 4 for i in range(5)]
+for fr_ in w:
+    v10 += click(fr_ / 30, amp=0.05, freq=2600)
+v10 += musicbox(lull[:8], 4.4, 0.25, amp=0.06)
+master(v10, 'v10')
