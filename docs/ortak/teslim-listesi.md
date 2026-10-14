@@ -18,9 +18,15 @@ Kreatif sohbeti hazır olan her video/metni buraya ekler. Reklam sohbeti buradan
 | 14 Ekim 2026 | `5_Araba_Hazır` (ARABA_motor_v1) | Araç · araba serisi · açı: motor sahibi (kimlik) | /mnt/project-files/kreatif/videolar/5_Araba_Hazır.mp4 · sohbet (Kreatif Merkezi) | Evet: araba metni (docs/kreatif/2026-10-14-araba-serisi.md) | hazır |
 | 14 Ekim 2026 | `6_Araba_Hazır` (ARABA_baba_v1) | Araç · araba serisi · açı: babanın ilk arabası (nostalji) | /mnt/project-files/kreatif/videolar/6_Araba_Hazır.mp4 · sohbet (Kreatif Merkezi) | Evet: araba metni (docs/kreatif/2026-10-14-araba-serisi.md) | hazır |
 | 14 Ekim 2026 | `7_Araba_Hazır` (ARABA_meslek_v1) | Araç · araba serisi · açı: şoför / operatör (meslek gururu) | /mnt/project-files/kreatif/videolar/7_Araba_Hazır.mp4 · sohbet (Kreatif Merkezi) | Evet: araba metni (docs/kreatif/2026-10-14-araba-serisi.md) | hazır |
+| 14 Ekim 2026 | `YH_gokyuzu_v1` | Yıldız (Kare Yıldız + şarkı kodu) · açı: tanıştığınız gecenin gökyüzü | /mnt/project-files/kreatif/videolar/YH_gokyuzu_v1.mp4 · sohbet (Kreatif Merkezi) | Evet: video başına metin (docs/kreatif/2026-10-14-kare-yildiz-serisi.md) | hazır |
+| 14 Ekim 2026 | `YH_sarki_v1` | Yıldız (Kare Yıldız + şarkı kodu) · açı: okut, şarkınız çalsın (kanıt) | /mnt/project-files/kreatif/videolar/YH_sarki_v1.mp4 · sohbet (Kreatif Merkezi) | Evet: video başına metin (docs/kreatif/2026-10-14-kare-yildiz-serisi.md) | hazır |
+| 14 Ekim 2026 | `YH_tarih_v1` | Yıldız (Kare Yıldız + şarkı kodu) · açı: hayatını değiştiren tarih | /mnt/project-files/kreatif/videolar/YH_tarih_v1.mp4 · sohbet (Kreatif Merkezi) | Evet: video başına metin (docs/kreatif/2026-10-14-kare-yildiz-serisi.md) | hazır |
+| 14 Ekim 2026 | `YH_anket_v1` | Yıldız (Kare Yıldız + şarkı kodu) · açı: çiçek solar / gökyüzü kalır | /mnt/project-files/kreatif/videolar/YH_anket_v1.mp4 · sohbet (Kreatif Merkezi) | Evet: video başına metin (docs/kreatif/2026-10-14-kare-yildiz-serisi.md) | hazır |
+| 14 Ekim 2026 | `YH_not_v1` | Yıldız (Kare Yıldız + şarkı kodu) · açı: söyleyemediğin cümle | /mnt/project-files/kreatif/videolar/YH_not_v1.mp4 · sohbet (Kreatif Merkezi) | Evet: video başına metin (docs/kreatif/2026-10-14-kare-yildiz-serisi.md) | hazır |
 
 **Durum değerleri:** hazır · reklama eklendi · yayında · kapatıldı
 
 Test planı ve karar tablosu: `docs/kreatif/2026-10-14-anime-test-serisi.md`. Eklerken kapanacaklar (Fatih onayıyla): 2_Yz, 3_Yz, 4_Yz, 6_Yz, 7_Yz.
 Gece serisi (5 video) planı: `docs/kreatif/2026-10-14-gece-serisi.md`. Orta ve son yazı "Ücretsiz önizleme · Önce gör, sonra sipariş ver"; 3 taksit yazısı yok.
 Araba serisi (4 video) planı: `docs/kreatif/2026-10-14-araba-serisi.md`. Plakalar sansürsüz (izinli). Araçta "ücretsiz önizleme" yazılmadı.
+Kare Yıldız serisi (5 video) planı ve metinleri: `docs/kreatif/2026-10-14-kare-yildiz-serisi.md`. Ürün: Gökyüzünden Melodi (yıldız haritası + şarkı kodu). Önizleme ve % indirim yazılmadı.

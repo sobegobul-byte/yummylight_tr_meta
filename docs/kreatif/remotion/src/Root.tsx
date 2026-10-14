@@ -14,6 +14,11 @@ import {A1OnceSonra} from './A1OnceSonra';
 import {A2Motor} from './A2Motor';
 import {A3Plaka} from './A3Plaka';
 import {A4Meslek} from './A4Meslek';
+import {Y1Gokyuzu} from './Y1Gokyuzu';
+import {Y2Sarki} from './Y2Sarki';
+import {Y3Tarih} from './Y3Tarih';
+import {Y4Anket} from './Y4Anket';
+import {Y5Not} from './Y5Not';
 
 const base = {durationInFrames: 270, fps: 30, width: 1080, height: 1920};
 
@@ -33,5 +38,10 @@ export const Root: React.FC = () => (
 		<Composition id="ARABA-motor-v1" component={A2Motor} {...base} />
 		<Composition id="ARABA-baba-v1" component={A3Plaka} {...base} />
 		<Composition id="ARABA-meslek-v1" component={A4Meslek} {...base} />
+		<Composition id="YH-gokyuzu-v1" component={Y1Gokyuzu} {...base} />
+		<Composition id="YH-sarki-v1" component={Y2Sarki} {...base} />
+		<Composition id="YH-tarih-v1" component={Y3Tarih} {...base} />
+		<Composition id="YH-anket-v1" component={Y4Anket} {...base} />
+		<Composition id="YH-not-v1" component={Y5Not} {...base} />
 	</>
 );

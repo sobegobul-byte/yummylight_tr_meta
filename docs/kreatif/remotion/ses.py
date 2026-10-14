@@ -276,3 +276,53 @@ a4 += chords([Am7, Fmaj7, Dm9, G6], start=0.0, each=2.25, amp=0.05, attack=0.2)
 for tt in [0.45, 2.35, 6.65]:
     a4 += noise_burst(tt, 0.3, amp=0.18)
 master(a4, 'a4')
+
+
+# ---- Dördüncü seri (yıldız haritası + şarkı kodu) ----
+# Y1 Gökyüzü: yıldız belirdikçe tek tek "ting", geniş sıcak pad
+y1 = chords([Fmaj7, Cmaj7, Am7, G6], amp=0.06, kind='pad', attack=0.6)
+for i, n in enumerate([84, 88, 91, 86, 93, 89, 96, 91, 88]):
+    y1 += note(hz(n), i * 0.067, 0.04, amp=0.07, attack=0.002, release=1.2, kind='pluck')
+y1 += shimmer(0.1, 2.6, amp=0.05) + noise_burst(2.85, 0.3, amp=0.12) + shimmer(6.6, 1.5)
+y1 += musicbox([72, 76, 79, 76, 74, 72, 71, 72], 3.0, 0.42, amp=0.05)
+master(y1, 'y1')
+
+# Y2 Şarkı: kayıt "tık", sonra ritimli pop: vuruş + bas + akor
+y2 = click(0.05, amp=0.2, freq=1500) + click(1.45, amp=0.35, freq=900, length=0.02)
+y2 += note(hz(48), 0.0, 1.4, amp=0.05, attack=0.3, kind='pad')
+for i in range(int((9 - 1.5) / 0.46)):
+    tt = 1.5 + i * 0.46
+    y2 += kick(tt, amp=0.42 if i % 2 == 0 else 0.25)
+y2 += chords([Cmaj7, Am7, Fmaj7, G6], start=1.5, each=1.84, amp=0.07, attack=0.05)
+y2 += musicbox([76, 79, 81, 79, 76, 74, 76, 72], 1.5, 0.23, amp=0.05) + noise_burst(6.45, 0.3, amp=0.14)
+master(y2, 'y2')
+
+# Y3 Tarih: sayaç tıkırtısı, daktilo, gece pad
+y3 = chords([Am7, Fmaj7, Cmaj7, G6], amp=0.055, kind='pad', attack=0.5)
+for i in range(32):
+    y3 += click(0.9 + i * 0.03, amp=0.08, freq=3000, length=0.006)
+y3 += kick(1.75, amp=0.5)
+for i in range(23):
+    y3 += click(3.0 + i / 36, amp=0.09, freq=1900, length=0.01)
+y3 += noise_burst(6.45, 0.3, amp=0.14)
+master(y3, 'y3')
+
+# Y4 Anket: hafif lo-fi, dokunuş "pop", seçimde parıltı
+y4 = chords([Fmaj7, G6, Am7, Cmaj7], amp=0.06, kind='pad', attack=0.3)
+for i in range(int(9 / 0.5)):
+    y4 += kick(i * 0.5, amp=0.25)
+for tt in [1.3, 7.2]:
+    y4 += note(hz(84), tt, 0.03, amp=0.14, attack=0.002, release=0.25) + shimmer(tt, 0.8, amp=0.05)
+y4 += musicbox([72, 74, 76, 79, 76, 74], 3.2, 0.5, amp=0.05)
+master(y4, 'y4')
+
+# Y5 Not: daktilo tuşları, satır sonu zili, piyano-vari müzik kutusu
+y5 = chords([Cmaj7, Am7, Dm9, G6], amp=0.05, kind='pad', attack=0.8)
+rng2 = np.random.default_rng(3)
+for i in range(40):
+    y5 += click(1.6 + i * 0.035 + rng2.uniform(0, 0.01), amp=0.1, freq=1400 + rng2.uniform(0, 600), length=0.01)
+for i in range(28):
+    y5 += click(6.8 + i * 0.035, amp=0.1, freq=1600, length=0.01)
+y5 += note(hz(96), 3.0, 0.02, amp=0.08, attack=0.001, release=0.6, kind='pluck')
+y5 += musicbox(lull, 3.1, 0.3, amp=0.055)
+master(y5, 'y5')
