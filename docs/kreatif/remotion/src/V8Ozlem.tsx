@@ -15,14 +15,14 @@ const MSGS: Msg[] = [
 	{t: 'Yaktım… sanki yanımdasın ✨', at: 3.0},
 ];
 
-const Bubble: React.FC<{m: Msg}> = ({m}) => {
+const Bubble: React.FC<{m: Msg; big?: boolean}> = ({m, big}) => {
 	const f = useCurrentFrame();
 	const at = s(m.at);
 	const sc = interpolate(f, [at, at + 6], [0.6, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.out(Easing.back(1.8))});
 	if (f < at) return null;
 	return (
 		<div style={{display: 'flex', justifyContent: m.me ? 'flex-end' : 'flex-start', marginBottom: 16}}>
-			<div style={{transform: `scale(${sc})`, transformOrigin: m.me ? '100% 100%' : '0% 100%', background: m.me ? C.amber : 'rgba(58,56,62,0.92)', color: m.me ? '#1B1408' : '#F4F1EC', fontFamily: inter, fontWeight: 600, fontSize: 56, lineHeight: 1.2, padding: '22px 34px', borderRadius: 44, borderBottomLeftRadius: m.me ? 44 : 12, borderBottomRightRadius: m.me ? 12 : 44, maxWidth: 820, boxShadow: '0 8px 24px rgba(0,0,0,0.35)'}}>
+			<div style={{transform: `scale(${sc})`, transformOrigin: m.me ? '100% 100%' : '0% 100%', background: m.me ? C.amber : 'rgba(58,56,62,0.92)', color: m.me ? '#1B1408' : '#F4F1EC', fontFamily: inter, fontWeight: 600, fontSize: big ? 84 : 60, lineHeight: 1.18, whiteSpace: big ? 'normal' : 'nowrap', padding: '22px 36px', borderRadius: 44, borderBottomLeftRadius: m.me ? 44 : 12, borderBottomRightRadius: m.me ? 12 : 44, maxWidth: 950, boxShadow: '0 8px 24px rgba(0,0,0,0.35)'}}>
 				{m.t}
 			</div>
 		</div>
@@ -51,7 +51,7 @@ export const V8Ozlem: React.FC = () => {
 			<Shots
 				shots={[
 					{id: '4206', start: 0.2, dur: 2.2, zoom: [1.18, 1.12], origin: '50% 15%', grade: NIGHT},
-					{id: '4210', start: 2.6, dur: 2.2, zoom: [1.15, 1.1], origin: '50% 15%', grade: NIGHT},
+					{id: '4210', start: 2.6, dur: 2.2, zoom: [1.15, 1.1], origin: '50% 15%', grade: NIGHT, dim: 0.3},
 					{id: '4203', start: 0.4, dur: 2.2, zoom: [1.0, 1.05]},
 					{id: '4202', start: 2.0, dur: 2.4, zoom: [1.05, 1.0]},
 				]}
@@ -87,9 +87,10 @@ const Mid: React.FC = () => {
 				her gece yanan bir anı.
 			</div>
 			<div style={{marginTop: 34, opacity: fadeIn(f, 14, 6)}}>
-				<span style={{fontFamily: inter, fontWeight: 800, fontSize: 46, color: '#1B1408', background: C.amber, padding: '14px 30px', borderRadius: 44, borderBottomLeftRadius: 12}}>
-					{MID_TAG}: {MID_L1.toLocaleLowerCase('tr')} {MID_L2}
-				</span>
+				<div style={{display: 'inline-block', fontFamily: inter, fontWeight: 800, fontSize: 52, lineHeight: 1.2, color: '#1B1408', background: C.amber, padding: '18px 40px', borderRadius: 44, borderBottomLeftRadius: 12, textShadow: 'none'}}>
+					<div style={{fontSize: 34, fontWeight: 600, opacity: 0.75}}>{MID_TAG}</div>
+					{MID_L1} {MID_L2}
+				</div>
 			</div>
 		</div>
 	);
@@ -102,11 +103,11 @@ const End: React.FC = () => {
 			<AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0) 55%)', opacity: fadeIn(f, 0, 8)}} />
 			<div style={{position: 'absolute', top: 160, left: 56, right: 56}}>
 				<Sequence from={2} layout="none">
-					<Bubble m={{t: END_L1 + ' ' + END_L2, me: true, at: 0}} />
+					<Bubble m={{t: END_L1 + ' ' + END_L2, me: true, at: 0}} big />
 				</Sequence>
 			</div>
-			<div style={{position: 'absolute', top: 470, width: '100%', textAlign: 'center', opacity: fadeIn(f, 16, 8)}}>
-				<span style={{fontFamily: inter, fontWeight: 800, fontSize: 42, color: C.cream, textShadow: '0 3px 16px rgba(0,0,0,0.8)', whiteSpace: 'nowrap'}}>{END_PILL}</span>
+			<div style={{position: 'absolute', top: 540, width: '100%', textAlign: 'center', opacity: fadeIn(f, 16, 8)}}>
+				<span style={{fontFamily: inter, fontWeight: 800, fontSize: 44, color: C.cream, textShadow: '0 3px 16px rgba(0,0,0,0.8)', whiteSpace: 'nowrap'}}>{END_PILL}</span>
 			</div>
 		</>
 	);

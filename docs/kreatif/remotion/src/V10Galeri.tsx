@@ -34,7 +34,7 @@ export const V10Galeri: React.FC = () => {
 				shots={[
 					{id: '4204', start: 0.2, dur: 2.2, zoom: [1.1, 1.02]},
 					{id: '4208', start: 0.6, dur: 2.2, zoom: [1.0, 1.06], grade: NIGHT},
-					{id: '4190', start: 4.2, dur: 2.0, zoom: [1.0, 1.04]},
+					{id: '4190', start: 4.2, dur: 2.0, zoom: [1.0, 1.04], dim: 0.3},
 					{id: '4202', start: 1.5, dur: 2.6, zoom: [1.06, 1.0]},
 				]}
 			/>
@@ -58,8 +58,10 @@ const Mid: React.FC = () => {
 	return (
 		<>
 			<Karaoke words={['Her', 'gece', 'başucunda', 'yansın.']} at={0} per={5} out={s(1.85)} top={180} size={104} hot={[2]} />
-			<div style={{position: 'absolute', top: 440, width: '100%', textAlign: 'center', opacity: Math.min(fadeIn(f, 18, 6), fadeOut(f, s(1.85), 6)), fontFamily: caveat, fontWeight: 700, fontSize: 74, color: C.amber, transform: 'rotate(-3deg)', textShadow: '0 3px 14px rgba(0,0,0,0.8)'}}>
-				{MID_TAG} · {MID_L1.toLocaleLowerCase('tr')} {MID_L2}
+			<div style={{position: 'absolute', top: 520, width: '100%', textAlign: 'center', opacity: Math.min(fadeIn(f, 18, 6), fadeOut(f, s(1.85), 6)), fontFamily: caveat, fontWeight: 700, fontSize: 76, lineHeight: 1.05, color: C.amber, transform: 'rotate(-3deg)', textShadow: '0 3px 14px rgba(0,0,0,0.8)'}}>
+				{MID_TAG}:
+				<br />
+				{MID_L1.toLocaleLowerCase('tr')} {MID_L2}
 			</div>
 		</>
 	);

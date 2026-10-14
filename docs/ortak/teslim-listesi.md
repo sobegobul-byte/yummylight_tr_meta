@@ -9,7 +9,13 @@ Kreatif sohbeti hazır olan her video/metni buraya ekler. Reklam sohbeti buradan
 | 14 Ekim 2026 | `YZ_avuc_v1` | Anime (Yapay Zeka) · açı: gerçek boyut/el | /mnt/project-files/kreatif/videolar/YZ_avuc_v1.mp4 · sohbet (Kreatif Merkezi) | Evet: 1_Yz metniyle birebir aynı | hazır |
 | 14 Ekim 2026 | `YZ_kime_v1` | Anime (Yapay Zeka) · açı: kime alınır | /mnt/project-files/kreatif/videolar/YZ_kime_v1.mp4 · sohbet (Kreatif Merkezi) | Evet: 1_Yz metniyle birebir aynı | hazır |
 | 14 Ekim 2026 | `YZ_fis_v1` | Anime (Yapay Zeka) · açı: teklif önce | /mnt/project-files/kreatif/videolar/YZ_fis_v1.mp4 · sohbet (Kreatif Merkezi) | Evet: 1_Yz metniyle birebir aynı | hazır |
+| 14 Ekim 2026 | `YZ_isikkapat_v1` | Anime (Yapay Zeka) · gece serisi · açı: ışığı kapat | /mnt/project-files/kreatif/videolar/YZ_isikkapat_v1.mp4 · sohbet (Kreatif Merkezi) | Evet: yeni önizleme metni (docs/kreatif/2026-10-14-gece-serisi.md) | hazır |
+| 14 Ekim 2026 | `YZ_gecesaat_v1` | Anime (Yapay Zeka) · gece serisi · açı: gece saati / kilit ekranı | /mnt/project-files/kreatif/videolar/YZ_gecesaat_v1.mp4 · sohbet (Kreatif Merkezi) | Evet: yeni önizleme metni (docs/kreatif/2026-10-14-gece-serisi.md) | hazır |
+| 14 Ekim 2026 | `YZ_ozlem_v1` | Anime (Yapay Zeka) · gece serisi · açı: özlem / mesajlaşma | /mnt/project-files/kreatif/videolar/YZ_ozlem_v1.mp4 · sohbet (Kreatif Merkezi) | Evet: yeni önizleme metni (docs/kreatif/2026-10-14-gece-serisi.md) | hazır |
+| 14 Ekim 2026 | `YZ_onizle_v1` | Anime (Yapay Zeka) · gece serisi · açı: önce gör (açık döngü) | /mnt/project-files/kreatif/videolar/YZ_onizle_v1.mp4 · sohbet (Kreatif Merkezi) | Evet: yeni önizleme metni (docs/kreatif/2026-10-14-gece-serisi.md) | hazır |
+| 14 Ekim 2026 | `YZ_galeri_v1` | Anime (Yapay Zeka) · gece serisi · açı: galeri / kayıp korkusu | /mnt/project-files/kreatif/videolar/YZ_galeri_v1.mp4 · sohbet (Kreatif Merkezi) | Evet: yeni önizleme metni (docs/kreatif/2026-10-14-gece-serisi.md) | hazır |
 
 **Durum değerleri:** hazır · reklama eklendi · yayında · kapatıldı
 
 Test planı ve karar tablosu: `docs/kreatif/2026-10-14-anime-test-serisi.md`. Eklerken kapanacaklar (Fatih onayıyla): 2_Yz, 3_Yz, 4_Yz, 6_Yz, 7_Yz.
+Gece serisi (5 video) planı: `docs/kreatif/2026-10-14-gece-serisi.md`. Orta ve son yazı "Ücretsiz önizleme · Önce gör, sonra sipariş ver"; 3 taksit yazısı yok.
