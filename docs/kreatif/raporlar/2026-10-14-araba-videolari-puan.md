@@ -10,10 +10,10 @@ Videolar `/mnt/project-files/kreatif/videolar/` klasöründe. Hepsi 9 saniye, 10
 
 | Sıra | Video | Kreatif | Reklam | **Ortalama** | Karar |
 |---|---|---|---|---|---|
-| 1 | `ARABA_oncesonra_v1` | 8,5 | 8,5 | **8,5** | Ekle · kazanan adayı |
-| 2 | `ARABA_baba_v1` | 8 | 8 | **8** | Ekle · satış adayı |
-| 3 | `ARABA_motor_v1` | 7 | 7 | **7** | Ekle · niş test |
-| 4 | `ARABA_meslek_v1` | 7,5 | 6,5 | **7** | Ekle · 3. gün kapatma adayı |
+| 1 | `4_Araba_Hazır` (ARABA_oncesonra_v1) | 8,5 | 8,5 | **8,5** | Ekle · kazanan adayı |
+| 2 | `6_Araba_Hazır` (ARABA_baba_v1) | 8 | 8 | **8** | Ekle · satış adayı |
+| 3 | `5_Araba_Hazır` (ARABA_motor_v1) | 7 | 7 | **7** | Ekle · niş test |
+| 4 | `7_Araba_Hazır` (ARABA_meslek_v1) | 7,5 | 6,5 | **7** | Ekle · 3. gün kapatma adayı |
 
 **Karşılaştırma için mevcut 1_Araba (9-14 Ekim):**
 - Durdurma oranı %31 ile kampanyanın en iyisi.
