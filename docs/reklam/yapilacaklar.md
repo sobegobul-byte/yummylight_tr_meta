@@ -122,3 +122,4 @@ _Son güncelleme: 2026-10-01_
 - Aktif kalan 9 reklam: 1_Yz, 3_Yz, 5_Yz, 9_YH, 11_YH, 2_FS, 4_FS, 5_FS, 1_Araba. Bütçe 3.500 değişmedi.
 - Spotify set adı değişmiyor (Fatih: önemli değil).
 - 11:20: Fatih "Baba Yapay Zeka Anime | Web Satış" setini kurdu (id 120256476659450309): sadece 3_Yz, günlük min. 300 TL. "Babanla Paylaştığın" videosu eklenmedi (Fatih: kalsın). Değerlendirme 18 Ekim: ROAS ≥ 1,8 kalır, tıklama < %0,4 kapanır.
+- 11:30: 1. dalga yayında (Fatih kurdu), Anime setinde: 8_Yz, 9_Yz, 11_Yz, 13_Yz, 17_Yz (Meta incelemesinde). Planla fark: 8_Yz 1_Yz metniyle çıktı; 9 ve 11 önizleme metniyle ama ilk satırları ("Uyumadan önce…", "Bu fotoğrafı yükledik…") yok. Fiilen test: 1_Yz metni (8, 13, 17) vs önizleme metni (9, 11). Dokunulmayacak: 14-17 Ekim. Aktif: 14 reklam.
