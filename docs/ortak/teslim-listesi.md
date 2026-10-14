@@ -14,8 +14,13 @@ Kreatif sohbeti hazır olan her video/metni buraya ekler. Reklam sohbeti buradan
 | 14 Ekim 2026 | `YZ_ozlem_v1` | Anime (Yapay Zeka) · gece serisi · açı: özlem / mesajlaşma | /mnt/project-files/kreatif/videolar/YZ_ozlem_v1.mp4 · sohbet (Kreatif Merkezi) | Evet: yeni önizleme metni (docs/kreatif/2026-10-14-gece-serisi.md) | hazır |
 | 14 Ekim 2026 | `YZ_onizle_v1` | Anime (Yapay Zeka) · gece serisi · açı: önce gör (açık döngü) | /mnt/project-files/kreatif/videolar/YZ_onizle_v1.mp4 · sohbet (Kreatif Merkezi) | Evet: yeni önizleme metni (docs/kreatif/2026-10-14-gece-serisi.md) | hazır |
 | 14 Ekim 2026 | `YZ_galeri_v1` | Anime (Yapay Zeka) · gece serisi · açı: galeri / kayıp korkusu | /mnt/project-files/kreatif/videolar/YZ_galeri_v1.mp4 · sohbet (Kreatif Merkezi) | Evet: yeni önizleme metni (docs/kreatif/2026-10-14-gece-serisi.md) | hazır |
+| 14 Ekim 2026 | `ARABA_oncesonra_v1` | Araç · araba serisi · açı: önce / sonra (fotoğraf → lamba) | /mnt/project-files/kreatif/videolar/ARABA_oncesonra_v1.mp4 · sohbet (Kreatif Merkezi) | Evet: araba metni (docs/kreatif/2026-10-14-araba-serisi.md) | hazır |
+| 14 Ekim 2026 | `ARABA_motor_v1` | Araç · araba serisi · açı: motor sahibi (kimlik) | /mnt/project-files/kreatif/videolar/ARABA_motor_v1.mp4 · sohbet (Kreatif Merkezi) | Evet: araba metni (docs/kreatif/2026-10-14-araba-serisi.md) | hazır |
+| 14 Ekim 2026 | `ARABA_baba_v1` | Araç · araba serisi · açı: babanın ilk arabası (nostalji) | /mnt/project-files/kreatif/videolar/ARABA_baba_v1.mp4 · sohbet (Kreatif Merkezi) | Evet: araba metni (docs/kreatif/2026-10-14-araba-serisi.md) | hazır |
+| 14 Ekim 2026 | `ARABA_meslek_v1` | Araç · araba serisi · açı: şoför / operatör (meslek gururu) | /mnt/project-files/kreatif/videolar/ARABA_meslek_v1.mp4 · sohbet (Kreatif Merkezi) | Evet: araba metni (docs/kreatif/2026-10-14-araba-serisi.md) | hazır |
 
 **Durum değerleri:** hazır · reklama eklendi · yayında · kapatıldı
 
 Test planı ve karar tablosu: `docs/kreatif/2026-10-14-anime-test-serisi.md`. Eklerken kapanacaklar (Fatih onayıyla): 2_Yz, 3_Yz, 4_Yz, 6_Yz, 7_Yz.
 Gece serisi (5 video) planı: `docs/kreatif/2026-10-14-gece-serisi.md`. Orta ve son yazı "Ücretsiz önizleme · Önce gör, sonra sipariş ver"; 3 taksit yazısı yok.
+Araba serisi (4 video) planı: `docs/kreatif/2026-10-14-araba-serisi.md`. Plakalar sansürsüz (izinli). Araçta "ücretsiz önizleme" yazılmadı.

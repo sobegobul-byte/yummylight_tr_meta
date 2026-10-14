@@ -226,3 +226,53 @@ for fr_ in w:
     v10 += click(fr_ / 30, amp=0.05, freq=2600)
 v10 += musicbox(lull[:8], 4.4, 0.25, amp=0.06)
 master(v10, 'v10')
+
+
+# ---- Üçüncü seri (araba lambaları) ----
+Em7, Cmaj9, D6 = chord(40, 52, 55, 59, 62), chord(36, 48, 52, 55, 62), chord(38, 50, 54, 57, 59)
+
+# A1 Önce/Sonra: tik-tak gerilim, perde açılırken whoosh + vuruş, sonra enerjik ritim
+a1 = np.zeros(N)
+for i in range(6):
+    a1 += click(0.1 + i * 0.4, amp=0.12, freq=1800)
+a1 += noise_burst(0.45, 0.35, amp=0.18) + noise_burst(2.3, 0.5, amp=0.32)
+a1 += kick(2.8, amp=0.7) + shimmer(2.8, 1.0)
+for i in range(int((9 - 2.8) / 0.4)):
+    a1 += kick(2.8 + i * 0.4, amp=0.35)
+a1 += chords([Am7, Fmaj7, Cmaj7, G6], start=2.8, each=1.55, amp=0.06, attack=0.1)
+a1 += noise_burst(6.4, 0.3, amp=0.18)
+master(a1, 'a1')
+
+# A2 Motor: düşük motor homurtusu (yükselen), hızlı vuruşlar, whoosh'lar
+a2 = np.zeros(N)
+rpm = np.interp(t_all, [0, 2.2, 2.4, 9], [45, 110, 70, 70])
+ph = 2 * np.pi * np.cumsum(rpm) / SR
+env = np.interp(t_all, [0, 0.1, 2.3, 2.6, 9], [0, 0.22, 0.3, 0.08, 0.06])
+a2 += env * np.tanh(3 * np.sin(ph)) * (0.7 + 0.3 * np.sin(ph * 0.5))
+for tt in [0.1, 0.3, 2.35, 6.25]:
+    a2 += noise_burst(tt, 0.3, amp=0.22)
+for i in range(int((9 - 2.4) / 0.3)):
+    a2 += kick(2.4 + i * 0.3, amp=0.4 if i % 2 == 0 else 0.22)
+a2 += chords([Em7, Cmaj9, D6, Em7], start=2.4, each=1.65, amp=0.05, attack=0.08)
+master(a2, 'a2')
+
+# A3 Baba: nostaljik müzik kutusu + sıcak pad, plaka "damga" darbeleri
+a3 = chords([Fmaj7, Cmaj7, Am7, G6], amp=0.06, kind='pad', attack=0.7)
+a3 += musicbox([72, 76, 79, 77, 76, 72, 74, 76, 72, 69, 67, 72, 76, 74, 72], 0.0, 0.5, amp=0.06)
+for tt in [0.27, 6.87]:
+    a3 += kick(tt, amp=0.75) + click(tt, amp=0.3, freq=700, length=0.03)
+a3 += shimmer(2.75, 1.0) + noise_burst(6.4, 0.35, amp=0.14)
+master(a3, 'a3')
+
+# A4 Meslek: mekanik tıkırtı (çizim / ölçü), lazer vızıltısı, sağlam vuruş
+a4 = np.zeros(N)
+for i in range(int(9 / 0.25)):
+    a4 += click(i * 0.25, amp=0.06 if i % 4 else 0.12, freq=2200)
+for i in range(int(9 / 0.5)):
+    a4 += kick(i * 0.5, amp=0.38)
+laser = (t_all > 4.0) & (t_all < 5.3)
+a4 += laser * 0.05 * np.sin(2 * np.pi * 880 * t_all) * (0.6 + 0.4 * np.sin(2 * np.pi * 9 * t_all))
+a4 += chords([Am7, Fmaj7, Dm9, G6], start=0.0, each=2.25, amp=0.05, attack=0.2)
+for tt in [0.45, 2.35, 6.65]:
+    a4 += noise_burst(tt, 0.3, amp=0.18)
+master(a4, 'a4')

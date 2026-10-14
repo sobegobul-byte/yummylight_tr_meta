@@ -10,6 +10,10 @@ import {V7Saat} from './V7Saat';
 import {V8Ozlem} from './V8Ozlem';
 import {V9Onizle} from './V9Onizle';
 import {V10Galeri} from './V10Galeri';
+import {A1OnceSonra} from './A1OnceSonra';
+import {A2Motor} from './A2Motor';
+import {A3Plaka} from './A3Plaka';
+import {A4Meslek} from './A4Meslek';
 
 const base = {durationInFrames: 270, fps: 30, width: 1080, height: 1920};
 
@@ -25,5 +29,9 @@ export const Root: React.FC = () => (
 		<Composition id="YZ-ozlem-v1" component={V8Ozlem} {...base} />
 		<Composition id="YZ-onizle-v1" component={V9Onizle} {...base} />
 		<Composition id="YZ-galeri-v1" component={V10Galeri} {...base} />
+		<Composition id="ARABA-oncesonra-v1" component={A1OnceSonra} {...base} />
+		<Composition id="ARABA-motor-v1" component={A2Motor} {...base} />
+		<Composition id="ARABA-baba-v1" component={A3Plaka} {...base} />
+		<Composition id="ARABA-meslek-v1" component={A4Meslek} {...base} />
 	</>
 );
