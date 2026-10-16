@@ -19,6 +19,7 @@ import {Y2Sarki} from './Y2Sarki';
 import {Y3Tarih} from './Y3Tarih';
 import {Y4Anket} from './Y4Anket';
 import {Y5Not} from './Y5Not';
+import {Y6Ani} from './Y6Ani';
 
 const base = {durationInFrames: 270, fps: 30, width: 1080, height: 1920};
 
@@ -43,5 +44,6 @@ export const Root: React.FC = () => (
 		<Composition id="YH-tarih-v1" component={Y3Tarih} {...base} />
 		<Composition id="YH-anket-v1" component={Y4Anket} {...base} />
 		<Composition id="YH-not-v1" component={Y5Not} {...base} />
+		<Composition id="YH-ani-v1" component={Y6Ani} {...base} durationInFrames={300} />
 	</>
 );
