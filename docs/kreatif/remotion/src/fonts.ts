@@ -22,4 +22,5 @@ export const F = {
 	mono: 'IBM Plex Mono',
 	caveat: 'Caveat',
 	fraunces: 'Fraunces',
+	lora: 'Lora',
 };
