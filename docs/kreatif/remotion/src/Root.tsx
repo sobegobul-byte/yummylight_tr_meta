@@ -21,6 +21,7 @@ import {Y4Anket} from './Y4Anket';
 import {Y5Not} from './Y5Not';
 import {Y6Ani} from './Y6Ani';
 import {Y7AniV2} from './Y7AniV2';
+import {Y8AniV3} from './Y8AniV3';
 
 const base = {durationInFrames: 270, fps: 30, width: 1080, height: 1920};
 
@@ -47,5 +48,6 @@ export const Root: React.FC = () => (
 		<Composition id="YH-not-v1" component={Y5Not} {...base} />
 		<Composition id="YH-ani-v1" component={Y6Ani} {...base} durationInFrames={300} />
 		<Composition id="YH-ani-v2" component={Y7AniV2} {...base} durationInFrames={300} />
+		<Composition id="YH-ani-v3" component={Y8AniV3} {...base} durationInFrames={300} />
 	</>
 );
