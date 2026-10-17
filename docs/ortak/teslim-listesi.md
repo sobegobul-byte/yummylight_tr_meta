@@ -26,6 +26,7 @@ Kreatif sohbeti hazır olan her video/metni buraya ekler. Reklam sohbeti buradan
 | 16 Ekim 2026 | `YH_ani_v1` | Yıldız haritası (yuvarlak lamba) · açı: tanıştığımız gece (11_YH kardeşi, Seedance 2.5 AI) | /mnt/project-files/kreatif/videolar/YH_ani_v1.mp4 | Evet: docs/kreatif/2026-10-16-yh-ani.md | hazır |
 | 16 Ekim 2026 | `YH_ani_v2` | Yıldız haritası (yuvarlak lamba) · açı: tanıştığımız gece · v1'in düzeltilmişi: Seedance 720p, lamba yazısı izlenerek kazıma efektiyle, gren | /mnt/project-files/kreatif/videolar/YH_ani_v2.mp4 | Evet: docs/kreatif/2026-10-16-yh-ani.md | hazır |
 | 16 Ekim 2026 | `YH_ani_v3` | Yıldız haritası (yuvarlak lamba) · açı: tanıştığımız gece · yeni ürün referansı (yazı akriliğin içinde), Seedance 2.5 480p, lamba yazısı AI'dan doğru geldi | /mnt/project-files/kreatif/videolar/YH_ani_v3.mp4 | Evet: docs/kreatif/2026-10-16-yh-ani.md | hazır |
+| 17 Ekim 2026 | `16_YH_Hazır` | Yıldız haritası (yuvarlak lamba) · açı: tanıştığımız gece · 11_YH klonu: Fatih'in ürettiği Higgsfield gece videosu, ilk 1,5 sn kesik, 8,5 sn, 11_YH alıntısı birebir + 3,5. sn teklif + 6. sn çağrı | Fatih'in bilgisayarı: ClaudetoDestkop\Kreatif Merkezi\Kreatif - YH Tanıştığımız Gece AI Video - 2 Versiyon\ (teklifli versiyon) | Evet: alıntı + Ücretsiz kargo · Kapıda ödeme · Peşin fiyatına 3 taksit | hazır |
 
 **Durum değerleri:** hazır · reklama eklendi · yayında · kapatıldı
 
