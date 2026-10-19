@@ -69,13 +69,14 @@ tr.total td{font-weight:700;border-top:2px solid var(--line)}
       <label>Adet<input type="number" id="sAdet" value="1" min="1"></label>
       <label>Tutar (KDV dahil, TL)<input type="number" id="sTutar"></label>
       <label>Ödeme<select id="sOdeme"></select></label>
+      <label>Pleksi<select id="sPleksi"><option value="1">1 pleksi</option><option value="2">2 pleksi</option></select></label>
       <label>Durum<select id="sDurum"><option value="tamam">Teslim</option><option value="iade">İade</option></select></label>
       <button class="btn" id="sEkle">Ekle</button>
     </div>
   </div>
   <div class="card">
     <h2>CSV'den toplu yükle</h2>
-    <p class="muted">Sütunlar: tarih;kanal;urun;adet;tutar;odeme;durum (ayraç ; veya ,). Ödeme: kart / taksit / kapida / havale / pazaryeri. Durum: tamam/iade.</p>
+    <p class="muted">Sütunlar: tarih;kanal;urun;adet;tutar;odeme;durum;pleksi (ayraç ; veya ,). Ödeme: kart / taksit / kapida / havale / pazaryeri. Durum: tamam/iade. Pleksi: 1 veya 2 (boşsa 1).</p>
     <input type="file" id="csv" accept=".csv,.txt">
   </div>
   <div class="card"><h2>Bu ayın siparişleri</h2><div id="sipTablo"></div></div>
@@ -115,7 +116,10 @@ tr.total td{font-weight:700;border-top:2px solid var(--line)}
     <p class="muted">Yüzde, sipariş tutarı (KDV dahil) üzerinden kesilir. Sabit tutar her siparişe eklenir.</p></div>
   <div class="card"><h2>Kanallar</h2><div id="kanalAyar"></div>
     <button class="btn ghost" id="kanalEkle" style="margin-top:8px">Kanal ekle</button></div>
-  <div class="card"><h2>Ürün maliyetleri</h2><div id="urunAyar"></div>
+  <div class="card"><h2>Ürün maliyeti</h2>
+    <div class="row"><label>Ahşap taban + kutu (TL)<input type="number" data-g="ahsap"></label><label>Pleksi, adet başı (TL)<input type="number" data-g="pleksi"></label></div>
+    <p class="muted">Her lamba = 1 ahşap + 1 pleksi. "2. pleksi" seçilen siparişte 1 ahşap + 2 pleksi.</p>
+    <h2 style="margin-top:16px">Ürünler</h2><div id="urunAyar"></div>
     <button class="btn ghost" id="urunEkle" style="margin-top:8px">Ürün ekle</button></div>
 </section>
 
@@ -123,7 +127,7 @@ tr.total td{font-weight:700;border-top:2px solid var(--line)}
 <script>
 const KEY='yl-kar-zarar-v1';
 const VARSAYILAN={
-  genel:{kdv:20,iadeKargo:95},
+  genel:{kdv:20,iadeKargo:95,ahsap:75,pleksi:25},
   odemeler:{kart:{oran:3.25,sabit:0},taksit:{oran:8.55,sabit:0},kapida:{oran:0,sabit:48},havale:{oran:0,sabit:0},pazaryeri:{oran:0,sabit:0}},
   kanallar:[
     {ad:'ikas (site)',komisyon:0,kargo:95,sabit:0},
@@ -132,17 +136,18 @@ const VARSAYILAN={
     {ad:'n11',komisyon:20,kargo:95,sabit:0}
   ],
   urunler:[
-    {ad:'Anime fotoğraf lambası',maliyet:100},
-    {ad:'Yıldız haritası lambası',maliyet:100},
-    {ad:'Spotify lambası',maliyet:100},
-    {ad:'Araç lambası',maliyet:100},
-    {ad:'Çocuk lambası',maliyet:100}
+    {ad:'Anime fotoğraf lambası',ek:0},
+    {ad:'Yıldız haritası lambası',ek:0},
+    {ad:'Spotify lambası',ek:0},
+    {ad:'Araç lambası',ek:0},
+    {ad:'Çocuk lambası',ek:0}
   ],
   siparisler:[],reklam:[],sabitGider:[]
 };
 let D;
 try{D=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!D)D=structuredClone(VARSAYILAN);
+if(D.genel.ahsap==null){D.genel.ahsap=75;D.genel.pleksi=25;for(const u of D.urunler){u.ek=u.maliyet===100||u.maliyet==null?0:u.maliyet-100;delete u.maliyet;}}
 if(!D.odemeler){D.odemeler=structuredClone(VARSAYILAN.odemeler);
   for(const k of D.kanallar){if(k.ad==='ikas (site)'&&k.komisyon===3)k.komisyon=0;if(k.kargo===100)k.kargo=95;}
   if(D.genel.iadeKargo===100)D.genel.iadeKargo=95;delete D.genel.kapida;}
@@ -167,7 +172,7 @@ function siparisHesap(s){
   const g=D.genel, iade=s.durum==='iade';
   const brut=+s.tutar||0, net=brut/(1+g.kdv/100);
   const komisyon=iade?0:brut*k.komisyon/100+(+k.sabit||0);
-  const urun=u.maliyet*(+s.adet||1);
+  const urun=(g.ahsap+g.pleksi*(+s.pleksi||1)+(+u.ek||0))*(+s.adet||1);
   const kargo=k.kargo+(iade?g.iadeKargo:0);
   const o=D.odemeler[s.odeme]||{oran:0,sabit:0};
   const odeme=iade?0:brut*o.oran/100+(+o.sabit||0);
@@ -206,7 +211,7 @@ function ozetCiz(){
 }
 function siparisCiz(){
   const sip=D.siparisler.map((s,i)=>({s,i})).filter(x=>x.s.tarih.startsWith(ay())).sort((a,b)=>b.s.tarih.localeCompare(a.s.tarih));
-  $('sipTablo').innerHTML=sip.length?`<table><tr><th>Tarih</th><th>Kanal</th><th>Ürün</th><th>Adet</th><th>Tutar</th><th>Ödeme</th><th>Durum</th><th>Kâr (reklam öncesi)</th><th></th></tr>${sip.map(({s,i})=>{const h=siparisHesap(s);return `<tr><td>${s.tarih}</td><td>${s.kanal}</td><td>${s.urun}</td><td>${s.adet}</td><td>${tl(s.tutar)}</td><td>${ODEME_AD[s.odeme]||s.odeme}</td><td>${s.durum==='iade'?'İade':'Teslim'}</td><td class="${cls(h.kar)}">${tl(h.kar)}</td><td><button class="x" data-sil="siparisler:${i}">×</button></td></tr>`}).join('')}</table>`:'<p class="muted">Bu ay sipariş yok. Ay seçimi Aylık özet sekmesinde.</p>';
+  $('sipTablo').innerHTML=sip.length?`<table><tr><th>Tarih</th><th>Kanal</th><th>Ürün</th><th>Adet</th><th>Tutar</th><th>Ödeme</th><th>Pleksi</th><th>Durum</th><th>Kâr (reklam öncesi)</th><th></th></tr>${sip.map(({s,i})=>{const h=siparisHesap(s);return `<tr><td>${s.tarih}</td><td>${s.kanal}</td><td>${s.urun}</td><td>${s.adet}</td><td>${tl(s.tutar)}</td><td>${ODEME_AD[s.odeme]||s.odeme}</td><td>${s.pleksi||1}</td><td>${s.durum==='iade'?'İade':'Teslim'}</td><td class="${cls(h.kar)}">${tl(h.kar)}</td><td><button class="x" data-sil="siparisler:${i}">×</button></td></tr>`}).join('')}</table>`:'<p class="muted">Bu ay sipariş yok. Ay seçimi Aylık özet sekmesinde.</p>';
 }
 function giderCiz(){
   const rek=D.reklam.map((r,i)=>({r,i})).filter(x=>x.r.ay===ay());
@@ -216,7 +221,7 @@ function giderCiz(){
 function ayarCiz(){
   document.querySelectorAll('[data-g]').forEach(i=>i.value=D.genel[i.dataset.g]);
   $('kanalAyar').innerHTML=`<table><tr><th>Kanal</th><th>Komisyon %</th><th>Sipariş başı sabit kesinti TL</th><th>Kargo TL</th><th></th></tr>${D.kanallar.map((k,i)=>`<tr><td><input data-l="kanallar:${i}:ad" value="${k.ad}"></td><td><input type="number" data-l="kanallar:${i}:komisyon" value="${k.komisyon}"></td><td><input type="number" data-l="kanallar:${i}:sabit" value="${k.sabit||0}"></td><td><input type="number" data-l="kanallar:${i}:kargo" value="${k.kargo}"></td><td><button class="x" data-sil="kanallar:${i}">×</button></td></tr>`).join('')}</table>`;
-  $('urunAyar').innerHTML=`<table><tr><th>Ürün</th><th>Birim maliyet TL (malzeme + kutu + baskı)</th><th></th></tr>${D.urunler.map((u,i)=>`<tr><td><input data-l="urunler:${i}:ad" value="${u.ad}"></td><td><input type="number" data-l="urunler:${i}:maliyet" value="${u.maliyet}"></td><td><button class="x" data-sil="urunler:${i}">×</button></td></tr>`).join('')}</table>`;
+  $('urunAyar').innerHTML=`<table><tr><th>Ürün</th><th>Ek maliyet TL (ahşap ve pleksi dışında, yoksa 0)</th><th></th></tr>${D.urunler.map((u,i)=>`<tr><td><input data-l="urunler:${i}:ad" value="${u.ad}"></td><td><input type="number" data-l="urunler:${i}:ek" value="${u.ek||0}"></td><td><button class="x" data-sil="urunler:${i}">×</button></td></tr>`).join('')}</table>`;
   $('odemeAyar').innerHTML=`<table><tr><th>Yöntem</th><th>Komisyon %</th><th>Sabit TL/sipariş</th></tr>${Object.keys(ODEME_AD).map(k=>`<tr><td>${ODEME_AD[k]}</td><td><input type="number" step="0.01" data-o="${k}:oran" value="${D.odemeler[k].oran}"></td><td><input type="number" data-o="${k}:sabit" value="${D.odemeler[k].sabit}"></td></tr>`).join('')}</table>`;
   $('sOdeme').innerHTML=Object.entries(ODEME_AD).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
   const opt=a=>a.map(x=>`<option>${x.ad}</option>`).join('');
@@ -233,15 +238,15 @@ document.body.addEventListener('change',e=>{
 });
 $('ay').onchange=hepsi;
 $('sEkle').onclick=()=>{if(!$('sTutar').value)return;
-  D.siparisler.push({tarih:$('sTarih').value,kanal:$('sKanal').value,urun:$('sUrun').value,adet:+$('sAdet').value||1,tutar:+$('sTutar').value,odeme:$('sOdeme').value,durum:$('sDurum').value});
+  D.siparisler.push({tarih:$('sTarih').value,kanal:$('sKanal').value,urun:$('sUrun').value,adet:+$('sAdet').value||1,tutar:+$('sTutar').value,odeme:$('sOdeme').value,durum:$('sDurum').value,pleksi:+$('sPleksi').value});
   $('sTutar').value='';hepsi();};
 $('rEkle').onclick=()=>{if(!$('rTutar').value)return;D.reklam.push({ay:ay(),platform:$('rPlat').value,kanal:$('rKanal').value,tutar:+$('rTutar').value});$('rTutar').value='';hepsi();};
 $('gEkle').onclick=()=>{if(!$('gAd').value||!$('gTutar').value)return;D.sabitGider.push({ad:$('gAd').value,tutar:+$('gTutar').value});$('gAd').value=$('gTutar').value='';hepsi();};
 $('kanalEkle').onclick=()=>{D.kanallar.push({ad:'Yeni kanal',komisyon:0,kargo:0,sabit:0});hepsi();};
-$('urunEkle').onclick=()=>{D.urunler.push({ad:'Yeni ürün',maliyet:0});hepsi();};
+$('urunEkle').onclick=()=>{D.urunler.push({ad:'Yeni ürün',ek:0});hepsi();};
 $('csv').onchange=async e=>{const f=e.target.files[0];if(!f)return;const t=await f.text();let n=0;
   for(const satir of t.split(/\r?\n/)){const c=satir.split(/[;,]/).map(x=>x.trim());if(c.length<5||!/^\d{4}-\d{2}-\d{2}/.test(c[0]))continue;
-    D.siparisler.push({tarih:c[0].slice(0,10),kanal:c[1],urun:c[2],adet:+c[3]||1,tutar:+c[4].replace(',','.')||0,odeme:ODEME_AD[(c[5]||'').toLowerCase()]?(c[5]||'').toLowerCase():'kart',durum:/iade/i.test(c[6]||'')?'iade':'tamam'});n++;}
+    D.siparisler.push({tarih:c[0].slice(0,10),kanal:c[1],urun:c[2],adet:+c[3]||1,tutar:+c[4].replace(',','.')||0,odeme:ODEME_AD[(c[5]||'').toLowerCase()]?(c[5]||'').toLowerCase():'kart',durum:/iade/i.test(c[6]||'')?'iade':'tamam',pleksi:+c[7]===2?2:1});n++;}
   alert(n+' sipariş eklendi');e.target.value='';hepsi();};
 $('yedekAl').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(D,null,1)],{type:'application/json'}));a.download='kar-zarar-yedek-'+bugun+'.json';a.click();};
 $('yedekYukle').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{D=JSON.parse(await f.text());hepsi();}catch(x){alert('Dosya okunamadı')}};
