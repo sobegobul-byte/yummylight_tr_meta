@@ -37,7 +37,7 @@ tr.total td{font-weight:700;border-top:2px solid var(--line)}
 </head>
 <body>
 <header>
-  <h1>Yummy Light · Kâr-Zarar</h1>
+  <h1>Yummy Light · Kâr-Zarar <span class="muted" id="guncel" style="font-weight:400"></span></h1>
   <nav id="tabs">
     <button data-t="ozet" class="on">Aylık özet</button>
     <button data-t="siparis">Siparişler</button>
@@ -52,11 +52,14 @@ tr.total td{font-weight:700;border-top:2px solid var(--line)}
     <label>Ay<input type="month" id="ay"></label>
     <button class="btn ghost" id="yedekAl">Yedek indir</button>
     <label class="btn ghost" style="flex:0;min-width:auto;color:var(--ink)">Yedek yükle<input type="file" id="yedekYukle" accept=".json" class="hide"></label>
-    <label class="btn" style="flex:0;min-width:auto;color:#fff;white-space:nowrap">ikas dosyası yükle<input type="file" id="ikasYukle" accept=".json" class="hide"></label>
+    <label class="btn" style="flex:0;min-width:auto;color:#fff;white-space:nowrap">Güncel veriyi yükle<input type="file" id="ikasYukle" accept=".json" class="hide"></label>
   </div>
   <div class="kpis" id="kpis"></div>
   <div class="card"><h2>Kanal bazında</h2><div id="kanalTablo"></div></div>
-  <div class="card"><h2>Kâr-zarar tablosu</h2><div id="pnl"></div>
+  <div class="card"><h2>Günlük</h2><div id="gunTablo"></div>
+    <p class="muted">Kâr = reklam sonrası, sabit giderler hariç.</p></div>
+  <div class="card"><h2>Haftalık (Pazartesi–Pazar)</h2><div id="haftaTablo"></div></div>
+  <div class="card"><h2>Aylık kâr-zarar tablosu</h2><div id="pnl"></div>
     <p class="muted">Satışlar KDV hariç alınır. Gider KDV'si (indirilebilir KDV) bu sürümde hesaba katılmıyor.</p></div>
 </section>
 
@@ -144,11 +147,12 @@ const VARSAYILAN={
     {ad:'Araç lambası',ek:0},
     {ad:'Çocuk lambası',ek:0}
   ],
-  siparisler:[],reklam:[],sabitGider:[]
+  siparisler:[],reklam:[],reklamGunluk:[],sabitGider:[]
 };
 let D;
 try{D=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!D)D=structuredClone(VARSAYILAN);
+if(!D.reklamGunluk)D.reklamGunluk=[];
 // eski kayıtlar: pleksi adet başıydı, artık siparişteki toplam ahşap/pleksi tutuluyor
 for(const s of D.siparisler)if(s.ahsap==null){s.ahsap=+s.adet||1;s.pleksi=s.ahsap*(+s.pleksi||1);}
 if(!D.kanallar.some(k=>k.ad==='DM (havale)'))D.kanallar.push({ad:'DM (havale)',komisyon:0,kargo:95,sabit:0});
@@ -190,6 +194,8 @@ function ayOzet(a){
   for(const s of sip){const h=siparisHesap(s);const r=kanal[s.kanal]??={adet:0,iade:0,ciro:0,komisyon:0,urun:0,odeme:0,kargo:0,kar:0,reklam:0};
     if(s.durum==='iade')r.iade++;else r.adet++;
     for(const f of['ciro','komisyon','odeme','urun','kargo','kar'])r[f]+=h[f];}
+  const META='Meta reklam (tüm satışlar)';
+  for(const r of D.reklamGunluk.filter(r=>r.tarih.startsWith(a)))(kanal[META]??={adet:0,iade:0,ciro:0,komisyon:0,urun:0,odeme:0,kargo:0,kar:0,reklam:0}).reklam+=+r.tutar;
   const rek=D.reklam.filter(r=>r.ay===a);
   for(const r of rek){(kanal[r.kanal]??={adet:0,iade:0,ciro:0,komisyon:0,urun:0,odeme:0,kargo:0,kar:0,reklam:0}).reklam+=+r.tutar}
   const T={adet:0,iade:0,ciro:0,komisyon:0,urun:0,odeme:0,kargo:0,kar:0,reklam:0};
@@ -197,6 +203,31 @@ function ayOzet(a){
   T.sabit=D.sabitGider.reduce((t,g)=>t+(+g.tutar||0),0);
   T.net=T.kar-T.reklam-T.sabit;
   return {kanal,T};
+}
+
+// günlük ve haftalık: reklam sonrası kâr, sabit gider hariç
+function gunler(){
+  const g={};const yeni=()=>({adet:0,ciro:0,kar:0,reklam:0});
+  for(const s of D.siparisler){const h=siparisHesap(s);const r=g[s.tarih]??=yeni();if(s.durum!=='iade')r.adet++;r.ciro+=h.ciro;r.kar+=h.kar;}
+  for(const r of D.reklamGunluk)(g[r.tarih]??=yeni()).reklam+=+r.tutar;
+  return g;
+}
+const pzt=t=>{const d=new Date(t+'T12:00:00');d.setDate(d.getDate()-((d.getDay()+6)%7));return d.toISOString().slice(0,10)};
+const gunAd=t=>new Date(t+'T12:00:00').toLocaleDateString('tr-TR',{day:'numeric',month:'short',weekday:'short'});
+function satirlar(rows){
+  if(!rows.length)return '<p class="muted">Bu ay için veri yok.</p>';
+  const Z={adet:0,ciro:0,kar:0,reklam:0};for(const [,r] of rows)for(const f in Z)Z[f]+=r[f];
+  const tr=(ad,r,c='')=>{const net=r.kar-r.reklam,roas=r.reklam?r.ciro*(1+D.genel.kdv/100)/r.reklam:0;
+    return `<tr class="${c}"><td>${ad}</td><td>${r.adet}</td><td>${tl(r.ciro)}</td><td>${tl(r.kar)}</td><td>${tl(r.reklam)}</td><td>${roas?roas.toFixed(2):'-'}</td><td class="${cls(net)}">${tl(net)}</td></tr>`};
+  return `<table><tr><th></th><th>Sipariş</th><th>Ciro</th><th>Reklam öncesi</th><th>Meta</th><th>ROAS</th><th>Kâr</th></tr>${rows.map(([a,r])=>tr(a,r)).join('')}${tr('Toplam',Z,'total')}</table>`;
+}
+function donemCiz(){
+  const g=gunler(),a=ay();
+  const gun=Object.keys(g).filter(t=>t.startsWith(a)).sort().reverse();
+  $('gunTablo').innerHTML=satirlar(gun.map(t=>[gunAd(t),g[t]]));
+  const h={};for(const t of Object.keys(g)){const k=pzt(t);const r=h[k]??={adet:0,ciro:0,kar:0,reklam:0,ilk:t,son:t};for(const f of['adet','ciro','kar','reklam'])r[f]+=g[t][f];if(t<r.ilk)r.ilk=t;if(t>r.son)r.son=t;}
+  const hafta=Object.keys(h).filter(k=>{const son=new Date(k+'T12:00:00');son.setDate(son.getDate()+6);return k.slice(0,7)===a||son.toISOString().slice(0,7)===a}).sort().reverse();
+  $('haftaTablo').innerHTML=satirlar(hafta.map(k=>{const b=new Date(k+'T12:00:00'),e=new Date(b);e.setDate(e.getDate()+6);const f=d=>d.toLocaleDateString('tr-TR',{day:'numeric',month:'short'});return [f(b)+' – '+f(e),h[k]]}));
 }
 
 // çizim
@@ -207,7 +238,9 @@ function ozetCiz(){
     ['Ciro (KDV hariç)',tl(T.ciro)],['Sipariş',T.adet+(T.iade?` (+${T.iade} iade)`:'')],
     ['Reklam',tl(T.reklam)],['ROAS (KDV dahil ciro)',roas?roas.toFixed(2):'-'],
     ['Sipariş başı net',T.adet?tl(T.net/T.adet):'-'],
-    ['Net kâr',`<span class="${cls(T.net)}">${tl(T.net)}</span>`]
+    ['Net kâr',`<span class="${cls(T.net)}">${tl(T.net)}</span>`],
+    ...(()=>{const g=gunler(),bg=bugun,hb=pzt(bugun);let b=0,h=0;for(const t in g){const n=g[t].kar-g[t].reklam;if(t===bg)b+=n;if(t>=hb&&t<=bg)h+=n;}
+      return [['Bugün kâr',`<span class="${cls(b)}">${tl(b)}</span>`],['Bu hafta kâr',`<span class="${cls(h)}">${tl(h)}</span>`]]})()
   ].map(([a,b])=>`<div class="kpi"><span class="muted">${a}</span><b>${b}</b></div>`).join('');
   const satir=(ad,r)=>`<tr><td>${ad}</td><td>${r.adet}</td><td>${tl(r.ciro)}</td><td>${tl(r.komisyon)}</td><td>${tl(r.odeme)}</td><td>${tl(r.urun)}</td><td>${tl(r.kargo)}</td><td>${tl(r.reklam)}</td><td class="${cls(r.kar-r.reklam)}">${tl(r.kar-r.reklam)}</td></tr>`;
   $('kanalTablo').innerHTML=Object.keys(kanal).length?`<table><tr><th>Kanal</th><th>Sipariş</th><th>Ciro</th><th>Komisyon</th><th>Ödeme</th><th>Ürün</th><th>Kargo</th><th>Reklam</th><th>Katkı</th></tr>${Object.entries(kanal).map(([a,r])=>satir(a,r)).join('')}</table>`:'<p class="muted">Bu ay için veri yok.</p>';
@@ -232,7 +265,7 @@ function ayarCiz(){
   const opt=a=>a.map(x=>`<option>${x.ad}</option>`).join('');
   $('sKanal').innerHTML=opt(D.kanallar);$('rKanal').innerHTML=opt(D.kanallar);$('sUrun').innerHTML=opt(D.urunler);
 }
-const hepsi=()=>{kaydet();ayarCiz();ozetCiz();siparisCiz();giderCiz();};
+const hepsi=()=>{kaydet();$('guncel').textContent=D.guncelleme?'· veri: '+D.guncelleme:'';ayarCiz();ozetCiz();donemCiz();siparisCiz();giderCiz();};
 
 // olaylar
 document.body.addEventListener('click',e=>{const s=e.target.dataset.sil;if(!s)return;const[l,i]=s.split(':');D[l].splice(+i,1);hepsi();});
@@ -255,11 +288,13 @@ $('csv').onchange=async e=>{const f=e.target.files[0];if(!f)return;const t=await
   alert(n+' sipariş eklendi');e.target.value='';hepsi();};
 $('yedekAl').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(D,null,1)],{type:'application/json'}));a.download='kar-zarar-yedek-'+bugun+'.json';a.click();};
 $('ikasYukle').onchange=async e=>{const f=e.target.files[0];if(!f)return;let d;try{d=JSON.parse(await f.text())}catch(x){alert('Dosya okunamadı');return}
-  if(d.tur!=='ikas-siparis'){alert('Bu bir ikas sipariş dosyası değil');return}
+  if(d.tur!=='ikas-siparis'&&d.tur!=='kar-zarar-veri'){alert('Bu dosya kâr-zarar verisi değil');return}
+  d.siparisler??=[];const rg=d.reklamGunluk||[];
+  const rk=new Set(rg.map(r=>r.tarih+'|'+r.platform));D.reklamGunluk=D.reklamGunluk.filter(r=>!rk.has(r.tarih+'|'+r.platform)).concat(rg);if(d.guncelleme)D.guncelleme=d.guncelleme;
   const yeni=new Set(d.siparisler.map(s=>s.no));const once=D.siparisler.length;
   D.siparisler=D.siparisler.filter(s=>!yeni.has(s.no)).concat(d.siparisler);
   const ay0=d.siparisler.map(s=>s.tarih).sort().pop();if(ay0)$('ay').value=ay0.slice(0,7);
-  alert(d.siparisler.length+' ikas siparişi yüklendi ('+(D.siparisler.length-once)+' yeni). Aynı numaralı eskiler güncellendi.');e.target.value='';hepsi();};
+  alert(d.siparisler.length+' sipariş ('+(D.siparisler.length-once)+' yeni) ve '+rg.length+' günlük reklam kaydı yüklendi.'+(d.guncelleme?' Veri tarihi: '+d.guncelleme:''));e.target.value='';hepsi();};
 $('yedekYukle').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{D=JSON.parse(await f.text());hepsi();}catch(x){alert('Dosya okunamadı')}};
 hepsi();
 </script>
