@@ -52,6 +52,7 @@ tr.total td{font-weight:700;border-top:2px solid var(--line)}
     <label>Ay<input type="month" id="ay"></label>
     <button class="btn ghost" id="yedekAl">Yedek indir</button>
     <label class="btn ghost" style="flex:0;min-width:auto;color:var(--ink)">Yedek yükle<input type="file" id="yedekYukle" accept=".json" class="hide"></label>
+    <label class="btn" style="flex:0;min-width:auto;color:#fff;white-space:nowrap">ikas dosyası yükle<input type="file" id="ikasYukle" accept=".json" class="hide"></label>
   </div>
   <div class="kpis" id="kpis"></div>
   <div class="card"><h2>Kanal bazında</h2><div id="kanalTablo"></div></div>
@@ -133,7 +134,8 @@ const VARSAYILAN={
     {ad:'ikas (site)',komisyon:0,kargo:95,sabit:0},
     {ad:'Trendyol',komisyon:20,kargo:95,sabit:0},
     {ad:'Hepsiburada',komisyon:20,kargo:95,sabit:0},
-    {ad:'n11',komisyon:20,kargo:95,sabit:0}
+    {ad:'n11',komisyon:20,kargo:95,sabit:0},
+    {ad:'DM (havale)',komisyon:0,kargo:95,sabit:0}
   ],
   urunler:[
     {ad:'Anime fotoğraf lambası',ek:0},
@@ -147,6 +149,9 @@ const VARSAYILAN={
 let D;
 try{D=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!D)D=structuredClone(VARSAYILAN);
+// eski kayıtlar: pleksi adet başıydı, artık siparişteki toplam ahşap/pleksi tutuluyor
+for(const s of D.siparisler)if(s.ahsap==null){s.ahsap=+s.adet||1;s.pleksi=s.ahsap*(+s.pleksi||1);}
+if(!D.kanallar.some(k=>k.ad==='DM (havale)'))D.kanallar.push({ad:'DM (havale)',komisyon:0,kargo:95,sabit:0});
 if(D.genel.ahsap==null){D.genel.ahsap=75;D.genel.pleksi=25;for(const u of D.urunler){u.ek=u.maliyet===100||u.maliyet==null?0:u.maliyet-100;delete u.maliyet;}}
 if(!D.odemeler){D.odemeler=structuredClone(VARSAYILAN.odemeler);
   for(const k of D.kanallar){if(k.ad==='ikas (site)'&&k.komisyon===3)k.komisyon=0;if(k.kargo===100)k.kargo=95;}
@@ -172,7 +177,7 @@ function siparisHesap(s){
   const g=D.genel, iade=s.durum==='iade';
   const brut=+s.tutar||0, net=brut/(1+g.kdv/100);
   const komisyon=iade?0:brut*k.komisyon/100+(+k.sabit||0);
-  const urun=(g.ahsap+g.pleksi*(+s.pleksi||1)+(+u.ek||0))*(+s.adet||1);
+  const urun=g.ahsap*(+s.ahsap||0)+g.pleksi*(+s.pleksi||0)+(+u.ek||0)*(+s.adet||1);
   const kargo=k.kargo+(iade?g.iadeKargo:0);
   const o=D.odemeler[s.odeme]||{oran:0,sabit:0};
   const odeme=iade?0:brut*o.oran/100+(+o.sabit||0);
@@ -204,14 +209,14 @@ function ozetCiz(){
     ['Sipariş başı net',T.adet?tl(T.net/T.adet):'-'],
     ['Net kâr',`<span class="${cls(T.net)}">${tl(T.net)}</span>`]
   ].map(([a,b])=>`<div class="kpi"><span class="muted">${a}</span><b>${b}</b></div>`).join('');
-  const satir=(ad,r)=>`<tr><td>${ad}</td><td>${r.adet}</td><td>${tl(r.ciro)}</td><td>${tl(r.komisyon)}</td><td>${tl(r.urun)}</td><td>${tl(r.odeme)}</td><td>${tl(r.kargo)}</td><td>${tl(r.reklam)}</td><td class="${cls(r.kar-r.reklam)}">${tl(r.kar-r.reklam)}</td></tr>`;
+  const satir=(ad,r)=>`<tr><td>${ad}</td><td>${r.adet}</td><td>${tl(r.ciro)}</td><td>${tl(r.komisyon)}</td><td>${tl(r.odeme)}</td><td>${tl(r.urun)}</td><td>${tl(r.kargo)}</td><td>${tl(r.reklam)}</td><td class="${cls(r.kar-r.reklam)}">${tl(r.kar-r.reklam)}</td></tr>`;
   $('kanalTablo').innerHTML=Object.keys(kanal).length?`<table><tr><th>Kanal</th><th>Sipariş</th><th>Ciro</th><th>Komisyon</th><th>Ödeme</th><th>Ürün</th><th>Kargo</th><th>Reklam</th><th>Katkı</th></tr>${Object.entries(kanal).map(([a,r])=>satir(a,r)).join('')}</table>`:'<p class="muted">Bu ay için veri yok.</p>';
   const p=[['Ciro (KDV hariç)',T.ciro],['− Pazaryeri komisyonu',-T.komisyon],['− Ürün maliyeti',-T.urun],['− Ödeme komisyonu (banka / kapıda)',-T.odeme],['− Kargo',-T.kargo],['= Brüt kâr',T.kar],['− Reklam',-T.reklam],['= Katkı payı',T.kar-T.reklam],['− Sabit giderler',-T.sabit]];
   $('pnl').innerHTML=`<table>${p.map(([a,b])=>`<tr><td>${a}</td><td>${tl(b)}</td><td class="muted">${T.ciro?Math.round(b/T.ciro*100)+'%':''}</td></tr>`).join('')}<tr class="total"><td>Net kâr</td><td class="${cls(T.net)}">${tl(T.net)}</td><td class="muted">${T.ciro?Math.round(T.net/T.ciro*100)+'%':''}</td></tr></table>`;
 }
 function siparisCiz(){
   const sip=D.siparisler.map((s,i)=>({s,i})).filter(x=>x.s.tarih.startsWith(ay())).sort((a,b)=>b.s.tarih.localeCompare(a.s.tarih));
-  $('sipTablo').innerHTML=sip.length?`<table><tr><th>Tarih</th><th>Kanal</th><th>Ürün</th><th>Adet</th><th>Tutar</th><th>Ödeme</th><th>Pleksi</th><th>Durum</th><th>Kâr (reklam öncesi)</th><th></th></tr>${sip.map(({s,i})=>{const h=siparisHesap(s);return `<tr><td>${s.tarih}</td><td>${s.kanal}</td><td>${s.urun}</td><td>${s.adet}</td><td>${tl(s.tutar)}</td><td>${ODEME_AD[s.odeme]||s.odeme}</td><td>${s.pleksi||1}</td><td>${s.durum==='iade'?'İade':'Teslim'}</td><td class="${cls(h.kar)}">${tl(h.kar)}</td><td><button class="x" data-sil="siparisler:${i}">×</button></td></tr>`}).join('')}</table>`:'<p class="muted">Bu ay sipariş yok. Ay seçimi Aylık özet sekmesinde.</p>';
+  $('sipTablo').innerHTML=sip.length?`<table><tr><th>Tarih</th><th>Kanal</th><th>Ürün</th><th>Adet</th><th>Tutar</th><th>Ödeme</th><th>Ahşap / pleksi</th><th>Durum</th><th>Kâr (reklam öncesi)</th><th></th></tr>${sip.map(({s,i})=>{const h=siparisHesap(s);return `<tr><td>${s.tarih}</td><td>${s.kanal}</td><td>${s.urun}${s.kontrol?' <b class="neg" title="Tutar tahmini, kontrol et">⚠</b>':''}${s.notu?`<div class="muted">${s.no?s.no+' · ':''}${s.notu.replace(/</g,'&lt;')}</div>`:(s.no?`<div class="muted">${s.no}</div>`:'')}</td><td>${s.adet}</td><td>${tl(s.tutar)}</td><td>${ODEME_AD[s.odeme]||s.odeme}</td><td>${s.ahsap} / ${s.pleksi}</td><td>${s.durum==='iade'?'İade':'Teslim'}</td><td class="${cls(h.kar)}">${tl(h.kar)}</td><td><button class="x" data-sil="siparisler:${i}">×</button></td></tr>`}).join('')}</table>`:'<p class="muted">Bu ay sipariş yok. Ay seçimi Aylık özet sekmesinde.</p>';
 }
 function giderCiz(){
   const rek=D.reklam.map((r,i)=>({r,i})).filter(x=>x.r.ay===ay());
@@ -238,7 +243,7 @@ document.body.addEventListener('change',e=>{
 });
 $('ay').onchange=hepsi;
 $('sEkle').onclick=()=>{if(!$('sTutar').value)return;
-  D.siparisler.push({tarih:$('sTarih').value,kanal:$('sKanal').value,urun:$('sUrun').value,adet:+$('sAdet').value||1,tutar:+$('sTutar').value,odeme:$('sOdeme').value,durum:$('sDurum').value,pleksi:+$('sPleksi').value});
+  D.siparisler.push({tarih:$('sTarih').value,kanal:$('sKanal').value,urun:$('sUrun').value,adet:+$('sAdet').value||1,tutar:+$('sTutar').value,odeme:$('sOdeme').value,durum:$('sDurum').value,ahsap:+$('sAdet').value||1,pleksi:(+$('sAdet').value||1)*+$('sPleksi').value});
   $('sTutar').value='';hepsi();};
 $('rEkle').onclick=()=>{if(!$('rTutar').value)return;D.reklam.push({ay:ay(),platform:$('rPlat').value,kanal:$('rKanal').value,tutar:+$('rTutar').value});$('rTutar').value='';hepsi();};
 $('gEkle').onclick=()=>{if(!$('gAd').value||!$('gTutar').value)return;D.sabitGider.push({ad:$('gAd').value,tutar:+$('gTutar').value});$('gAd').value=$('gTutar').value='';hepsi();};
@@ -246,9 +251,15 @@ $('kanalEkle').onclick=()=>{D.kanallar.push({ad:'Yeni kanal',komisyon:0,kargo:0,
 $('urunEkle').onclick=()=>{D.urunler.push({ad:'Yeni ürün',ek:0});hepsi();};
 $('csv').onchange=async e=>{const f=e.target.files[0];if(!f)return;const t=await f.text();let n=0;
   for(const satir of t.split(/\r?\n/)){const c=satir.split(/[;,]/).map(x=>x.trim());if(c.length<5||!/^\d{4}-\d{2}-\d{2}/.test(c[0]))continue;
-    D.siparisler.push({tarih:c[0].slice(0,10),kanal:c[1],urun:c[2],adet:+c[3]||1,tutar:+c[4].replace(',','.')||0,odeme:ODEME_AD[(c[5]||'').toLowerCase()]?(c[5]||'').toLowerCase():'kart',durum:/iade/i.test(c[6]||'')?'iade':'tamam',pleksi:+c[7]===2?2:1});n++;}
+    D.siparisler.push({tarih:c[0].slice(0,10),kanal:c[1],urun:c[2],adet:+c[3]||1,tutar:+c[4].replace(',','.')||0,odeme:ODEME_AD[(c[5]||'').toLowerCase()]?(c[5]||'').toLowerCase():'kart',durum:/iade/i.test(c[6]||'')?'iade':'tamam',ahsap:+c[3]||1,pleksi:(+c[3]||1)*(+c[7]===2?2:1)});n++;}
   alert(n+' sipariş eklendi');e.target.value='';hepsi();};
 $('yedekAl').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(D,null,1)],{type:'application/json'}));a.download='kar-zarar-yedek-'+bugun+'.json';a.click();};
+$('ikasYukle').onchange=async e=>{const f=e.target.files[0];if(!f)return;let d;try{d=JSON.parse(await f.text())}catch(x){alert('Dosya okunamadı');return}
+  if(d.tur!=='ikas-siparis'){alert('Bu bir ikas sipariş dosyası değil');return}
+  const yeni=new Set(d.siparisler.map(s=>s.no));const once=D.siparisler.length;
+  D.siparisler=D.siparisler.filter(s=>!yeni.has(s.no)).concat(d.siparisler);
+  const ay0=d.siparisler.map(s=>s.tarih).sort().pop();if(ay0)$('ay').value=ay0.slice(0,7);
+  alert(d.siparisler.length+' ikas siparişi yüklendi ('+(D.siparisler.length-once)+' yeni). Aynı numaralı eskiler güncellendi.');e.target.value='';hepsi();};
 $('yedekYukle').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{D=JSON.parse(await f.text());hepsi();}catch(x){alert('Dosya okunamadı')}};
 hepsi();
 </script>
