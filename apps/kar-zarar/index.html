@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yummy Light Kâr-Zarar</title>
+<style>
+:root{--bg:#f7f6f3;--card:#fff;--ink:#1f2328;--muted:#6b7280;--line:#e5e2dc;--acc:#7c3aed;--pos:#15803d;--neg:#b91c1c}
+@media (prefers-color-scheme:dark){:root{--bg:#16161a;--card:#1f1f25;--ink:#ececf1;--muted:#9a9aa5;--line:#2e2e36;--acc:#a78bfa;--pos:#4ade80;--neg:#f87171}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{padding:16px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+h1{font-size:18px;margin:0;flex:1}
+nav{display:flex;gap:6px;flex-wrap:wrap}
+nav button{background:none;border:1px solid var(--line);color:var(--ink);padding:6px 12px;border-radius:999px;cursor:pointer}
+nav button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+main{max-width:1100px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px;overflow-x:auto}
+h2{font-size:16px;margin:0 0 12px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--muted);font-weight:600}
+input,select{background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:5px 7px;font:inherit;width:100%;min-width:70px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:end}
+.row>label{flex:1;min-width:120px;font-size:13px;color:var(--muted)}
+.btn{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:8px 14px;cursor:pointer;font:inherit}
+.btn.ghost{background:none;color:var(--ink);border:1px solid var(--line)}
+.x{background:none;border:0;color:var(--neg);cursor:pointer;font-size:16px}
+.pos{color:var(--pos)}.neg{color:var(--neg)}.muted{color:var(--muted);font-size:13px}
+.kpis{margin-bottom:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.kpi b{display:block;font-size:20px;margin-top:4px}
+tr.total td{font-weight:700;border-top:2px solid var(--line)}
+.hide{display:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>Yummy Light · Kâr-Zarar</h1>
+  <nav id="tabs">
+    <button data-t="ozet" class="on">Aylık özet</button>
+    <button data-t="siparis">Siparişler</button>
+    <button data-t="gider">Reklam ve sabit gider</button>
+    <button data-t="ayar">Ayarlar</button>
+  </nav>
+</header>
+<main>
+
+<section id="t-ozet">
+  <div class="card row">
+    <label>Ay<input type="month" id="ay"></label>
+    <button class="btn ghost" id="yedekAl">Yedek indir</button>
+    <label class="btn ghost" style="flex:0;min-width:auto;color:var(--ink)">Yedek yükle<input type="file" id="yedekYukle" accept=".json" class="hide"></label>
+  </div>
+  <div class="kpis" id="kpis"></div>
+  <div class="card"><h2>Kanal bazında</h2><div id="kanalTablo"></div></div>
+  <div class="card"><h2>Kâr-zarar tablosu</h2><div id="pnl"></div>
+    <p class="muted">Satışlar KDV hariç alınır. Gider KDV'si (indirilebilir KDV) bu sürümde hesaba katılmıyor.</p></div>
+</section>
+
+<section id="t-siparis" class="hide">
+  <div class="card">
+    <h2>Sipariş ekle</h2>
+    <div class="row">
+      <label>Tarih<input type="date" id="sTarih"></label>
+      <label>Kanal<select id="sKanal"></select></label>
+      <label>Ürün<select id="sUrun"></select></label>
+      <label>Adet<input type="number" id="sAdet" value="1" min="1"></label>
+      <label>Tutar (KDV dahil, TL)<input type="number" id="sTutar"></label>
+      <label>Ödeme<select id="sOdeme"><option value="kart">Kart</option><option value="kapida">Kapıda</option></select></label>
+      <label>Durum<select id="sDurum"><option value="tamam">Teslim</option><option value="iade">İade</option></select></label>
+      <button class="btn" id="sEkle">Ekle</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2>CSV'den toplu yükle</h2>
+    <p class="muted">Sütunlar: tarih;kanal;urun;adet;tutar;odeme;durum (ayraç ; veya ,). Ödeme: kart/kapida. Durum: tamam/iade.</p>
+    <input type="file" id="csv" accept=".csv,.txt">
+  </div>
+  <div class="card"><h2>Bu ayın siparişleri</h2><div id="sipTablo"></div></div>
+</section>
+
+<section id="t-gider" class="hide">
+  <div class="card">
+    <h2>Reklam harcaması (seçili ay)</h2>
+    <div class="row">
+      <label>Platform<select id="rPlat"><option>Meta</option><option>Google</option><option>TikTok</option><option>Pazaryeri reklamı</option><option>Diğer</option></select></label>
+      <label>Kanal<select id="rKanal"></select></label>
+      <label>Tutar (TL)<input type="number" id="rTutar"></label>
+      <button class="btn" id="rEkle">Ekle</button>
+    </div>
+    <div id="rTablo" style="margin-top:12px"></div>
+  </div>
+  <div class="card">
+    <h2>Sabit giderler (her ay tekrar eder)</h2>
+    <div class="row">
+      <label>Gider<input id="gAd" placeholder="Kira, maaş, elektrik..."></label>
+      <label>Aylık tutar (TL)<input type="number" id="gTutar"></label>
+      <button class="btn" id="gEkle">Ekle</button>
+    </div>
+    <div id="gTablo" style="margin-top:12px"></div>
+  </div>
+</section>
+
+<section id="t-ayar" class="hide">
+  <div class="card">
+    <h2>Genel</h2>
+    <div class="row">
+      <label>Satış KDV oranı (%)<input type="number" data-g="kdv"></label>
+      <label>Kapıda ödeme ek maliyeti (TL/sipariş)<input type="number" data-g="kapida"></label>
+      <label>İade kargo maliyeti (TL)<input type="number" data-g="iadeKargo"></label>
+    </div>
+  </div>
+  <div class="card"><h2>Kanallar</h2><div id="kanalAyar"></div>
+    <button class="btn ghost" id="kanalEkle" style="margin-top:8px">Kanal ekle</button></div>
+  <div class="card"><h2>Ürün maliyetleri</h2><div id="urunAyar"></div>
+    <button class="btn ghost" id="urunEkle" style="margin-top:8px">Ürün ekle</button></div>
+</section>
+
+</main>
+<script>
+const KEY='yl-kar-zarar-v1';
+const VARSAYILAN={
+  genel:{kdv:20,kapida:0,iadeKargo:100},
+  kanallar:[
+    {ad:'ikas (site)',komisyon:3,kargo:100,sabit:0},
+    {ad:'Trendyol',komisyon:20,kargo:100,sabit:0},
+    {ad:'Hepsiburada',komisyon:20,kargo:100,sabit:0},
+    {ad:'n11',komisyon:20,kargo:100,sabit:0}
+  ],
+  urunler:[
+    {ad:'Anime fotoğraf lambası',maliyet:100},
+    {ad:'Yıldız haritası lambası',maliyet:100},
+    {ad:'Spotify lambası',maliyet:100},
+    {ad:'Araç lambası',maliyet:100},
+    {ad:'Çocuk lambası',maliyet:100}
+  ],
+  siparisler:[],reklam:[],sabitGider:[]
+};
+let D;
+try{D=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!D)D=structuredClone(VARSAYILAN);
+const kaydet=()=>{try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}};
+const $=id=>document.getElementById(id);
+const tl=n=>(Math.round(n)).toLocaleString('tr-TR')+' TL';
+const cls=n=>n<0?'neg':'pos';
+const bugun=new Date().toISOString().slice(0,10);
+$('ay').value=bugun.slice(0,7);$('sTarih').value=bugun;
+const ay=()=>$('ay').value;
+
+// sekmeler
+$('tabs').onclick=e=>{const t=e.target.dataset.t;if(!t)return;
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  document.querySelectorAll('main>section').forEach(s=>s.classList.toggle('hide',s.id!=='t-'+t));};
+
+// hesap
+function siparisHesap(s){
+  const k=D.kanallar.find(x=>x.ad===s.kanal)||{komisyon:0,kargo:0,sabit:0};
+  const u=D.urunler.find(x=>x.ad===s.urun)||{maliyet:0};
+  const g=D.genel, iade=s.durum==='iade';
+  const brut=+s.tutar||0, net=brut/(1+g.kdv/100);
+  const komisyon=iade?0:brut*k.komisyon/100+(+k.sabit||0);
+  const urun=u.maliyet*(+s.adet||1);
+  const kargo=k.kargo+(iade?g.iadeKargo:0);
+  const kapida=s.odeme==='kapida'?g.kapida:0;
+  const ciro=iade?0:net;
+  return {ciro,komisyon,urun,kargo,kapida,kar:ciro-komisyon-urun-kargo-kapida};
+}
+function ayOzet(a){
+  const sip=D.siparisler.filter(s=>s.tarih.startsWith(a));
+  const kanal={};
+  for(const s of sip){const h=siparisHesap(s);const r=kanal[s.kanal]??={adet:0,iade:0,ciro:0,komisyon:0,urun:0,kargo:0,kapida:0,kar:0,reklam:0};
+    if(s.durum==='iade')r.iade++;else r.adet++;
+    for(const f of['ciro','komisyon','urun','kargo','kapida','kar'])r[f]+=h[f];}
+  const rek=D.reklam.filter(r=>r.ay===a);
+  for(const r of rek){(kanal[r.kanal]??={adet:0,iade:0,ciro:0,komisyon:0,urun:0,kargo:0,kapida:0,kar:0,reklam:0}).reklam+=+r.tutar}
+  const T={adet:0,iade:0,ciro:0,komisyon:0,urun:0,kargo:0,kapida:0,kar:0,reklam:0};
+  for(const r of Object.values(kanal))for(const f in T)T[f]+=r[f];
+  T.sabit=D.sabitGider.reduce((t,g)=>t+(+g.tutar||0),0);
+  T.net=T.kar-T.reklam-T.sabit;
+  return {kanal,T};
+}
+
+// çizim
+function ozetCiz(){
+  const {kanal,T}=ayOzet(ay());
+  const roas=T.reklam?T.ciro*(1+D.genel.kdv/100)/T.reklam:0;
+  $('kpis').innerHTML=[
+    ['Ciro (KDV hariç)',tl(T.ciro)],['Sipariş',T.adet+(T.iade?` (+${T.iade} iade)`:'')],
+    ['Reklam',tl(T.reklam)],['ROAS (KDV dahil ciro)',roas?roas.toFixed(2):'-'],
+    ['Sipariş başı net',T.adet?tl(T.net/T.adet):'-'],
+    ['Net kâr',`<span class="${cls(T.net)}">${tl(T.net)}</span>`]
+  ].map(([a,b])=>`<div class="kpi"><span class="muted">${a}</span><b>${b}</b></div>`).join('');
+  const satir=(ad,r)=>`<tr><td>${ad}</td><td>${r.adet}</td><td>${tl(r.ciro)}</td><td>${tl(r.komisyon)}</td><td>${tl(r.urun)}</td><td>${tl(r.kargo+r.kapida)}</td><td>${tl(r.reklam)}</td><td class="${cls(r.kar-r.reklam)}">${tl(r.kar-r.reklam)}</td></tr>`;
+  $('kanalTablo').innerHTML=Object.keys(kanal).length?`<table><tr><th>Kanal</th><th>Sipariş</th><th>Ciro</th><th>Komisyon</th><th>Ürün</th><th>Kargo</th><th>Reklam</th><th>Katkı</th></tr>${Object.entries(kanal).map(([a,r])=>satir(a,r)).join('')}</table>`:'<p class="muted">Bu ay için veri yok.</p>';
+  const p=[['Ciro (KDV hariç)',T.ciro],['− Komisyon',-T.komisyon],['− Ürün maliyeti',-T.urun],['− Kargo ve kapıda ödeme',-(T.kargo+T.kapida)],['= Brüt kâr',T.kar],['− Reklam',-T.reklam],['= Katkı payı',T.kar-T.reklam],['− Sabit giderler',-T.sabit]];
+  $('pnl').innerHTML=`<table>${p.map(([a,b])=>`<tr><td>${a}</td><td>${tl(b)}</td><td class="muted">${T.ciro?Math.round(b/T.ciro*100)+'%':''}</td></tr>`).join('')}<tr class="total"><td>Net kâr</td><td class="${cls(T.net)}">${tl(T.net)}</td><td class="muted">${T.ciro?Math.round(T.net/T.ciro*100)+'%':''}</td></tr></table>`;
+}
+function siparisCiz(){
+  const sip=D.siparisler.map((s,i)=>({s,i})).filter(x=>x.s.tarih.startsWith(ay())).sort((a,b)=>b.s.tarih.localeCompare(a.s.tarih));
+  $('sipTablo').innerHTML=sip.length?`<table><tr><th>Tarih</th><th>Kanal</th><th>Ürün</th><th>Adet</th><th>Tutar</th><th>Ödeme</th><th>Durum</th><th>Kâr (reklam öncesi)</th><th></th></tr>${sip.map(({s,i})=>{const h=siparisHesap(s);return `<tr><td>${s.tarih}</td><td>${s.kanal}</td><td>${s.urun}</td><td>${s.adet}</td><td>${tl(s.tutar)}</td><td>${s.odeme==='kapida'?'Kapıda':'Kart'}</td><td>${s.durum==='iade'?'İade':'Teslim'}</td><td class="${cls(h.kar)}">${tl(h.kar)}</td><td><button class="x" data-sil="siparisler:${i}">×</button></td></tr>`}).join('')}</table>`:'<p class="muted">Bu ay sipariş yok. Ay seçimi Aylık özet sekmesinde.</p>';
+}
+function giderCiz(){
+  const rek=D.reklam.map((r,i)=>({r,i})).filter(x=>x.r.ay===ay());
+  $('rTablo').innerHTML=rek.length?`<table><tr><th>Platform</th><th>Kanal</th><th>Tutar</th><th></th></tr>${rek.map(({r,i})=>`<tr><td>${r.platform}</td><td>${r.kanal}</td><td>${tl(r.tutar)}</td><td><button class="x" data-sil="reklam:${i}">×</button></td></tr>`).join('')}</table>`:`<p class="muted">${ay()} için reklam girilmedi.</p>`;
+  $('gTablo').innerHTML=D.sabitGider.length?`<table><tr><th>Gider</th><th>Aylık</th><th></th></tr>${D.sabitGider.map((g,i)=>`<tr><td>${g.ad}</td><td>${tl(g.tutar)}</td><td><button class="x" data-sil="sabitGider:${i}">×</button></td></tr>`).join('')}</table>`:'<p class="muted">Sabit gider yok.</p>';
+}
+function ayarCiz(){
+  document.querySelectorAll('[data-g]').forEach(i=>i.value=D.genel[i.dataset.g]);
+  $('kanalAyar').innerHTML=`<table><tr><th>Kanal</th><th>Komisyon %</th><th>Sipariş başı sabit kesinti TL</th><th>Kargo TL</th><th></th></tr>${D.kanallar.map((k,i)=>`<tr><td><input data-l="kanallar:${i}:ad" value="${k.ad}"></td><td><input type="number" data-l="kanallar:${i}:komisyon" value="${k.komisyon}"></td><td><input type="number" data-l="kanallar:${i}:sabit" value="${k.sabit||0}"></td><td><input type="number" data-l="kanallar:${i}:kargo" value="${k.kargo}"></td><td><button class="x" data-sil="kanallar:${i}">×</button></td></tr>`).join('')}</table>`;
+  $('urunAyar').innerHTML=`<table><tr><th>Ürün</th><th>Birim maliyet TL (malzeme + kutu + baskı)</th><th></th></tr>${D.urunler.map((u,i)=>`<tr><td><input data-l="urunler:${i}:ad" value="${u.ad}"></td><td><input type="number" data-l="urunler:${i}:maliyet" value="${u.maliyet}"></td><td><button class="x" data-sil="urunler:${i}">×</button></td></tr>`).join('')}</table>`;
+  const opt=a=>a.map(x=>`<option>${x.ad}</option>`).join('');
+  $('sKanal').innerHTML=opt(D.kanallar);$('rKanal').innerHTML=opt(D.kanallar);$('sUrun').innerHTML=opt(D.urunler);
+}
+const hepsi=()=>{kaydet();ayarCiz();ozetCiz();siparisCiz();giderCiz();};
+
+// olaylar
+document.body.addEventListener('click',e=>{const s=e.target.dataset.sil;if(!s)return;const[l,i]=s.split(':');D[l].splice(+i,1);hepsi();});
+document.body.addEventListener('change',e=>{
+  const g=e.target.dataset.g;if(g){D.genel[g]=+e.target.value;hepsi();return}
+  const l=e.target.dataset.l;if(l){const[a,i,f]=l.split(':');D[a][+i][f]=f==='ad'?e.target.value:+e.target.value;hepsi();}
+});
+$('ay').onchange=hepsi;
+$('sEkle').onclick=()=>{if(!$('sTutar').value)return;
+  D.siparisler.push({tarih:$('sTarih').value,kanal:$('sKanal').value,urun:$('sUrun').value,adet:+$('sAdet').value||1,tutar:+$('sTutar').value,odeme:$('sOdeme').value,durum:$('sDurum').value});
+  $('sTutar').value='';hepsi();};
+$('rEkle').onclick=()=>{if(!$('rTutar').value)return;D.reklam.push({ay:ay(),platform:$('rPlat').value,kanal:$('rKanal').value,tutar:+$('rTutar').value});$('rTutar').value='';hepsi();};
+$('gEkle').onclick=()=>{if(!$('gAd').value||!$('gTutar').value)return;D.sabitGider.push({ad:$('gAd').value,tutar:+$('gTutar').value});$('gAd').value=$('gTutar').value='';hepsi();};
+$('kanalEkle').onclick=()=>{D.kanallar.push({ad:'Yeni kanal',komisyon:0,kargo:0,sabit:0});hepsi();};
+$('urunEkle').onclick=()=>{D.urunler.push({ad:'Yeni ürün',maliyet:0});hepsi();};
+$('csv').onchange=async e=>{const f=e.target.files[0];if(!f)return;const t=await f.text();let n=0;
+  for(const satir of t.split(/\r?\n/)){const c=satir.split(/[;,]/).map(x=>x.trim());if(c.length<5||!/^\d{4}-\d{2}-\d{2}/.test(c[0]))continue;
+    D.siparisler.push({tarih:c[0].slice(0,10),kanal:c[1],urun:c[2],adet:+c[3]||1,tutar:+c[4].replace(',','.')||0,odeme:/kap/i.test(c[5]||'')?'kapida':'kart',durum:/iade/i.test(c[6]||'')?'iade':'tamam'});n++;}
+  alert(n+' sipariş eklendi');e.target.value='';hepsi();};
+$('yedekAl').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(D,null,1)],{type:'application/json'}));a.download='kar-zarar-yedek-'+bugun+'.json';a.click();};
+$('yedekYukle').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{D=JSON.parse(await f.text());hepsi();}catch(x){alert('Dosya okunamadı')}};
+hepsi();
+</script>
+</body>
+</html>
