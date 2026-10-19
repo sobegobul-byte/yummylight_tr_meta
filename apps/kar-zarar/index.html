@@ -68,14 +68,14 @@ tr.total td{font-weight:700;border-top:2px solid var(--line)}
       <label>Ürün<select id="sUrun"></select></label>
       <label>Adet<input type="number" id="sAdet" value="1" min="1"></label>
       <label>Tutar (KDV dahil, TL)<input type="number" id="sTutar"></label>
-      <label>Ödeme<select id="sOdeme"><option value="kart">Kart</option><option value="kapida">Kapıda</option></select></label>
+      <label>Ödeme<select id="sOdeme"></select></label>
       <label>Durum<select id="sDurum"><option value="tamam">Teslim</option><option value="iade">İade</option></select></label>
       <button class="btn" id="sEkle">Ekle</button>
     </div>
   </div>
   <div class="card">
     <h2>CSV'den toplu yükle</h2>
-    <p class="muted">Sütunlar: tarih;kanal;urun;adet;tutar;odeme;durum (ayraç ; veya ,). Ödeme: kart/kapida. Durum: tamam/iade.</p>
+    <p class="muted">Sütunlar: tarih;kanal;urun;adet;tutar;odeme;durum (ayraç ; veya ,). Ödeme: kart / taksit / kapida / havale / pazaryeri. Durum: tamam/iade.</p>
     <input type="file" id="csv" accept=".csv,.txt">
   </div>
   <div class="card"><h2>Bu ayın siparişleri</h2><div id="sipTablo"></div></div>
@@ -108,10 +108,11 @@ tr.total td{font-weight:700;border-top:2px solid var(--line)}
     <h2>Genel</h2>
     <div class="row">
       <label>Satış KDV oranı (%)<input type="number" data-g="kdv"></label>
-      <label>Kapıda ödeme ek maliyeti (TL/sipariş)<input type="number" data-g="kapida"></label>
       <label>İade kargo maliyeti (TL)<input type="number" data-g="iadeKargo"></label>
     </div>
   </div>
+  <div class="card"><h2>Ödeme yöntemleri</h2><div id="odemeAyar"></div>
+    <p class="muted">Yüzde, sipariş tutarı (KDV dahil) üzerinden kesilir. Sabit tutar her siparişe eklenir.</p></div>
   <div class="card"><h2>Kanallar</h2><div id="kanalAyar"></div>
     <button class="btn ghost" id="kanalEkle" style="margin-top:8px">Kanal ekle</button></div>
   <div class="card"><h2>Ürün maliyetleri</h2><div id="urunAyar"></div>
@@ -122,12 +123,13 @@ tr.total td{font-weight:700;border-top:2px solid var(--line)}
 <script>
 const KEY='yl-kar-zarar-v1';
 const VARSAYILAN={
-  genel:{kdv:20,kapida:0,iadeKargo:100},
+  genel:{kdv:20,iadeKargo:95},
+  odemeler:{kart:{oran:3.25,sabit:0},taksit:{oran:8.55,sabit:0},kapida:{oran:0,sabit:48},havale:{oran:0,sabit:0},pazaryeri:{oran:0,sabit:0}},
   kanallar:[
-    {ad:'ikas (site)',komisyon:3,kargo:100,sabit:0},
-    {ad:'Trendyol',komisyon:20,kargo:100,sabit:0},
-    {ad:'Hepsiburada',komisyon:20,kargo:100,sabit:0},
-    {ad:'n11',komisyon:20,kargo:100,sabit:0}
+    {ad:'ikas (site)',komisyon:0,kargo:95,sabit:0},
+    {ad:'Trendyol',komisyon:20,kargo:95,sabit:0},
+    {ad:'Hepsiburada',komisyon:20,kargo:95,sabit:0},
+    {ad:'n11',komisyon:20,kargo:95,sabit:0}
   ],
   urunler:[
     {ad:'Anime fotoğraf lambası',maliyet:100},
@@ -141,9 +143,13 @@ const VARSAYILAN={
 let D;
 try{D=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!D)D=structuredClone(VARSAYILAN);
+if(!D.odemeler){D.odemeler=structuredClone(VARSAYILAN.odemeler);
+  for(const k of D.kanallar){if(k.ad==='ikas (site)'&&k.komisyon===3)k.komisyon=0;if(k.kargo===100)k.kargo=95;}
+  if(D.genel.iadeKargo===100)D.genel.iadeKargo=95;delete D.genel.kapida;}
+const ODEME_AD={kart:'Kart (tek çekim)',taksit:'Kart 3 taksit',kapida:'Kapıda ödeme',havale:'Havale / EFT',pazaryeri:'Pazaryeri'};
 const kaydet=()=>{try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}};
 const $=id=>document.getElementById(id);
-const tl=n=>(Math.round(n)).toLocaleString('tr-TR')+' TL';
+const tl=n=>(Math.round(n)||0).toLocaleString('tr-TR')+' TL';
 const cls=n=>n<0?'neg':'pos';
 const bugun=new Date().toISOString().slice(0,10);
 $('ay').value=bugun.slice(0,7);$('sTarih').value=bugun;
@@ -163,19 +169,20 @@ function siparisHesap(s){
   const komisyon=iade?0:brut*k.komisyon/100+(+k.sabit||0);
   const urun=u.maliyet*(+s.adet||1);
   const kargo=k.kargo+(iade?g.iadeKargo:0);
-  const kapida=s.odeme==='kapida'?g.kapida:0;
+  const o=D.odemeler[s.odeme]||{oran:0,sabit:0};
+  const odeme=iade?0:brut*o.oran/100+(+o.sabit||0);
   const ciro=iade?0:net;
-  return {ciro,komisyon,urun,kargo,kapida,kar:ciro-komisyon-urun-kargo-kapida};
+  return {ciro,komisyon,odeme,urun,kargo,kar:ciro-komisyon-odeme-urun-kargo};
 }
 function ayOzet(a){
   const sip=D.siparisler.filter(s=>s.tarih.startsWith(a));
   const kanal={};
-  for(const s of sip){const h=siparisHesap(s);const r=kanal[s.kanal]??={adet:0,iade:0,ciro:0,komisyon:0,urun:0,kargo:0,kapida:0,kar:0,reklam:0};
+  for(const s of sip){const h=siparisHesap(s);const r=kanal[s.kanal]??={adet:0,iade:0,ciro:0,komisyon:0,urun:0,odeme:0,kargo:0,kar:0,reklam:0};
     if(s.durum==='iade')r.iade++;else r.adet++;
-    for(const f of['ciro','komisyon','urun','kargo','kapida','kar'])r[f]+=h[f];}
+    for(const f of['ciro','komisyon','odeme','urun','kargo','kar'])r[f]+=h[f];}
   const rek=D.reklam.filter(r=>r.ay===a);
-  for(const r of rek){(kanal[r.kanal]??={adet:0,iade:0,ciro:0,komisyon:0,urun:0,kargo:0,kapida:0,kar:0,reklam:0}).reklam+=+r.tutar}
-  const T={adet:0,iade:0,ciro:0,komisyon:0,urun:0,kargo:0,kapida:0,kar:0,reklam:0};
+  for(const r of rek){(kanal[r.kanal]??={adet:0,iade:0,ciro:0,komisyon:0,urun:0,odeme:0,kargo:0,kar:0,reklam:0}).reklam+=+r.tutar}
+  const T={adet:0,iade:0,ciro:0,komisyon:0,urun:0,odeme:0,kargo:0,kar:0,reklam:0};
   for(const r of Object.values(kanal))for(const f in T)T[f]+=r[f];
   T.sabit=D.sabitGider.reduce((t,g)=>t+(+g.tutar||0),0);
   T.net=T.kar-T.reklam-T.sabit;
@@ -192,14 +199,14 @@ function ozetCiz(){
     ['Sipariş başı net',T.adet?tl(T.net/T.adet):'-'],
     ['Net kâr',`<span class="${cls(T.net)}">${tl(T.net)}</span>`]
   ].map(([a,b])=>`<div class="kpi"><span class="muted">${a}</span><b>${b}</b></div>`).join('');
-  const satir=(ad,r)=>`<tr><td>${ad}</td><td>${r.adet}</td><td>${tl(r.ciro)}</td><td>${tl(r.komisyon)}</td><td>${tl(r.urun)}</td><td>${tl(r.kargo+r.kapida)}</td><td>${tl(r.reklam)}</td><td class="${cls(r.kar-r.reklam)}">${tl(r.kar-r.reklam)}</td></tr>`;
-  $('kanalTablo').innerHTML=Object.keys(kanal).length?`<table><tr><th>Kanal</th><th>Sipariş</th><th>Ciro</th><th>Komisyon</th><th>Ürün</th><th>Kargo</th><th>Reklam</th><th>Katkı</th></tr>${Object.entries(kanal).map(([a,r])=>satir(a,r)).join('')}</table>`:'<p class="muted">Bu ay için veri yok.</p>';
-  const p=[['Ciro (KDV hariç)',T.ciro],['− Komisyon',-T.komisyon],['− Ürün maliyeti',-T.urun],['− Kargo ve kapıda ödeme',-(T.kargo+T.kapida)],['= Brüt kâr',T.kar],['− Reklam',-T.reklam],['= Katkı payı',T.kar-T.reklam],['− Sabit giderler',-T.sabit]];
+  const satir=(ad,r)=>`<tr><td>${ad}</td><td>${r.adet}</td><td>${tl(r.ciro)}</td><td>${tl(r.komisyon)}</td><td>${tl(r.urun)}</td><td>${tl(r.odeme)}</td><td>${tl(r.kargo)}</td><td>${tl(r.reklam)}</td><td class="${cls(r.kar-r.reklam)}">${tl(r.kar-r.reklam)}</td></tr>`;
+  $('kanalTablo').innerHTML=Object.keys(kanal).length?`<table><tr><th>Kanal</th><th>Sipariş</th><th>Ciro</th><th>Komisyon</th><th>Ödeme</th><th>Ürün</th><th>Kargo</th><th>Reklam</th><th>Katkı</th></tr>${Object.entries(kanal).map(([a,r])=>satir(a,r)).join('')}</table>`:'<p class="muted">Bu ay için veri yok.</p>';
+  const p=[['Ciro (KDV hariç)',T.ciro],['− Pazaryeri komisyonu',-T.komisyon],['− Ürün maliyeti',-T.urun],['− Ödeme komisyonu (banka / kapıda)',-T.odeme],['− Kargo',-T.kargo],['= Brüt kâr',T.kar],['− Reklam',-T.reklam],['= Katkı payı',T.kar-T.reklam],['− Sabit giderler',-T.sabit]];
   $('pnl').innerHTML=`<table>${p.map(([a,b])=>`<tr><td>${a}</td><td>${tl(b)}</td><td class="muted">${T.ciro?Math.round(b/T.ciro*100)+'%':''}</td></tr>`).join('')}<tr class="total"><td>Net kâr</td><td class="${cls(T.net)}">${tl(T.net)}</td><td class="muted">${T.ciro?Math.round(T.net/T.ciro*100)+'%':''}</td></tr></table>`;
 }
 function siparisCiz(){
   const sip=D.siparisler.map((s,i)=>({s,i})).filter(x=>x.s.tarih.startsWith(ay())).sort((a,b)=>b.s.tarih.localeCompare(a.s.tarih));
-  $('sipTablo').innerHTML=sip.length?`<table><tr><th>Tarih</th><th>Kanal</th><th>Ürün</th><th>Adet</th><th>Tutar</th><th>Ödeme</th><th>Durum</th><th>Kâr (reklam öncesi)</th><th></th></tr>${sip.map(({s,i})=>{const h=siparisHesap(s);return `<tr><td>${s.tarih}</td><td>${s.kanal}</td><td>${s.urun}</td><td>${s.adet}</td><td>${tl(s.tutar)}</td><td>${s.odeme==='kapida'?'Kapıda':'Kart'}</td><td>${s.durum==='iade'?'İade':'Teslim'}</td><td class="${cls(h.kar)}">${tl(h.kar)}</td><td><button class="x" data-sil="siparisler:${i}">×</button></td></tr>`}).join('')}</table>`:'<p class="muted">Bu ay sipariş yok. Ay seçimi Aylık özet sekmesinde.</p>';
+  $('sipTablo').innerHTML=sip.length?`<table><tr><th>Tarih</th><th>Kanal</th><th>Ürün</th><th>Adet</th><th>Tutar</th><th>Ödeme</th><th>Durum</th><th>Kâr (reklam öncesi)</th><th></th></tr>${sip.map(({s,i})=>{const h=siparisHesap(s);return `<tr><td>${s.tarih}</td><td>${s.kanal}</td><td>${s.urun}</td><td>${s.adet}</td><td>${tl(s.tutar)}</td><td>${ODEME_AD[s.odeme]||s.odeme}</td><td>${s.durum==='iade'?'İade':'Teslim'}</td><td class="${cls(h.kar)}">${tl(h.kar)}</td><td><button class="x" data-sil="siparisler:${i}">×</button></td></tr>`}).join('')}</table>`:'<p class="muted">Bu ay sipariş yok. Ay seçimi Aylık özet sekmesinde.</p>';
 }
 function giderCiz(){
   const rek=D.reklam.map((r,i)=>({r,i})).filter(x=>x.r.ay===ay());
@@ -210,6 +217,8 @@ function ayarCiz(){
   document.querySelectorAll('[data-g]').forEach(i=>i.value=D.genel[i.dataset.g]);
   $('kanalAyar').innerHTML=`<table><tr><th>Kanal</th><th>Komisyon %</th><th>Sipariş başı sabit kesinti TL</th><th>Kargo TL</th><th></th></tr>${D.kanallar.map((k,i)=>`<tr><td><input data-l="kanallar:${i}:ad" value="${k.ad}"></td><td><input type="number" data-l="kanallar:${i}:komisyon" value="${k.komisyon}"></td><td><input type="number" data-l="kanallar:${i}:sabit" value="${k.sabit||0}"></td><td><input type="number" data-l="kanallar:${i}:kargo" value="${k.kargo}"></td><td><button class="x" data-sil="kanallar:${i}">×</button></td></tr>`).join('')}</table>`;
   $('urunAyar').innerHTML=`<table><tr><th>Ürün</th><th>Birim maliyet TL (malzeme + kutu + baskı)</th><th></th></tr>${D.urunler.map((u,i)=>`<tr><td><input data-l="urunler:${i}:ad" value="${u.ad}"></td><td><input type="number" data-l="urunler:${i}:maliyet" value="${u.maliyet}"></td><td><button class="x" data-sil="urunler:${i}">×</button></td></tr>`).join('')}</table>`;
+  $('odemeAyar').innerHTML=`<table><tr><th>Yöntem</th><th>Komisyon %</th><th>Sabit TL/sipariş</th></tr>${Object.keys(ODEME_AD).map(k=>`<tr><td>${ODEME_AD[k]}</td><td><input type="number" step="0.01" data-o="${k}:oran" value="${D.odemeler[k].oran}"></td><td><input type="number" data-o="${k}:sabit" value="${D.odemeler[k].sabit}"></td></tr>`).join('')}</table>`;
+  $('sOdeme').innerHTML=Object.entries(ODEME_AD).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
   const opt=a=>a.map(x=>`<option>${x.ad}</option>`).join('');
   $('sKanal').innerHTML=opt(D.kanallar);$('rKanal').innerHTML=opt(D.kanallar);$('sUrun').innerHTML=opt(D.urunler);
 }
@@ -219,6 +228,7 @@ const hepsi=()=>{kaydet();ayarCiz();ozetCiz();siparisCiz();giderCiz();};
 document.body.addEventListener('click',e=>{const s=e.target.dataset.sil;if(!s)return;const[l,i]=s.split(':');D[l].splice(+i,1);hepsi();});
 document.body.addEventListener('change',e=>{
   const g=e.target.dataset.g;if(g){D.genel[g]=+e.target.value;hepsi();return}
+  const o=e.target.dataset.o;if(o){const[k,f]=o.split(':');D.odemeler[k][f]=+e.target.value;hepsi();return}
   const l=e.target.dataset.l;if(l){const[a,i,f]=l.split(':');D[a][+i][f]=f==='ad'?e.target.value:+e.target.value;hepsi();}
 });
 $('ay').onchange=hepsi;
@@ -231,7 +241,7 @@ $('kanalEkle').onclick=()=>{D.kanallar.push({ad:'Yeni kanal',komisyon:0,kargo:0,
 $('urunEkle').onclick=()=>{D.urunler.push({ad:'Yeni ürün',maliyet:0});hepsi();};
 $('csv').onchange=async e=>{const f=e.target.files[0];if(!f)return;const t=await f.text();let n=0;
   for(const satir of t.split(/\r?\n/)){const c=satir.split(/[;,]/).map(x=>x.trim());if(c.length<5||!/^\d{4}-\d{2}-\d{2}/.test(c[0]))continue;
-    D.siparisler.push({tarih:c[0].slice(0,10),kanal:c[1],urun:c[2],adet:+c[3]||1,tutar:+c[4].replace(',','.')||0,odeme:/kap/i.test(c[5]||'')?'kapida':'kart',durum:/iade/i.test(c[6]||'')?'iade':'tamam'});n++;}
+    D.siparisler.push({tarih:c[0].slice(0,10),kanal:c[1],urun:c[2],adet:+c[3]||1,tutar:+c[4].replace(',','.')||0,odeme:ODEME_AD[(c[5]||'').toLowerCase()]?(c[5]||'').toLowerCase():'kart',durum:/iade/i.test(c[6]||'')?'iade':'tamam'});n++;}
   alert(n+' sipariş eklendi');e.target.value='';hepsi();};
 $('yedekAl').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(D,null,1)],{type:'application/json'}));a.download='kar-zarar-yedek-'+bugun+'.json';a.click();};
 $('yedekYukle').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{D=JSON.parse(await f.text());hepsi();}catch(x){alert('Dosya okunamadı')}};
