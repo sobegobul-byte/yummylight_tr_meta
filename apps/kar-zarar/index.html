@@ -114,6 +114,7 @@ tr.total td{font-weight:700;border-top:2px solid var(--line)}
     <div class="row">
       <label>Satış KDV oranı (%)<input type="number" data-g="kdv"></label>
       <label>İade kargo maliyeti (TL)<input type="number" data-g="iadeKargo"></label>
+      <label>Meta reklamına eklenen KDV (%)<input type="number" data-g="reklamKdv"></label>
     </div>
   </div>
   <div class="card"><h2>Ödeme yöntemleri</h2><div id="odemeAyar"></div>
@@ -131,7 +132,7 @@ tr.total td{font-weight:700;border-top:2px solid var(--line)}
 <script>
 const KEY='yl-kar-zarar-v1';
 const VARSAYILAN={
-  genel:{kdv:20,iadeKargo:95,ahsap:75,pleksi:25},
+  genel:{kdv:20,reklamKdv:20,iadeKargo:95,ahsap:75,pleksi:25},
   odemeler:{kart:{oran:3.25,sabit:0},taksit:{oran:8.55,sabit:0},kapida:{oran:0,sabit:48},havale:{oran:0,sabit:0},pazaryeri:{oran:0,sabit:0}},
   kanallar:[
     {ad:'ikas (site)',komisyon:0,kargo:95,sabit:0},
@@ -153,6 +154,9 @@ let D;
 try{D=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!D)D=structuredClone(VARSAYILAN);
 if(!D.reklamGunluk)D.reklamGunluk=[];
+if(D.genel.reklamKdv==null)D.genel.reklamKdv=20;
+// Meta harcaması KDV hariç gelir; faturadaki KDV eklenir (Fatih, 19 Eki 2026)
+const metaTL=r=>(+r.tutar||0)*(1+(+D.genel.reklamKdv||0)/100);
 // eski kayıtlar: pleksi adet başıydı, artık siparişteki toplam ahşap/pleksi tutuluyor
 for(const s of D.siparisler)if(s.ahsap==null){s.ahsap=+s.adet||1;s.pleksi=s.ahsap*(+s.pleksi||1);}
 if(!D.kanallar.some(k=>k.ad==='DM (havale)'))D.kanallar.push({ad:'DM (havale)',komisyon:0,kargo:95,sabit:0});
@@ -195,7 +199,7 @@ function ayOzet(a){
     if(s.durum==='iade')r.iade++;else r.adet++;
     for(const f of['ciro','komisyon','odeme','urun','kargo','kar'])r[f]+=h[f];}
   const META='Meta reklam (tüm satışlar)';
-  for(const r of D.reklamGunluk.filter(r=>r.tarih.startsWith(a)))(kanal[META]??={adet:0,iade:0,ciro:0,komisyon:0,urun:0,odeme:0,kargo:0,kar:0,reklam:0}).reklam+=+r.tutar;
+  for(const r of D.reklamGunluk.filter(r=>r.tarih.startsWith(a)))(kanal[META]??={adet:0,iade:0,ciro:0,komisyon:0,urun:0,odeme:0,kargo:0,kar:0,reklam:0}).reklam+=metaTL(r);
   const rek=D.reklam.filter(r=>r.ay===a);
   for(const r of rek){(kanal[r.kanal]??={adet:0,iade:0,ciro:0,komisyon:0,urun:0,odeme:0,kargo:0,kar:0,reklam:0}).reklam+=+r.tutar}
   const T={adet:0,iade:0,ciro:0,komisyon:0,urun:0,odeme:0,kargo:0,kar:0,reklam:0};
@@ -209,7 +213,7 @@ function ayOzet(a){
 function gunler(){
   const g={};const yeni=()=>({adet:0,ciro:0,kar:0,reklam:0});
   for(const s of D.siparisler){const h=siparisHesap(s);const r=g[s.tarih]??=yeni();if(s.durum!=='iade')r.adet++;r.ciro+=h.ciro;r.kar+=h.kar;}
-  for(const r of D.reklamGunluk)(g[r.tarih]??=yeni()).reklam+=+r.tutar;
+  for(const r of D.reklamGunluk)(g[r.tarih]??=yeni()).reklam+=metaTL(r);
   return g;
 }
 const pzt=t=>{const d=new Date(t+'T12:00:00');d.setDate(d.getDate()-((d.getDay()+6)%7));return d.toISOString().slice(0,10)};
