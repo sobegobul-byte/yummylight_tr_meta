@@ -129,6 +129,7 @@ tr.total td{font-weight:700;border-top:2px solid var(--line)}
 </section>
 
 </main>
+<script type="application/json" id="gomuluVeri">null</script>
 <script>
 const KEY='yl-kar-zarar-v1';
 const VARSAYILAN={
@@ -291,15 +292,19 @@ $('csv').onchange=async e=>{const f=e.target.files[0];if(!f)return;const t=await
     D.siparisler.push({tarih:c[0].slice(0,10),kanal:c[1],urun:c[2],adet:+c[3]||1,tutar:+c[4].replace(',','.')||0,odeme:ODEME_AD[(c[5]||'').toLowerCase()]?(c[5]||'').toLowerCase():'kart',durum:/iade/i.test(c[6]||'')?'iade':'tamam',ahsap:+c[3]||1,pleksi:(+c[3]||1)*(+c[7]===2?2:1)});n++;}
   alert(n+' sipariş eklendi');e.target.value='';hepsi();};
 $('yedekAl').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(D,null,1)],{type:'application/json'}));a.download='kar-zarar-yedek-'+bugun+'.json';a.click();};
-$('ikasYukle').onchange=async e=>{const f=e.target.files[0];if(!f)return;let d;try{d=JSON.parse(await f.text())}catch(x){alert('Dosya okunamadı');return}
-  if(d.tur!=='ikas-siparis'&&d.tur!=='kar-zarar-veri'){alert('Bu dosya kâr-zarar verisi değil');return}
+function veriBirlestir(d){
   d.siparisler??=[];const rg=d.reklamGunluk||[];
   const rk=new Set(rg.map(r=>r.tarih+'|'+r.platform));D.reklamGunluk=D.reklamGunluk.filter(r=>!rk.has(r.tarih+'|'+r.platform)).concat(rg);if(d.guncelleme)D.guncelleme=d.guncelleme;
   const yeni=new Set(d.siparisler.map(s=>s.no));const once=D.siparisler.length;
   D.siparisler=D.siparisler.filter(s=>!yeni.has(s.no)).concat(d.siparisler);
   const ay0=d.siparisler.map(s=>s.tarih).sort().pop();if(ay0)$('ay').value=ay0.slice(0,7);
-  alert(d.siparisler.length+' sipariş ('+(D.siparisler.length-once)+' yeni) ve '+rg.length+' günlük reklam kaydı yüklendi.'+(d.guncelleme?' Veri tarihi: '+d.guncelleme:''));e.target.value='';hepsi();};
+  return d.siparisler.length+' sipariş ('+(D.siparisler.length-once)+' yeni) ve '+rg.length+' günlük reklam kaydı yüklendi.'+(d.guncelleme?' Veri tarihi: '+d.guncelleme:'');
+}
+$('ikasYukle').onchange=async e=>{const f=e.target.files[0];if(!f)return;let d;try{d=JSON.parse(await f.text())}catch(x){alert('Dosya okunamadı');return}
+  if(d.tur!=='ikas-siparis'&&d.tur!=='kar-zarar-veri'){alert('Bu dosya kâr-zarar verisi değil');return}
+  alert(veriBirlestir(d));e.target.value='';hepsi();};
 $('yedekYukle').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{D=JSON.parse(await f.text());hepsi();}catch(x){alert('Dosya okunamadı')}};
+try{const g=JSON.parse(document.getElementById('gomuluVeri').textContent);if(g&&g.guncelleme&&g.guncelleme!==D.guncelleme)veriBirlestir(g);}catch(e){}
 hepsi();
 </script>
 </body>
