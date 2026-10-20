@@ -61,9 +61,11 @@ def donustur(o):
              notu=(o.get("note") or "").strip(), kontrol=False)
     return s
 
+def donustur_hepsi(ham):
+    return [s for o in ham if o["status"] != "CANCELLED" for s in [donustur(o)] if s]
+
 def main(girdi, cikti):
-    ham = json.load(open(girdi))
-    out = [s for o in ham if o["status"] != "CANCELLED" for s in [donustur(o)] if s]
+    out = donustur_hepsi(json.load(open(girdi)))
     json.dump({"tur": "ikas-siparis", "siparisler": out}, open(cikti, "w"), ensure_ascii=False, indent=1)
     print(len(ham), "ham,", len(out), "aktarıldı,", sum(s["kontrol"] for s in out), "kontrol gerekli")
 

@@ -9,7 +9,7 @@ API = "https://api.myikas.com/api/v1/admin/graphql"
 UA = {"User-Agent": "curl/8.5.0"}  # varsayılan Python UA'sı 403 alıyor
 
 def token():
-    store = os.environ["IKAS_STORE"].replace("https://", "").removesuffix(".myikas.com")
+    store = os.environ["IKAS_STORE"].replace("https://", "").strip("/").removesuffix(".myikas.com")
     data = urllib.parse.urlencode({"grant_type": "client_credentials",
         "client_id": os.environ["IKAS_CLIENT_ID"], "client_secret": os.environ["IKAS_CLIENT_SECRET"]}).encode()
     req = urllib.request.Request(f"https://{store}.myikas.com/api/admin/oauth/token", data, UA)
@@ -37,7 +37,8 @@ ORDER_Q = """query($p:Int!,$from:Timestamp!,$to:Timestamp!){ listOrder(paginatio
 TX_Q = """query($id:String!){ listOrderTransactions(orderId:$id){ status type paymentMethod
  paymentMethodDetail{ installment{ installmentCount } } } }"""
 
-def main(ay, cikti):
+def cek(ay):
+    """ay: 'YYYY-MM'. O ayın siparişlerini (kartlılarda taksit bilgisiyle) döndürür."""
     y, m = map(int, ay.split("-"))
     bas = datetime(y, m, 1, tzinfo=TR)
     son = datetime(y + (m == 12), m % 12 + 1, 1, tzinfo=TR)
@@ -52,6 +53,11 @@ def main(ay, cikti):
     for o in siparisler:  # taksit sayısı sadece kartlı siparişlerde lazım
         if any(pm["type"] == "CREDIT_CARD" for pm in o["paymentMethods"]):
             o["transactions"] = gql(tok, TX_Q, {"id": o["id"]})["listOrderTransactions"]
+    return siparisler
+
+
+def main(ay, cikti):
+    siparisler = cek(ay)
     json.dump(siparisler, open(cikti, "w"), ensure_ascii=False)
     print(len(siparisler), "sipariş kaydedildi:", cikti)
 

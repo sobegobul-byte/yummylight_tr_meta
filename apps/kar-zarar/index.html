@@ -52,7 +52,8 @@ tr.total td{font-weight:700;border-top:2px solid var(--line)}
     <label>Ay<input type="month" id="ay"></label>
     <button class="btn ghost" id="yedekAl">Yedek indir</button>
     <label class="btn ghost" style="flex:0;min-width:auto;color:var(--ink)">Yedek yükle<input type="file" id="yedekYukle" accept=".json" class="hide"></label>
-    <label class="btn" style="flex:0;min-width:auto;color:#fff;white-space:nowrap">Güncel veriyi yükle<input type="file" id="ikasYukle" accept=".json" class="hide"></label>
+    <button class="btn" id="cekBtn" style="white-space:nowrap">Güncel verileri çek</button>
+    <label class="btn ghost" style="flex:0;min-width:auto;color:var(--ink);white-space:nowrap">Dosyadan yükle<input type="file" id="ikasYukle" accept=".json" class="hide"></label>
   </div>
   <div class="kpis" id="kpis"></div>
   <div class="card"><h2>Kanal bazında</h2><div id="kanalTablo"></div></div>
@@ -300,6 +301,15 @@ function veriBirlestir(d){
   const ay0=d.siparisler.map(s=>s.tarih).sort().pop();if(ay0)$('ay').value=ay0.slice(0,7);
   return d.siparisler.length+' sipariş ('+(D.siparisler.length-once)+' yeni) ve '+rg.length+' günlük reklam kaydı yüklendi.'+(d.guncelleme?' Veri tarihi: '+d.guncelleme:'');
 }
+$('cekBtn').onclick=async()=>{
+  if(!location.protocol.startsWith('http')){alert('Bu buton, uygulamayı Kâr-Zarar klasöründeki baslat.bat ile açınca çalışır.');return}
+  const b=$('cekBtn');b.disabled=true;b.textContent='Çekiliyor...';
+  try{const r=await fetch('/api/guncelle?ay='+ay(),{method:'POST'});const d=await r.json();
+    if(!r.ok)throw new Error(d.hata||r.status);
+    const m=veriBirlestir(d);hepsi();alert(m+(d.uyarilar&&d.uyarilar.length?'\n\n'+d.uyarilar.join('\n'):''));}
+  catch(e){alert('Veri çekilemedi: '+e.message)}
+  finally{b.disabled=false;b.textContent='Güncel verileri çek';}
+};
 $('ikasYukle').onchange=async e=>{const f=e.target.files[0];if(!f)return;let d;try{d=JSON.parse(await f.text())}catch(x){alert('Dosya okunamadı');return}
   if(d.tur!=='ikas-siparis'&&d.tur!=='kar-zarar-veri'){alert('Bu dosya kâr-zarar verisi değil');return}
   alert(veriBirlestir(d));e.target.value='';hepsi();};
