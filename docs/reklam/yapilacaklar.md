@@ -1,8 +1,34 @@
 # Yapılacaklar
 
-_Son güncelleme: 2026-10-01_
+_Son güncelleme: 2026-10-23_
 
-## Öncelik sırası
+## Güncel liste (23 Ekim 2026)
+
+Ayrıntı: `raporlar/2026-10-23-genel-analiz-ve-puan.md` (genel puan 54/100).
+
+**Onay bekleyen (Fatih):**
+- [ ] 17_YH, 15_YH, 16_YH Yıldız setine (tek seferde)
+- [ ] Anime setine günlük minimum 700 TL
+- [ ] Spotify setini kapat
+- [ ] 4_Araba'yı kapat
+- [ ] 1_Yz kapalı kalsın mı (21 Ekim'de onaysız durduruldu)
+- [x] Bütçe 3.500 TL'de kalır (23 Ekim Cuma kuralı: 7 günlük ROAS 1,70)
+
+**Kreatif Merkezi:**
+- [ ] 18_YH koordinat X → K (izlemeli yama)
+- [ ] 3_Yz_v2 (Baba, 8-10 sn), 6_Araba_v2 (plaka + 1_Araba açılışı)
+- [ ] Yeni adlar ÜRÜN_AÇI_vN
+
+**Ölçüm / site:**
+- [ ] WhatsApp siparişleri ikas'a gerçek tutarla (Fatih)
+- [ ] Spotify ürün sayfası incelemesi
+- [ ] GA4 sepete ekleme eksik (Rapor Merkezi)
+
+**Takvim:** 27 Ekim yeni kreatif ilk kontrol · 30 Ekim Cuma bütçe kuralı · Kasım başı Baba setini Anime'ye katma · 7-8 bin TL/gün olunca Yıldız/Anime ayrı kampanya.
+
+## Eski liste (1 Ekim 2026)
+
+### Öncelik sırası
 
 - [ ] **1. Ödeme sorununu çöz** (kullanıcı) — Ana hesap IN_GRACE_PERIOD. Faturalar ve Ödemeler'den bakiye ödenmeli / kart güncellenmeli.
 - [x] **1b. Mart 2026 sonrası çöküşün sebebini bul** — Kullanıcı teyidi (01.10.2026): site/altyapı DEĞİŞMEDİ; reklamlar kötüleşti, sonra kapatıldı. → Çöküş büyük olasılıkla gerçek performans kaybı (kreatif yorgunluğu, formül değişimi, kitle kaybı), ölçüm hatası değil. Yine de pixel sağlık kontrolü yapılacak.
