@@ -1,6 +1,14 @@
 # Yapılacaklar
 
-_Son güncelleme: 2026-10-23_
+_Son güncelleme: 2026-10-25_
+
+## 25 Ekim 2026 uygulananlar (Fatih onayı: "spotfy ve araba setlerini kapat animasyon minumum harcamayı 700 tl bütçeyi %20 arttır")
+- [x] Spotify seti kapatıldı (PAUSED)
+- [x] Anime seti günlük minimum 700 TL
+- [x] Kampanya bütçesi 3.500 → 4.200 TL/gün
+- [ ] Araba: tüm Araç seti mi, sadece 4_Araba mı? Fatih'e soruldu (öneri: sadece 4_Araba)
+- [ ] Kreatifleri Fatih ekleyecek (öneri: 17_YH, 15_YH, 16_YH Yıldız setine), sonra canlı kontrol
+- Mevcut minimumlar: Yıldız 750, Anime 700, Araç 300, Baba 300
 
 ## Güncel liste (23 Ekim 2026)
 
