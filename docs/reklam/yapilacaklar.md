@@ -6,9 +6,9 @@ _Son güncelleme: 2026-10-25_
 - [x] Spotify seti kapatıldı (PAUSED)
 - [x] Anime seti günlük minimum 700 TL
 - [x] Kampanya bütçesi 3.500 → 4.200 TL/gün
-- [ ] Araba: tüm Araç seti mi, sadece 4_Araba mı? Fatih'e soruldu (öneri: sadece 4_Araba)
+- [x] Araç seti tamamen kapatıldı (Fatih 25 Ekim: "araba setini tamamen kapat"; 6_Araba dahil)
 - [ ] Kreatifleri Fatih ekleyecek (öneri: 17_YH, 15_YH, 16_YH Yıldız setine), sonra canlı kontrol
-- Mevcut minimumlar: Yıldız 750, Anime 700, Araç 300, Baba 300
+- Açık setler: Yıldız (min 750), Anime (min 700), Baba (min 300)
 
 ## Güncel liste (23 Ekim 2026)
 
