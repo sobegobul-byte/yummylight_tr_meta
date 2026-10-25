@@ -22,6 +22,7 @@ import {Y5Not} from './Y5Not';
 import {Y6Ani} from './Y6Ani';
 import {Y7AniV2} from './Y7AniV2';
 import {Y8AniV3} from './Y8AniV3';
+import {Y9Hook, Y9Props} from './Y9Hook';
 
 const base = {durationInFrames: 270, fps: 30, width: 1080, height: 1920};
 
@@ -49,5 +50,9 @@ export const Root: React.FC = () => (
 		<Composition id="YH-ani-v1" component={Y6Ani} {...base} durationInFrames={300} />
 		<Composition id="YH-ani-v2" component={Y7AniV2} {...base} durationInFrames={300} />
 		<Composition id="YH-ani-v3" component={Y8AniV3} {...base} durationInFrames={300} />
+		<Composition id="YH-hook-a" component={Y9Hook} {...base} durationInFrames={300} defaultProps={{video: 'ai/YH_hook_1.mp4', music: 'audio/lofi1.wav', hook: [['Tanıştığınız', 'gece'], ['gökyüzü', 'nasıldı?']]} as Y9Props} />
+		<Composition id="YH-hook-d" component={Y9Hook} {...base} durationInFrames={300} defaultProps={{video: 'ai/YH_hook_2.mp4', music: 'audio/lofi2.wav', reveal: true, hook: [['Bu', 'gece', 'gökyüzü'], ['bir', 'daha', 'asla'], ['aynı', 'olmayacak…']], hook2: [['…ama', 'sizinki'], ['burada', 'kaldı.']]} as Y9Props} />
+		<Composition id="YH-hook-b" component={Y9Hook} {...base} durationInFrames={300} defaultProps={{video: 'ai/YH_hook_3.mp4', music: 'audio/lofi3.wav', blurBand: [[2, 0], [3, 540], [10, 540]], hook: [['Tanıştığınız', 'geceyi'], ['siz', 'unutsanız', 'da'], ['yıldızlar', 'unutmadı.']]} as Y9Props} />
+		<Composition id="YH-hook-c" component={Y9Hook} {...base} durationInFrames={300} defaultProps={{video: 'ai/YH_hook_4.mp4', music: 'audio/lofi4.wav', blurBand: [[3.5, 0], [4.5, 540], [5.5, 520], [7, 400], [8, 320], [10, 320]], hook: [['Sevgilin', 'bunu', 'açınca'], ['3', 'saniye'], ['konuşamayacak.']]} as Y9Props} />
 	</>
 );
