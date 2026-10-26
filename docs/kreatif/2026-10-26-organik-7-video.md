@@ -23,19 +23,21 @@
 
 ## 7 video
 
-| # | Ad | Anı (rapordan) | Hook | Lamba yazısı | Mekan |
+Gün sırası Sosyal Medya'nın 7 günlük planıyla aynı (/mnt/project-files/sosyal-medya/2026-10-25-yh-7-gun-organik-plan.md). Her gün farklı bir anı, böylece organikte hangi anının tuttuğu ölçülür.
+
+| Gün | Ad | Anı | Hook | Lamba yazısı | Mekan |
 |---|---|---|---|---|---|
-| 1 | YH_tanisma_v1 | Tanıştığımız gün (en sık) | Sevgilimin "seninle tanıştıktan sonra gökyüzüne bakmayı sevdim" diyerek verdiği hediye | Tanıştığımız Gün · Ankara · 2025 tarihi | Kitaplı, sıcak ışıklı salon köşesi, koltuk yanı sehpa |
-| 2 | YH_evet_v1 | Evlilik teklifi | Evlenme teklifi aldığım gecenin yıldızlarını aldı | Evet Dediğin An · İzmir | Balkon kapısı önü, ince peri ışıkları, masada iki kadeh ve yüzük kutusu |
-| 3 | YH_ilkyil_v1 | Yıldönümü | İlk yılımızı unutmasın diye o gecenin gökyüzünü aldım | İlk Yılımız · İstanbul | Akşam yemeği masası, sönmüş mumlar, çiçek |
-| 4 | YH_dogum_v1 | Sevgiliye doğum günü | Sen doğduğunda yıldızlar böyle dizilmişti | İyi ki Doğdun · Bursa | Küçük pastanın yanında lamba, sade doğum günü süsü |
-| 5 | YH_isim_v1 | Ahşap yazı "İsim & İsim" | İkimizin adı, tanıştığımız gecenin gökyüzünün altında | Bizim Gecemiz · tabanda "Ayşe & Mehmet" | Yatak başı komodin, keten nevresim |
-| 6 | YH_barisma_v1 | Barışma / gönül alma | Kavgadan sonra konuşamadım, sadece bunu bıraktım | Seni Seçtiğim Gece · Mersin | Yağmurlu pencere önü, çalışma masası |
-| 7 | YH_an_v1 | Gerçek hediye notu | "Zamanı durduramam ama o an gökyüzü sadece bize aitti." | O An · Muğla | Koyu ahşap masa, erkek odası (kadının erkeğe hediyesi) |
+| 1 | YH_tanisma_v1 | Tanıştığımız gün (en sık) | Sevgilimin "tanıştığımız gece gökyüzü tam olarak böyleydi" diyerek verdiği hediye | Tanıştığımız Gün · Ankara | Kitaplı, sıcak ışıklı salon köşesi, koltuk yanı sehpa |
+| 2 | YH_ilkbulusma_v1 | İlk buluşma | İlk buluşmamızın gökyüzünü odasına koydum | İlk Buluşmamız · İstanbul | Öğrenci odası, duvarda fotoğraf ipliği, mandallı polaroidler (yüzsüz) |
+| 3 | YH_evet_v1 | Evlilik teklifi | Yüzük değil… evet dediği gecenin gökyüzü | Evet Dediğin An · İzmir | Balkon kapısı önü, ince peri ışıkları, masada iki kadeh ve açık yüzük kutusu |
+| 4 | YH_ilkyil_v1 | Yıldönümü | 1. yıl dönümümüz için çiçek almadım | İlk Yılımız · İstanbul | Akşam yemeği masası, sönmüş mumlar |
+| 5 | YH_dogum_v1 | Sevgiliye doğum günü | Sen doğduğunda yıldızlar böyle dizilmişti | İyi ki Doğdun · Bursa | Küçük pastanın yanında lamba, sade doğum günü süsü |
+| 6 | YH_barisma_v1 | Barışma / gönül alma | Kavgadan sonra konuşamadım, sadece bunu bıraktım | Bizim Gecemiz · Mersin | Yağmurlu pencere önü, çalışma masası |
+| 7 | YH_isim_v1 | Ahşap yazı "İsim & İsim" | Adımız ahşapta, gecemiz yıldızlarda | Seni Seçtiğim Gece · tabanda "Ayşe & Mehmet" | Yatak başı komodin, keten nevresim |
 
 **Notlar**
-- 1 ve 7 numaradaki cümleler gerçek müşteri notlarından uyarlandı. Müşteri adı ya da tarihi kullanılmıyor.
-- 4 numara, rapora göre ikinci kanal olan doğum gününü organikte ucuza test eder.
+- Müşteri notları ve lamba yazıları birebir alıntılanmaz. Temalar rapordan, cümleler bizim.
+- 5 numara, rapora göre ikinci kanal olan doğum gününü organikte ucuza test eder.
 - 6 numara yeni bir duygu. Yorumlara bakarak devam edip etmeyeceğimize karar veririz.
 - Mekanlar 7 videoda da farklı. Pastel masa ve beyaz komodin reklamda yayında olduğu için tekrar kullanılmıyor.
 
