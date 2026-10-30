@@ -21,6 +21,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 
+from . import faiz as fz
 from . import odemeler as od
 from . import totp
 
@@ -28,7 +29,7 @@ KOK = Path(__file__).resolve().parent.parent
 VERI = KOK / "veri"
 VERI.mkdir(exist_ok=True)
 STATIK = Path(__file__).resolve().parent / "static"
-SURUM = "0.4"
+SURUM = "0.5"
 
 GUVENLIK = VERI / "guvenlik.json"
 FINANS = VERI / "finans.json"
@@ -308,6 +309,9 @@ def _kart_temizle(k: dict, eski: dict | None) -> dict:
         if a in k:
             yeni[a] = str(k[a] or "").strip()
     yeni["son4"] = "".join(c for c in yeni.get("son4", "") if c.isdigit())[-4:]
+    for a in ("akdi_faiz", "gecikme_faiz"):
+        if a in k:
+            yeni[a] = round(_sayi(k[a]), 4) if k[a] not in (None, "") else None
     for a in ("limit", "guncel_borc"):
         if a in k:
             yeni[a] = round(_sayi(k[a]), 2)
@@ -373,6 +377,8 @@ def _kredi_temizle(g: dict, eski: dict | None) -> dict:
     for a in ("tutar", "taksit"):
         if a in g:
             k[a] = round(_sayi(g[a]), 2)
+    if "gecikme_faiz" in g:
+        k["gecikme_faiz"] = round(_sayi(g["gecikme_faiz"]), 4) if g["gecikme_faiz"] not in (None, "") else None
     if "faiz" in g:
         k["faiz"] = round(_sayi(g["faiz"]), 4)              # aylik %
     if "vade" in g:
@@ -586,6 +592,23 @@ def _kredi_olaylari(k: dict, bugun: date, bit: date) -> list[dict]:
     return sonuc
 
 
+def _kredi_tarih(k: dict, i: int) -> date:
+    ilk = date.fromisoformat(k["ilk_taksit"])
+    return _ay_gunu(*_ay_ekle(ilk, i), ilk.day)
+
+
+@app.post("/api/ayarlar")
+async def ayarlar_kaydet(req: Request):
+    g = await req.json()
+    f = _finans()
+    a = f.setdefault("ayarlar", {})
+    for k in fz.VARSAYILAN_AYAR:
+        if k in g and g[k] not in (None, ""):
+            a[k] = round(_sayi(g[k]), 4)
+    _kaydet(f)
+    return {"tamam": True}
+
+
 @app.get("/")
 def ana():
     return FileResponse(STATIK / "index.html")
@@ -645,6 +668,7 @@ def durum():
     return {
         "surum": SURUM, "bugun": bugun.isoformat(), "guvenlik": _guvenlik_ozet(), "kartlar": kartlar, "ekstreler": ekstreler, "krediler": krediler, "yaklasan": yaklasan,
         "odemeler": odeme_kalemleri, "odeme_takvim": odeme_olay, "hesaplar": f["hesaplar"],
+        "faiz": fz.hesapla(f, kartlar, ekstreler, krediler, odeme_olay, bugun, _kredi_tarih),
         "nakit": {"toplam": round(nakit_toplam, 2), "pencere": pencere, "hesap_sayisi": len(f["hesaplar"])},
         "ozet": {"kart_sayisi": len(aktif), "banka_sayisi": len({k["banka"] for k in aktif}),
                  "toplam_limit": round(limit, 2), "toplam_borc": round(borc, 2),
