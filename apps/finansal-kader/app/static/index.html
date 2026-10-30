@@ -65,6 +65,15 @@ dialog form{padding:20px}
 .dugmeler{display:flex;gap:8px;justify-content:flex-end}
 .ipucu{font-size:12px;color:var(--soluk);margin-top:3px}
 .yakinda-kutu{max-width:560px}
+.eksi{color:var(--kirmizi)}
+.ay-baslik{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--soluk);font-weight:650;margin:14px 0 2px;display:flex;justify-content:space-between}
+.ay-baslik:first-child{margin-top:0}
+.liste li.pasif{opacity:.5}
+.mini{border:1px solid var(--cizgi);background:var(--kart);border-radius:20px;padding:2px 9px;font-size:12px;cursor:pointer;margin-top:4px}
+.uyari-satir{background:var(--sari2);color:var(--sari);padding:9px 12px;border-radius:10px;font-size:14px;margin:-8px 0 16px}
+.secim{display:flex;gap:10px;align-items:flex-start;padding:8px 2px;border-top:1px solid var(--cizgi);font-size:14px;color:var(--yazi);cursor:pointer}
+.secim input{width:auto;margin-top:3px}
+.secim.pasif{opacity:.5}
 .surum{position:fixed;left:10px;bottom:8px;font-size:11px;color:var(--soluk)}
 </style></head>
 <body>
@@ -97,6 +106,48 @@ dialog form{padding:20px}
   <div class="hata" id="kartHata"></div>
   <div class="dugmeler"><button class="btn tehlike" type="button" id="kartSil" style="margin-right:auto">Sil</button>
     <button class="btn ikincil" value="iptal" formnovalidate>Vazgeç</button><button class="btn" id="kartKaydet" value="kaydet">Kaydet</button></div>
+</form></dialog>
+
+<dialog id="odD"><form method="dialog" id="odF">
+  <h2 id="odBaslik">Ödeme ekle</h2>
+  <div class="alanlar">
+    <div class="tam"><label>Ad</label><input name="ad" required placeholder="Örn. Ev internet, KDV, Canva"></div>
+    <div><label>Kategori</label><select name="kategori"></select></div>
+    <div><label>Kimin adına</label><select name="sahip"><option>Şirket</option><option>Şahsi</option></select></div>
+    <div><label>Sıklık</label><select name="siklik"><option value="aylik">Aylık</option><option value="2aylik">2 ayda bir</option><option value="3aylik">3 ayda bir</option><option value="6aylik">6 ayda bir</option><option value="yillik">Yıllık</option><option value="haftalik">Haftalık</option><option value="tek">Tek seferlik</option></select></div>
+    <div><label>Tutar (TL)</label><input name="tutar" inputmode="decimal" placeholder="0"></div>
+    <div><label>Tutar her ay değişiyor mu?</label><select name="degisken"><option value="0">Hayır, sabit</option><option value="1">Evet (fatura gibi), tahmini</option></select></div>
+    <div><label>Sıradaki / ilk ödeme tarihi</label><input name="tarih" type="date" required></div>
+    <div><label>Bitiş tarihi</label><input name="bitis" type="date"><div class="ipucu">Boşsa süresiz.</div></div>
+    <div><label>Nasıl ödeniyor</label><select name="yol"></select></div>
+    <div id="odKart"><label>Hangi kart</label><select name="kart_id"></select></div>
+    <div><label>Durum</label><select name="aktif"><option value="1">Devam ediyor</option><option value="0">İptal edildi</option></select></div>
+    <div class="tam"><label>Not</label><input name="not"></div>
+  </div>
+  <div class="hata" id="odHata"></div>
+  <div class="dugmeler"><button class="btn tehlike" type="button" id="odSil" style="margin-right:auto">Sil</button>
+    <button class="btn ikincil" value="iptal" formnovalidate>Vazgeç</button><button class="btn" value="kaydet">Kaydet</button></div>
+</form></dialog>
+
+<dialog id="sbD"><div style="padding:20px">
+  <h2>Hazır listeden ekle</h2>
+  <p class="soluk" style="margin:6px 0 10px;font-size:13px">Seçtikleriniz tutarsız eklenir; sonra her birine tıklayıp tutarı ve tarihi girersiniz. Vergi ve SGK günleri genel son ödeme günleridir, muhasebecinizle teyit edin.</p>
+  <div id="sbListe" style="max-height:55vh;overflow:auto"></div>
+  <div class="dugmeler" style="margin-top:14px"><button class="btn ikincil" onclick="$('#sbD').close()">Vazgeç</button><button class="btn" id="sbEkle">Seçilenleri ekle</button></div>
+</div></dialog>
+
+<dialog id="hsD"><form method="dialog" id="hsF">
+  <h2 id="hsBaslik">Hesap ekle</h2>
+  <div class="alanlar">
+    <div><label>Hesap adı</label><input name="ad" placeholder="Örn. Ticari vadesiz"></div>
+    <div><label>Banka</label><select name="banka"></select></div>
+    <div><label>Tür</label><select name="tur"><option>Vadesiz</option><option>Vadeli</option><option>Kasa</option><option>Döviz</option><option>Diğer</option></select></div>
+    <div><label>Kimin adına</label><select name="sahip"><option>Şirket</option><option>Şahsi</option></select></div>
+    <div class="tam"><label>Güncel bakiye (TL)</label><input name="bakiye" inputmode="decimal" required placeholder="0"></div>
+  </div>
+  <div class="hata" id="hsHata"></div>
+  <div class="dugmeler"><button class="btn tehlike" type="button" id="hsSil" style="margin-right:auto">Sil</button>
+    <button class="btn ikincil" value="iptal" formnovalidate>Vazgeç</button><button class="btn" value="kaydet">Kaydet</button></div>
 </form></dialog>
 
 <dialog id="krD"><form method="dialog" id="krF">
@@ -141,7 +192,7 @@ dialog form{padding:20px}
 
 <script>
 const BANKALAR={"Ziraat Bankası":"#e30a17","Türkiye İş Bankası":"#0a4ea2","Garanti BBVA":"#00a650","Yapı Kredi":"#004990","Akbank":"#e2001a","QNB":"#5a0a6e","Halkbank":"#005baa","VakıfBank":"#f5b400","DenizBank":"#0071bc","Enpara":"#6c2c91","TEB":"#00843d","ING":"#ff6200","Kuveyt Türk":"#00754a","Albaraka":"#a3195b","Şekerbank":"#0f7a3b","Fibabanka":"#00539b","Odeabank":"#6e2c8f","HSBC":"#db0011","Diğer":"#7a746b"};
-const SEKME=[["ozet","Özet"],["kartlar","Kartlar"],["ekstreler","Ekstreler"],["krediler","Krediler"],["odemeler","Gelecek ödemeler",1],["plan","Yol planı",1],["yatirim","Yatırımlar",1]];
+const SEKME=[["ozet","Özet"],["kartlar","Kartlar"],["ekstreler","Ekstreler"],["krediler","Krediler"],["odemeler","Ödemeler"],["nakit","Nakit"],["plan","Yol planı",1],["yatirim","Yatırımlar",1]];
 let D=null, sekme=(()=>{try{return localStorage.getItem('fk_sekme')||'ozet'}catch(e){return 'ozet'}})();
 const $=s=>document.querySelector(s);
 const tl=n=>(n==null?'–':new Intl.NumberFormat('tr-TR',{minimumFractionDigits:0,maximumFractionDigits:2}).format(n)+' ₺');
@@ -161,13 +212,13 @@ const durumR=d=>`<span class="rozet ${DURUM[d][1]}">${DURUM[d][0]}</span>`;
 async function yukle(){const r=await fetch('/api/durum');if(r.status===401){location.href='/giris';return}D=await r.json();$('#surum').textContent='v'+D.surum;ciz()}
 function ciz(){
   $('#nav').innerHTML=SEKME.map(([k,a,y])=>`<button class="${k===sekme?'secili':''}" onclick="sec('${k}')">${a}${y?'<span class="yakinda">yakında</span>':''}</button>`).join('');
-  $('#icerik').innerHTML=({ozet:ozet,kartlar:kartlarS,ekstreler:ekstrelerS,krediler:kredilerS}[sekme]||yakinda)();
+  $('#icerik').innerHTML=({ozet:ozet,kartlar:kartlarS,ekstreler:ekstrelerS,krediler:kredilerS,odemeler:odemelerS,nakit:nakitS}[sekme]||yakinda)();
 }
 function sec(k){sekme=k;try{localStorage.setItem('fk_sekme',k)}catch(e){}ciz()}
 
 function ozet(){
   const o=D.ozet;
-  if(!D.kartlar.length&&!D.krediler.length)return `<div class="kutu bos"><h2>Henüz kart yok</h2><p>Başlamak için kredi kartlarınızı ekleyin: banka, limit, hesap kesim ve son ödeme günü.</p><button class="btn" onclick="kartAc()">+ İlk kartı ekle</button></div>`;
+  if(!D.kartlar.length&&!D.krediler.length&&!D.odemeler.length&&!D.hesaplar.length)return `<div class="kutu bos"><h2>Henüz kart yok</h2><p>Başlamak için kredi kartlarınızı ekleyin: banka, limit, hesap kesim ve son ödeme günü.</p><button class="btn" onclick="kartAc()">+ İlk kartı ekle</button></div>`;
   const cls=o.doluluk>=80?'tehlike':o.doluluk>=60?'uyari':'';
   const yak=D.yaklasan.slice(0,8);
   const bankalar={};D.kartlar.filter(k=>k.aktif!==false).forEach(k=>{(bankalar[k.banka]=bankalar[k.banka]||{l:0,b:0,n:0});bankalar[k.banka].l+=k.limit||0;bankalar[k.banka].b+=k.guncel_borc||0;bankalar[k.banka].n++});
@@ -177,6 +228,11 @@ function ozet(){
     <div class="kutu tile"><div class="etk">Kullanılabilir limit</div><div class="deger rakam">${tl(o.kullanilabilir)}</div></div>
     <div class="kutu tile"><div class="etk">30 gün içinde ödenecek</div><div class="deger rakam">${tl(o.otuz_gun_odeme)}</div><div class="alt">${o.kredi_sayisi?'Kart ekstreleri + kredi taksitleri':'Kart ekstreleri'}</div></div>
   </div>
+  ${(D.hesaplar.length||D.odemeler.length)?`<div class="izgara ozet">
+    ${D.hesaplar.length?`<div class="kutu tile"><div class="etk">Hesaplardaki nakit</div><div class="deger rakam">${tl(D.nakit.toplam)}</div><div class="alt">30 gün sonra bilinen ödemelerden sonra: <b class="${D.nakit.pencere['30'].kalan<0?'eksi':''}">${tl(D.nakit.pencere['30'].kalan)}</b></div></div>`:''}
+    ${D.odemeler.length?`<div class="kutu tile"><div class="etk">Aylık sabit giderler</div><div class="deger rakam">${tl(o.sabit_aylik)}</div><div class="alt">Şirket ${tl(o.sabit_aylik_sirket)} · abonelikler ${tl(o.abonelik_aylik)}</div></div>`:''}
+    ${o.geciken?`<div class="kutu tile"><div class="etk">Geciken ödeme</div><div class="deger rakam eksi">${o.geciken}</div><div class="alt"><a href="#" onclick="sec('odemeler');return false">Ödemeler'de gör</a></div></div>`:''}
+  </div>`:''}
   ${o.kredi_sayisi?`<div class="izgara ozet">
     <div class="kutu tile"><div class="etk">Kalan kredi borcu</div><div class="deger rakam">${tl(o.kredi_kalan)}</div><div class="alt">${o.kredi_sayisi} açık kredi · kalan taksitlerin toplamı</div></div>
     <div class="kutu tile"><div class="etk">Kalan anapara</div><div class="deger rakam">${tl(o.kredi_anapara)}</div><div class="alt">Erken kapatmada yaklaşık tutar</div></div>
@@ -185,9 +241,9 @@ function ozet(){
   ${guvenlikSatir()}
   <div class="izgara iki">
     <div class="kutu"><div class="baslik"><h3>Yaklaşan ödemeler</h3></div>
-      ${yak.length?`<ul class="liste">${yak.map(y=>{const k=y.kredi_id?null:kartBul(y.kart_id),c=y.kredi_id?krediBul(y.kredi_id):null,d=new Date(y.tarih+'T00:00');return `<li>
+      ${yak.length?`<ul class="liste">${yak.map(y=>{const k=(y.kredi_id||y.kalem_id)?null:kartBul(y.kart_id),c=y.kredi_id?krediBul(y.kredi_id):null,d=new Date(y.tarih+'T00:00');return `<li>
         <div class="tarih"><b>${d.getDate()}</b><span>${d.toLocaleDateString('tr-TR',{month:'short'})}</span></div>
-        <div class="dolgu"><div class="ad">${c?krediAd(c):kartAd(k)}</div><div class="soluk" style="font-size:13px">${c?`Kredi taksidi ${c.hesap.odenen+1}/${c.vade}`:y.kaynak==='tahmin'?'Ekstre girilmedi, güncel borç gösteriliyor':'Asgari '+tl(y.asgari)}</div></div>
+        <div class="dolgu"><div class="ad">${y.kalem_id?esc(y.ad):c?krediAd(c):kartAd(k)}</div><div class="soluk" style="font-size:13px">${y.kalem_id?esc(y.kategori)+' · '+esc(y.sahip)+(y.karttan?' · karttan, ekstreye yansır':'')+(y.durum==='gecikti'?' · <b class="eksi">gecikti</b>':''):c?`Kredi taksidi ${c.hesap.odenen+1}/${c.vade}`:y.kaynak==='tahmin'?'Ekstre girilmedi, güncel borç gösteriliyor':'Asgari '+tl(y.asgari)}</div></div>
         <div class="sagr"><div class="rakam" style="font-weight:600">${tl(y.tutar)}</div>${kalanRozet(gunKalan(y.tarih))}</div></li>`}).join('')}</ul>`:'<p class="soluk">Yaklaşan ödeme yok.</p>'}
     </div>
     <div class="kutu"><div class="baslik"><h3>Bankalara göre</h3></div>
@@ -254,6 +310,56 @@ function krediKutu(c){const h=c.hesap,yuz=Math.round(h.odenen/c.vade*100),bitti=
     ${c.not?`<div class="soluk" style="font-size:13px;margin-top:10px">${esc(c.not)}</div>`:''}
     <div class="islem"><button class="btn ikincil" onclick="krediAc('${c.id}')">Düzenle</button></div></div>`}
 
+const SIKLIK={aylik:'Aylık','2aylik':'2 ayda bir','3aylik':'3 ayda bir','6aylik':'6 ayda bir',yillik:'Yıllık',haftalik:'Haftalık',tek:'Tek seferlik'};
+const ayAd=s=>new Date(s+'T00:00').toLocaleDateString('tr-TR',{month:'long',year:'numeric'});
+function odemelerS(){
+  const o=D.ozet,ol=D.odeme_takvim;
+  const ust=`<div class="baslik"><h2>Ödemeler</h2><button class="btn ikincil" style="margin-left:auto" onclick="sablonAc()">Hazır listeden ekle</button><button class="btn" style="margin-left:0" onclick="odemeAc()">+ Ödeme ekle</button></div>`;
+  if(!D.odemeler.length)return ust+`<div class="kutu bos"><h2>Henüz ödeme yok</h2><p>Abonelik, fatura, kira, vergi, SGK/Bağ-Kur, maaş, sigorta gibi düzenli ödemeleri ekleyin. En hızlısı hazır listeden seçmek; tutarları sonra girersiniz.</p><button class="btn" onclick="sablonAc()">Hazır listeden seç</button></div>`;
+  const ayl={};[...ol].sort((x,y)=>x.tarih.localeCompare(y.tarih)).forEach(e=>{const a=e.durum==='gecikti'?'Geciken':ayAd(e.tarih);(ayl[a]=ayl[a]||[]).push(e)});
+  const sirali=Object.keys(ayl).sort((a,b)=>a==='Geciken'?-1:b==='Geciken'?1:ayl[a][0].tarih.localeCompare(ayl[b][0].tarih));
+  const kat={};D.odemeler.forEach(k=>(kat[k.kategori||'Diğer']=kat[k.kategori||'Diğer']||[]).push(k));
+  return ust+`<div class="izgara ozet">
+    <div class="kutu tile"><div class="etk">Aylık sabit giderler</div><div class="deger rakam">${tl(o.sabit_aylik)}</div><div class="alt">Yıllık ödemeler aya bölünmüş</div></div>
+    <div class="kutu tile"><div class="etk">Şirket payı</div><div class="deger rakam">${tl(o.sabit_aylik_sirket)}</div><div class="alt">Şahsi ${tl(o.sabit_aylik-o.sabit_aylik_sirket)}</div></div>
+    <div class="kutu tile"><div class="etk">Abonelikler</div><div class="deger rakam">${tl(o.abonelik_aylik)}</div><div class="alt">aylık · yıllık ${tl(o.abonelik_aylik*12)}</div></div>
+    <div class="kutu tile"><div class="etk">Geciken</div><div class="deger rakam ${o.geciken?'eksi':''}">${o.geciken}</div><div class="alt">Ödendi işaretlenmemiş, tarihi geçmiş</div></div>
+  </div>
+  ${o.tutarsiz?`<p class="uyari-satir">${o.tutarsiz} kalemin tutarı henüz girilmedi. Tutar girilmeden toplamlara ve nakit tahminine katılmaz.</p>`:''}
+  <div class="izgara iki">
+  <div class="kutu"><div class="baslik"><h3>Önümüzdeki 90 gün</h3></div>
+    ${sirali.length?sirali.map(a=>`<div class="ay-baslik">${a} <span class="soluk rakam">${tl(ayl[a].filter(e=>e.durum!=='odendi').reduce((t,e)=>t+e.tutar,0))}</span></div>
+      <ul class="liste">${ayl[a].map(odemeSatir).join('')}</ul>`).join(''):'<p class="soluk">90 gün içinde ödeme yok.</p>'}
+  </div>
+  <div class="kutu"><div class="baslik"><h3>Tanımlı ödemeler</h3></div>
+    ${Object.keys(kat).sort((a,b)=>a.localeCompare(b,'tr')).map(k=>`<div class="ay-baslik">${esc(k)}</div><ul class="liste">${kat[k].map(x=>`<li class="${x.aktif===false?'pasif':''}" style="cursor:pointer" onclick="odemeAc('${x.id}')">
+      <div class="dolgu"><div class="ad">${esc(x.ad)}</div><div class="soluk" style="font-size:13px">${SIKLIK[x.siklik]} · ${esc(x.sahip)} · ${esc(x.yol||'')}${x.sonraki?' · sıradaki '+new Date(x.sonraki+'T00:00').toLocaleDateString('tr-TR',{day:'numeric',month:'short'}):''}</div></div>
+      <div class="sagr rakam">${x.tutar?`<div style="font-weight:600">${x.degisken?'~':''}${tl(x.tutar)}</div>${x.siklik!=='aylik'&&x.siklik!=='tek'?`<div class="soluk" style="font-size:12px">ayda ${tl(x.aylik)}</div>`:''}`:'<span class="rozet sari">Tutar yok</span>'}</div></li>`).join('')}</ul>`).join('')}
+  </div></div>`}
+function odemeSatir(e){const d=new Date(e.tarih+'T00:00'),od=e.durum==='odendi';
+  return `<li class="${od?'pasif':''}"><div class="tarih"><b>${d.getDate()}</b><span>${d.toLocaleDateString('tr-TR',{month:'short'})}</span></div>
+    <div class="dolgu"><div class="ad">${esc(e.ad)}</div><div class="soluk" style="font-size:13px">${esc(e.kategori)} · ${esc(e.sahip)} · ${esc(e.yol||'')}</div></div>
+    <div class="sagr"><div class="rakam" style="font-weight:600">${e.tutar?(e.degisken&&!od?'~':'')+tl(e.tutar):'–'}</div>
+      ${od?`<button class="mini" onclick="odendi('${e.kalem_id}','${e.tarih}',1)">Ödendi ✓ geri al</button>`:`${e.durum==='gecikti'?'<span class="rozet kirmizi">Gecikti</span>':kalanRozet(gunKalan(e.tarih))} <button class="mini" onclick="odendi('${e.kalem_id}','${e.tarih}')">Ödendi</button>`}</div></li>`}
+async function odendi(id,donem,geri){const k=D.odemeler.find(x=>x.id===id);let tutar=k.tutar;
+  if(!geri&&(k.degisken||!k.tutar)){const v=prompt(`${k.ad}: ödenen tutar (TL)`,k.tutar||'');if(v===null)return;tutar=v}
+  await fetch('/api/odeme/odendi',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kalem_id:id,donem,tutar,geri_al:!!geri})});yukle()}
+
+function nakitS(){
+  const n=D.nakit,p=n.pencere;
+  const ust=`<div class="baslik"><h2>Nakit</h2><button class="btn" onclick="hesapAc()">+ Hesap ekle</button></div>`;
+  if(!D.hesaplar.length)return ust+`<div class="kutu bos"><h2>Henüz hesap yok</h2><p>Banka hesaplarınızı ve kasadaki nakdi bakiyesiyle girin. Panel, önümüzdeki 30/60/90 günde bilinen ödemelerden sonra ne kaldığını hesaplar.</p><button class="btn" onclick="hesapAc()">+ İlk hesabı ekle</button></div>`;
+  const cumle=`Bugün hesaplarda <b>${tl(n.toplam)}</b> var. Önümüzdeki 30 günde bilinen çıkışlar <b>${tl(p['30'].cikis)}</b>; hepsi ödenirse geriye <b class="${p['30'].kalan<0?'eksi':''}">${tl(p['30'].kalan)}</b> kalır.`;
+  const eski=D.hesaplar.filter(h=>h.guncelleme&&gunKalan(h.guncelleme)<-7).length;
+  return ust+`<div class="kutu" style="margin-bottom:14px"><p style="margin:0;font-size:16px">${cumle}</p>
+    <p class="soluk" style="margin:8px 0 0;font-size:13px">Satış gelirleri dahil değil. Kartlarda sadece girilen ekstre ya da güncel borç sayılıyor; kartla ödenen abonelikler ekstreye yansıdığı için ayrıca sayılmıyor.${eski?` ${eski} hesabın bakiyesi 7 günden eski, güncellemeniz iyi olur.`:''}</p></div>
+  <div class="izgara ozet">${['30','60','90'].map(g=>`<div class="kutu tile"><div class="etk">${g} gün içinde çıkacak</div><div class="deger rakam">${tl(p[g].cikis)}</div><div class="alt">Sonra kalan: <b class="${p[g].kalan<0?'eksi':''}">${tl(p[g].kalan)}</b></div></div>`).join('')}</div>
+  <div class="izgara kartlar">${D.hesaplar.map(h=>`<div class="kutu kk"><span class="serit" style="background:${BANKALAR[h.banka]||BANKALAR['Diğer']}"></span>
+    <div class="ust2"><div><div style="font-weight:650">${esc(h.ad||h.banka)}</div><div class="soluk" style="font-size:13px">${esc(h.banka||'')} · ${esc(h.tur||'')} · ${esc(h.sahip||'')}</div></div></div>
+    <div class="deger rakam" style="font-size:22px;font-weight:650;margin-top:10px">${tl(h.bakiye||0)}</div>
+    <div class="soluk" style="font-size:13px">Güncelleme: ${tarihY(h.guncelleme)}</div>
+    <div class="islem"><button class="btn ikincil" onclick="hesapAc('${h.id}')">Bakiyeyi güncelle</button></div></div>`).join('')}</div>`}
+
 function yakinda(){const a=SEKME.find(s=>s[0]===sekme)[1];
   const m={odemeler:'Kira, vergi, SGK, tedarikçi, kredi taksitleri gibi kart dışı ödemeler burada tarih sırasıyla görünecek.',plan:'Sevgililer Günü 2027\'ye kadar aylık hedefler ve gerçekleşen rakamlar.',yatirim:'Makine, stok, reklam gibi yatırımların tutarı ve geri dönüşü.'}[sekme];
   return `<div class="kutu yakinda-kutu"><h2>${a}</h2><p class="soluk">${m}</p><p class="soluk">Kartlar bölümü oturduktan sonra sırayla eklenecek.</p></div>`}
@@ -270,6 +376,41 @@ kartF.addEventListener('submit',async e=>{if(e.submitter&&e.submitter.value!=='k
   const r=await fetch('/api/kart',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(g)});
   if(!r.ok){$('#kartHata').textContent=(await r.json()).detail||'Kaydedilemedi';return}$('#kartD').close();yukle()});
 $('#kartSil').onclick=async()=>{if(!confirm('Kart ve bu karta ait ekstreler silinsin mi?'))return;await fetch('/api/kart/'+kartF.dataset.id,{method:'DELETE'});$('#kartD').close();yukle()};
+
+// ---- odeme formu
+const odF=$('#odF');let SAB=null;
+async function sabYukle(){if(!SAB)SAB=await (await fetch('/api/odeme/sablonlar')).json();return SAB}
+async function odemeAc(id){const s=await sabYukle(),k=id?D.odemeler.find(x=>x.id===id):{};odF.reset();odF.dataset.id=id||'';$('#odHata').textContent='';
+  odF.kategori.innerHTML=s.kategoriler.map(x=>`<option>${x}</option>`).join('');odF.yol.innerHTML=s.yollar.map(x=>`<option>${x}</option>`).join('');
+  odF.kart_id.innerHTML=D.kartlar.map(k=>`<option value="${k.id}">${esc(k.banka)}${k.kart_adi?' · '+esc(k.kart_adi):''}${k.son4?' •'+esc(k.son4):''}</option>`).join('');
+  $('#odBaslik').textContent=id?'Ödemeyi düzenle':'Ödeme ekle';$('#odSil').style.display=id?'':'none';
+  odF.yol.value='Havale / EFT';odF.tarih.value=D.bugun;
+  ['ad','kategori','sahip','siklik','tutar','tarih','bitis','yol','kart_id','not'].forEach(a=>{if(k[a]!=null&&k[a]!=='')odF[a].value=k[a]});
+  odF.degisken.value=k.degisken?'1':'0';odF.aktif.value=k.aktif===false?'0':'1';kartGoster();$('#odD').showModal()}
+function kartGoster(){$('#odKart').style.display=odF.yol.value==='Kredi kartı'?'':'none'}
+odF.yol.onchange=kartGoster;
+odF.addEventListener('submit',async e=>{if(e.submitter&&e.submitter.value!=='kaydet')return;e.preventDefault();
+  const g=Object.fromEntries(new FormData(odF));g.degisken=g.degisken==='1';g.aktif=g.aktif==='1';if(odF.dataset.id)g.id=odF.dataset.id;
+  const r=await fetch('/api/odeme',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(g)});
+  if(!r.ok){$('#odHata').textContent=(await r.json()).detail||'Kaydedilemedi';return}$('#odD').close();yukle()});
+$('#odSil').onclick=async()=>{if(!confirm('Ödeme ve geçmiş kayıtları silinsin mi?'))return;await fetch('/api/odeme/'+odF.dataset.id,{method:'DELETE'});$('#odD').close();yukle()};
+async function sablonAc(){SAB=null;const s=await sabYukle();const gr={'Şirket':[],'Şahsi':[]};s.sablonlar.forEach(x=>gr[x.sahip].push(x));
+  $('#sbListe').innerHTML=Object.entries(gr).map(([g,l])=>`<div class="ay-baslik">${g==='Şirket'?'İşletme':'Kişisel'}</div>`+l.map(x=>`<label class="secim ${x.var?'pasif':''}"><input type="checkbox" value="${esc(x.ad)}" ${x.var?'disabled checked':''}> <span><b>${esc(x.ad)}</b><br><span class="soluk">${esc(x.kategori)} · ${SIKLIK[x.siklik]}${x.ay?' ('+x.ay.map(m=>new Date(2026,m-1,1).toLocaleDateString('tr-TR',{month:'short'})).join(', ')+')':''} · ayın ${x.gun>=28?'son günleri':x.gun+"'i"}</span></span></label>`).join('')).join('');
+  $('#sbD').showModal()}
+$('#sbEkle').onclick=async()=>{const adlar=[...document.querySelectorAll('#sbListe input:checked:not(:disabled)')].map(i=>i.value);
+  if(adlar.length)await fetch('/api/odeme/sablon',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({adlar})});$('#sbD').close();sec('odemeler');yukle()};
+
+// ---- hesap formu
+const hsF=$('#hsF');
+hsF.banka.innerHTML=['Kasa (nakit)',...Object.keys(BANKALAR)].map(b=>`<option>${b}</option>`).join('');
+function hesapAc(id){const h=id?D.hesaplar.find(x=>x.id===id):{};hsF.reset();hsF.dataset.id=id||'';$('#hsHata').textContent='';
+  $('#hsBaslik').textContent=id?'Hesabı güncelle':'Hesap ekle';$('#hsSil').style.display=id?'':'none';
+  ['ad','banka','tur','sahip','bakiye'].forEach(a=>{if(h[a]!=null&&h[a]!=='')hsF[a].value=h[a]});$('#hsD').showModal()}
+hsF.addEventListener('submit',async e=>{if(e.submitter&&e.submitter.value!=='kaydet')return;e.preventDefault();
+  const g=Object.fromEntries(new FormData(hsF));if(hsF.dataset.id)g.id=hsF.dataset.id;
+  const r=await fetch('/api/hesap',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(g)});
+  if(!r.ok){$('#hsHata').textContent=(await r.json()).detail||'Kaydedilemedi';return}$('#hsD').close();yukle()});
+$('#hsSil').onclick=async()=>{if(!confirm('Hesap silinsin mi?'))return;await fetch('/api/hesap/'+hsF.dataset.id,{method:'DELETE'});$('#hsD').close();yukle()};
 
 // ---- kredi formu
 const krF=$('#krF');

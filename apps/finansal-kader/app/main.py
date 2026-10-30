@@ -21,13 +21,14 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 
+from . import odemeler as od
 from . import totp
 
 KOK = Path(__file__).resolve().parent.parent
 VERI = KOK / "veri"
 VERI.mkdir(exist_ok=True)
 STATIK = Path(__file__).resolve().parent / "static"
-SURUM = "0.3"
+SURUM = "0.4"
 
 GUVENLIK = VERI / "guvenlik.json"
 FINANS = VERI / "finans.json"
@@ -263,6 +264,9 @@ def _finans() -> dict:
     f.setdefault("kartlar", [])
     f.setdefault("ekstreler", [])
     f.setdefault("krediler", [])
+    f.setdefault("odemeler", [])
+    f.setdefault("odeme_kayit", [])
+    f.setdefault("hesaplar", [])
     return f
 
 
@@ -437,6 +441,151 @@ def kredi_sil(cid: str):
     return {"tamam": True}
 
 
+# --------------------------------------------------------------------------- odemeler ve nakit
+def _odeme_temizle(g: dict, eski: dict | None) -> dict:
+    k = dict(eski or {})
+    for a in ("ad", "kategori", "sahip", "yol", "kart_id", "not"):
+        if a in g:
+            k[a] = str(g[a] or "").strip()
+    if "siklik" in g:
+        k["siklik"] = g["siklik"] if g["siklik"] in od.SIKLIKLAR else "aylik"
+    if "tutar" in g:
+        k["tutar"] = round(_sayi(g["tutar"]), 2)
+    for a in ("degisken", "aktif"):
+        if a in g:
+            k[a] = bool(g[a])
+    k.setdefault("aktif", True)
+    for a in ("tarih", "bitis"):
+        if a in g:
+            try:
+                k[a] = date.fromisoformat(g[a]).isoformat() if g[a] else None
+            except (TypeError, ValueError):
+                raise HTTPException(400, "Tarih hatalı")
+    if not k.get("ad"):
+        raise HTTPException(400, "Ödemenin adı girilmeli")
+    if not k.get("tarih"):
+        raise HTTPException(400, "İlk ödeme tarihi girilmeli")
+    if k.get("yol") != "Kredi kartı":
+        k["kart_id"] = ""
+    return k
+
+
+@app.post("/api/odeme")
+async def odeme_kaydet(req: Request):
+    g = await req.json()
+    f = _finans()
+    eski = next((k for k in f["odemeler"] if k["id"] == g.get("id")), None) if g.get("id") else None
+    k = _odeme_temizle(g, eski)
+    if eski:
+        f["odemeler"][f["odemeler"].index(eski)] = k
+    else:
+        k["id"] = "o" + secrets.token_hex(4)
+        f["odemeler"].append(k)
+    _kaydet(f)
+    return {"tamam": True, "id": k["id"]}
+
+
+@app.delete("/api/odeme/{oid}")
+def odeme_sil(oid: str):
+    f = _finans()
+    f["odemeler"] = [k for k in f["odemeler"] if k["id"] != oid]
+    f["odeme_kayit"] = [o for o in f["odeme_kayit"] if o["kalem_id"] != oid]
+    _kaydet(f)
+    return {"tamam": True}
+
+
+@app.post("/api/odeme/odendi")
+async def odeme_odendi(req: Request):
+    """Bir donemi odendi isaretler (ya da geri alir). Panel kendiliginden hicbir seyi odenmis saymaz."""
+    g = await req.json()
+    f = _finans()
+    kalem = next((k for k in f["odemeler"] if k["id"] == g.get("kalem_id")), None)
+    if not kalem or not g.get("donem"):
+        raise HTTPException(400, "Kalem bulunamadı")
+    f["odeme_kayit"] = [o for o in f["odeme_kayit"] if not (o["kalem_id"] == kalem["id"] and o["donem"] == g["donem"])]
+    if not g.get("geri_al"):
+        f["odeme_kayit"].append({"kalem_id": kalem["id"], "donem": g["donem"],
+                                 "tutar": round(_sayi(g.get("tutar"), kalem.get("tutar") or 0), 2),
+                                 "odeme_tarihi": date.today().isoformat()})
+    _kaydet(f)
+    return {"tamam": True}
+
+
+@app.post("/api/odeme/sablon")
+async def odeme_sablon(req: Request):
+    """Hazir listeden secilenleri tutarsiz ekler; kullanici sonra tutari girer."""
+    secilen = (await req.json()).get("adlar") or []
+    f = _finans()
+    var = {k["ad"] for k in f["odemeler"]}
+    bugun = date.today()
+    eklenen = 0
+    for s in od.SABLONLAR:
+        if s["ad"] in secilen and s["ad"] not in var:
+            f["odemeler"].append({"id": "o" + secrets.token_hex(4), "ad": s["ad"], "kategori": s["kategori"],
+                                  "sahip": s["sahip"], "siklik": s["siklik"], "tutar": 0.0,
+                                  "degisken": bool(s.get("degisken")), "tarih": od.sablon_baslangic(s, bugun),
+                                  "bitis": None, "yol": "Havale / EFT", "kart_id": "", "aktif": True,
+                                  "not": "Hazır listeden eklendi: tutarı ve tarihi kontrol edin."})
+            eklenen += 1
+    _kaydet(f)
+    return {"tamam": True, "eklenen": eklenen}
+
+
+@app.get("/api/odeme/sablonlar")
+def odeme_sablonlar():
+    var = {k["ad"] for k in _finans()["odemeler"]}
+    return {"sablonlar": [dict(s, var=s["ad"] in var) for s in od.SABLONLAR],
+            "kategoriler": od.KATEGORILER, "yollar": od.YOLLAR}
+
+
+@app.post("/api/hesap")
+async def hesap_kaydet(req: Request):
+    g = await req.json()
+    f = _finans()
+    eski = next((h for h in f["hesaplar"] if h["id"] == g.get("id")), None) if g.get("id") else None
+    h = dict(eski or {})
+    for a in ("ad", "banka", "tur", "sahip"):
+        if a in g:
+            h[a] = str(g[a] or "").strip()
+    if "bakiye" in g:
+        if eski is None or _sayi(g["bakiye"]) != eski.get("bakiye"):
+            h["guncelleme"] = date.today().isoformat()
+        h["bakiye"] = round(_sayi(g["bakiye"]), 2)
+    if not h.get("ad") and not h.get("banka"):
+        raise HTTPException(400, "Hesap adı ya da banka girilmeli")
+    if eski:
+        f["hesaplar"][f["hesaplar"].index(eski)] = h
+    else:
+        h["id"] = "h" + secrets.token_hex(4)
+        h.setdefault("guncelleme", date.today().isoformat())
+        f["hesaplar"].append(h)
+    _kaydet(f)
+    return {"tamam": True, "id": h["id"]}
+
+
+@app.delete("/api/hesap/{hid}")
+def hesap_sil(hid: str):
+    f = _finans()
+    f["hesaplar"] = [h for h in f["hesaplar"] if h["id"] != hid]
+    _kaydet(f)
+    return {"tamam": True}
+
+
+def _kredi_olaylari(k: dict, bugun: date, bit: date) -> list[dict]:
+    h = k["hesap"]
+    if not h["kalan_taksit"]:
+        return []
+    ilk = date.fromisoformat(k["ilk_taksit"])
+    sonuc = []
+    for i in range(h["odenen"], k["vade"]):
+        d = _ay_gunu(*_ay_ekle(ilk, i), ilk.day)
+        if d > bit:
+            break
+        sonuc.append({"kaynak": "kredi", "kredi_id": k["id"], "tarih": d.isoformat(), "tutar": h["taksit"],
+                      "taksit_no": i + 1, "durum": "taksit"})
+    return sonuc
+
+
 @app.get("/")
 def ana():
     return FileResponse(STATIK / "index.html")
@@ -471,14 +620,41 @@ def durum():
     for k in acik:
         yaklasan.append({"kredi_id": k["id"], "tarih": k["hesap"]["sonraki"], "kaynak": "kredi",
                          "tutar": k["hesap"]["taksit"], "asgari": None, "durum": "taksit"})
-    yaklasan.sort(key=lambda y: y["tarih"] or "9999")
     otuz = (bugun + timedelta(days=30)).isoformat()
+    odeme_olay = od.takvim(f, bugun)
+    yaklasan += [dict(o, karttan=o["yol"] == "Kredi kartı") for o in odeme_olay
+                 if o["durum"] in ("bekliyor", "gecikti") and o["tarih"] <= otuz]
+    yaklasan.sort(key=lambda y: y["tarih"] or "9999")
+
+    # nakit: bilinen cikislar (kartla odenen kalemler kart ekstresinde sayildigi icin haric)
+    kart_olay = [y for y in yaklasan if y.get("kart_id") and y["kaynak"] in ("ekstre", "tahmin")]
+    nakit_toplam = sum(h.get("bakiye") or 0 for h in f["hesaplar"])
+    pencere = {}
+    for n in (30, 60, 90):
+        sinir = (bugun + timedelta(days=n)).isoformat()
+        kalemler = ([o for o in odeme_olay if o["durum"] in ("bekliyor", "gecikti") and o["yol"] != "Kredi kartı"]
+                    + kart_olay + [e for k in acik for e in _kredi_olaylari(k, bugun, bugun + timedelta(days=n))])
+        cikis = sum(x["tutar"] for x in kalemler if x["tarih"] <= sinir)
+        pencere[str(n)] = {"cikis": round(cikis, 2), "kalan": round(nakit_toplam - cikis, 2)}
+    odeme_kalemleri = []
+    for k in f["odemeler"]:
+        sonraki = next((o for o in odeme_olay if o["kalem_id"] == k["id"] and o["tarih"] >= bugun.isoformat()
+                        and o["durum"] != "odendi"), None)
+        odeme_kalemleri.append(dict(k, aylik=round(od.aylik_esdeger(k), 2), sonraki=sonraki["tarih"] if sonraki else None))
+    aktif_odeme = [k for k in odeme_kalemleri if k.get("aktif", True)]
     return {
         "surum": SURUM, "bugun": bugun.isoformat(), "guvenlik": _guvenlik_ozet(), "kartlar": kartlar, "ekstreler": ekstreler, "krediler": krediler, "yaklasan": yaklasan,
+        "odemeler": odeme_kalemleri, "odeme_takvim": odeme_olay, "hesaplar": f["hesaplar"],
+        "nakit": {"toplam": round(nakit_toplam, 2), "pencere": pencere, "hesap_sayisi": len(f["hesaplar"])},
         "ozet": {"kart_sayisi": len(aktif), "banka_sayisi": len({k["banka"] for k in aktif}),
                  "toplam_limit": round(limit, 2), "toplam_borc": round(borc, 2),
                  "kullanilabilir": round(limit - borc, 2), "doluluk": round(borc / limit * 100, 1) if limit else 0,
-                 "otuz_gun_odeme": round(sum(y["tutar"] for y in yaklasan if (y["tarih"] or "") <= otuz), 2),
+                 "otuz_gun_odeme": round(sum(y["tutar"] for y in yaklasan if (y["tarih"] or "") <= otuz and not y.get("karttan")), 2),
+                 "sabit_aylik": round(sum(k["aylik"] for k in aktif_odeme), 2),
+                 "sabit_aylik_sirket": round(sum(k["aylik"] for k in aktif_odeme if k.get("sahip") == "Şirket"), 2),
+                 "abonelik_aylik": round(sum(k["aylik"] for k in aktif_odeme if k.get("kategori") == "Abonelik"), 2),
+                 "geciken": sum(1 for o in odeme_olay if o["durum"] == "gecikti"),
+                 "tutarsiz": sum(1 for k in aktif_odeme if not k.get("tutar")),
                  "kredi_sayisi": len(acik), "kredi_kalan": round(sum(k["hesap"]["kalan_odeme"] for k in acik), 2),
                  "kredi_anapara": round(sum(k["hesap"]["kalan_anapara"] for k in acik), 2),
                  "kredi_aylik": round(sum(k["hesap"]["taksit"] for k in acik), 2)},
