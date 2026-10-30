@@ -27,7 +27,7 @@ KOK = Path(__file__).resolve().parent.parent
 VERI = KOK / "veri"
 VERI.mkdir(exist_ok=True)
 STATIK = Path(__file__).resolve().parent / "static"
-SURUM = "0.2"
+SURUM = "0.3"
 
 GUVENLIK = VERI / "guvenlik.json"
 FINANS = VERI / "finans.json"
@@ -262,6 +262,7 @@ def _finans() -> dict:
     f = _oku(FINANS, {})
     f.setdefault("kartlar", [])
     f.setdefault("ekstreler", [])
+    f.setdefault("krediler", [])
     return f
 
 
@@ -356,6 +357,86 @@ def _ekstre_durum(e: dict, bugun: date) -> str:
     return "kismi" if odenen > 0 else "bekliyor"
 
 
+# --------------------------------------------------------------------------- krediler
+KREDI_ALANLARI = ("banka", "tur", "sahip", "ad", "not")
+
+
+def _kredi_temizle(g: dict, eski: dict | None) -> dict:
+    k = dict(eski or {})
+    for a in KREDI_ALANLARI:
+        if a in g:
+            k[a] = str(g[a] or "").strip()
+    for a in ("tutar", "taksit"):
+        if a in g:
+            k[a] = round(_sayi(g[a]), 2)
+    if "faiz" in g:
+        k["faiz"] = round(_sayi(g["faiz"]), 4)              # aylik %
+    if "vade" in g:
+        k["vade"] = int(_sayi(g["vade"]))
+    if "odenen_taksit" in g:                                # bos = tarihe gore hesapla
+        k["odenen_taksit"] = None if g["odenen_taksit"] in (None, "") else int(_sayi(g["odenen_taksit"]))
+    if "ilk_taksit" in g:
+        try:
+            k["ilk_taksit"] = date.fromisoformat(g["ilk_taksit"]).isoformat()
+        except (TypeError, ValueError):
+            raise HTTPException(400, "İlk taksit tarihi girilmeli")
+    if "kapali" in g:
+        k["kapali"] = bool(g["kapali"])
+    if not k.get("banka"):
+        raise HTTPException(400, "Banka seçilmeli")
+    if not k.get("vade") or k["vade"] < 1:
+        raise HTTPException(400, "Vade (ay) girilmeli")
+    if not k.get("taksit") and not (k.get("tutar") and k.get("faiz") is not None):
+        raise HTTPException(400, "Aylık taksit ya da tutar + faiz girilmeli")
+    return k
+
+
+def _kredi_hesap(k: dict, bugun: date) -> dict:
+    n, P, r = k["vade"], k.get("tutar") or 0, (k.get("faiz") or 0) / 100
+    taksit = k.get("taksit") or (P * r / (1 - (1 + r) ** -n) if r else P / n)
+    ilk = date.fromisoformat(k["ilk_taksit"])
+
+    def tarih(i: int) -> date:
+        return _ay_gunu(*_ay_ekle(ilk, i), ilk.day)
+
+    if k.get("odenen_taksit") is not None:
+        odenen = max(0, min(n, k["odenen_taksit"]))
+    else:
+        odenen = sum(1 for i in range(n) if tarih(i) < bugun)
+    kalan = 0 if k.get("kapali") else n - odenen
+    if r and P:
+        anapara = P * (1 + r) ** odenen - taksit * ((1 + r) ** odenen - 1) / r
+    else:
+        anapara = P - taksit * odenen if P else taksit * kalan
+    return {"taksit": round(taksit, 2), "odenen": odenen, "kalan_taksit": kalan,
+            "kalan_odeme": round(taksit * kalan, 2), "kalan_anapara": round(max(anapara, 0) if kalan else 0, 2),
+            "sonraki": tarih(odenen).isoformat() if kalan else None, "bitis": tarih(n - 1).isoformat(),
+            "toplam_odeme": round(taksit * n, 2), "toplam_faiz": round(taksit * n - P, 2) if P else None}
+
+
+@app.post("/api/kredi")
+async def kredi_kaydet(req: Request):
+    g = await req.json()
+    f = _finans()
+    eski = next((k for k in f["krediler"] if k["id"] == g.get("id")), None) if g.get("id") else None
+    k = _kredi_temizle(g, eski)
+    if eski:
+        f["krediler"][f["krediler"].index(eski)] = k
+    else:
+        k["id"] = "c" + secrets.token_hex(4)
+        f["krediler"].append(k)
+    _kaydet(f)
+    return {"tamam": True, "id": k["id"]}
+
+
+@app.delete("/api/kredi/{cid}")
+def kredi_sil(cid: str):
+    f = _finans()
+    f["krediler"] = [k for k in f["krediler"] if k["id"] != cid]
+    _kaydet(f)
+    return {"tamam": True}
+
+
 @app.get("/")
 def ana():
     return FileResponse(STATIK / "index.html")
@@ -385,14 +466,22 @@ def durum():
         if k["id"] not in ekstreli and k["takvim"]:
             yaklasan.append({"kart_id": k["id"], "tarih": k["takvim"]["sonraki_odeme"], "kaynak": "tahmin",
                              "tutar": k.get("guncel_borc") or 0, "asgari": None, "durum": "tahmini"})
+    krediler = [dict(k, hesap=_kredi_hesap(k, bugun)) for k in f["krediler"]]
+    acik = [k for k in krediler if k["hesap"]["kalan_taksit"]]
+    for k in acik:
+        yaklasan.append({"kredi_id": k["id"], "tarih": k["hesap"]["sonraki"], "kaynak": "kredi",
+                         "tutar": k["hesap"]["taksit"], "asgari": None, "durum": "taksit"})
     yaklasan.sort(key=lambda y: y["tarih"] or "9999")
     otuz = (bugun + timedelta(days=30)).isoformat()
     return {
-        "surum": SURUM, "bugun": bugun.isoformat(), "guvenlik": _guvenlik_ozet(), "kartlar": kartlar, "ekstreler": ekstreler, "yaklasan": yaklasan,
+        "surum": SURUM, "bugun": bugun.isoformat(), "guvenlik": _guvenlik_ozet(), "kartlar": kartlar, "ekstreler": ekstreler, "krediler": krediler, "yaklasan": yaklasan,
         "ozet": {"kart_sayisi": len(aktif), "banka_sayisi": len({k["banka"] for k in aktif}),
                  "toplam_limit": round(limit, 2), "toplam_borc": round(borc, 2),
                  "kullanilabilir": round(limit - borc, 2), "doluluk": round(borc / limit * 100, 1) if limit else 0,
-                 "otuz_gun_odeme": round(sum(y["tutar"] for y in yaklasan if (y["tarih"] or "") <= otuz), 2)},
+                 "otuz_gun_odeme": round(sum(y["tutar"] for y in yaklasan if (y["tarih"] or "") <= otuz), 2),
+                 "kredi_sayisi": len(acik), "kredi_kalan": round(sum(k["hesap"]["kalan_odeme"] for k in acik), 2),
+                 "kredi_anapara": round(sum(k["hesap"]["kalan_anapara"] for k in acik), 2),
+                 "kredi_aylik": round(sum(k["hesap"]["taksit"] for k in acik), 2)},
     }
 
 

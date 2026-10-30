@@ -99,6 +99,30 @@ dialog form{padding:20px}
     <button class="btn ikincil" value="iptal" formnovalidate>Vazgeç</button><button class="btn" id="kartKaydet" value="kaydet">Kaydet</button></div>
 </form></dialog>
 
+<dialog id="krD"><form method="dialog" id="krF">
+  <h2 id="krBaslik">Kredi ekle</h2>
+  <div class="alanlar">
+    <div><label>Banka</label><select name="banka" required></select></div>
+    <div><label>Kredi türü</label><select name="tur">
+      <option>İhtiyaç kredisi</option><option>Ticari / KOBİ kredisi</option><option>Taşıt kredisi</option><option>Konut kredisi</option><option>Rotatif / spot kredi</option><option>KMH / esnek hesap</option><option>Diğer</option></select></div>
+    <div><label>Kimin adına</label><select name="sahip"><option>Şahsi</option><option>Şirket</option></select></div>
+    <div><label>Açıklama</label><input name="ad" placeholder="Örn. Makine kredisi"></div>
+    <div><label>Çekilen tutar (TL)</label><input name="tutar" inputmode="decimal" placeholder="250.000"></div>
+    <div><label>Aylık faiz (%)</label><input name="faiz" inputmode="decimal" placeholder="3,49"></div>
+    <div><label>Vade (ay)</label><input name="vade" type="number" min="1" max="360" required placeholder="24"></div>
+    <div><label>Aylık taksit (TL)</label><input name="taksit" inputmode="decimal" placeholder="Boşsa hesaplanır">
+      <div class="ipucu">Ödeme planındaki tutarı yazın, vergiler dahil en doğrusu o.</div></div>
+    <div><label>İlk taksit tarihi</label><input name="ilk_taksit" type="date" required></div>
+    <div><label>Ödenmiş taksit sayısı</label><input name="odenen_taksit" type="number" min="0" placeholder="Boşsa tarihe göre">
+      <div class="ipucu">Boş bırakılırsa tarihi geçen taksitler ödendi sayılır.</div></div>
+    <div><label>Durum</label><select name="kapali"><option value="0">Devam ediyor</option><option value="1">Kapandı</option></select></div>
+    <div><label>Not</label><input name="not"></div>
+  </div>
+  <div class="hata" id="krHata"></div>
+  <div class="dugmeler"><button class="btn tehlike" type="button" id="krSil" style="margin-right:auto">Sil</button>
+    <button class="btn ikincil" value="iptal" formnovalidate>Vazgeç</button><button class="btn" value="kaydet">Kaydet</button></div>
+</form></dialog>
+
 <dialog id="ekD"><form method="dialog" id="ekF">
   <h2 id="ekBaslik">Ekstre gir</h2>
   <div class="alanlar">
@@ -117,7 +141,7 @@ dialog form{padding:20px}
 
 <script>
 const BANKALAR={"Ziraat Bankası":"#e30a17","Türkiye İş Bankası":"#0a4ea2","Garanti BBVA":"#00a650","Yapı Kredi":"#004990","Akbank":"#e2001a","QNB":"#5a0a6e","Halkbank":"#005baa","VakıfBank":"#f5b400","DenizBank":"#0071bc","Enpara":"#6c2c91","TEB":"#00843d","ING":"#ff6200","Kuveyt Türk":"#00754a","Albaraka":"#a3195b","Şekerbank":"#0f7a3b","Fibabanka":"#00539b","Odeabank":"#6e2c8f","HSBC":"#db0011","Diğer":"#7a746b"};
-const SEKME=[["ozet","Özet"],["kartlar","Kartlar"],["ekstreler","Ekstreler"],["odemeler","Gelecek ödemeler",1],["plan","Yol planı",1],["yatirim","Yatırımlar",1]];
+const SEKME=[["ozet","Özet"],["kartlar","Kartlar"],["ekstreler","Ekstreler"],["krediler","Krediler"],["odemeler","Gelecek ödemeler",1],["plan","Yol planı",1],["yatirim","Yatırımlar",1]];
 let D=null, sekme=(()=>{try{return localStorage.getItem('fk_sekme')||'ozet'}catch(e){return 'ozet'}})();
 const $=s=>document.querySelector(s);
 const tl=n=>(n==null?'–':new Intl.NumberFormat('tr-TR',{minimumFractionDigits:0,maximumFractionDigits:2}).format(n)+' ₺');
@@ -125,6 +149,8 @@ const tarihY=s=>s?new Date(s+'T00:00').toLocaleDateString('tr-TR',{day:'numeric'
 const gunKalan=s=>Math.round((new Date(s+'T00:00')-new Date(D.bugun+'T00:00'))/864e5);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const kartBul=id=>D.kartlar.find(k=>k.id===id)||{};
+const krediBul=id=>D.krediler.find(k=>k.id===id)||{};
+const krediAd=c=>esc(c.banka)+' · '+esc(c.ad||c.tur||'Kredi');
 const kartAd=k=>esc(k.banka)+(k.kart_adi?' · '+esc(k.kart_adi):'')+(k.son4?' <span class="soluk">•'+esc(k.son4)+'</span>':'');
 const renk=k=>BANKALAR[k.banka]||BANKALAR['Diğer'];
 function kalanRozet(g){if(g<0)return `<span class="rozet kirmizi">${-g} gün geçti</span>`;if(g===0)return '<span class="rozet kirmizi">Bugün</span>';
@@ -135,13 +161,13 @@ const durumR=d=>`<span class="rozet ${DURUM[d][1]}">${DURUM[d][0]}</span>`;
 async function yukle(){const r=await fetch('/api/durum');if(r.status===401){location.href='/giris';return}D=await r.json();$('#surum').textContent='v'+D.surum;ciz()}
 function ciz(){
   $('#nav').innerHTML=SEKME.map(([k,a,y])=>`<button class="${k===sekme?'secili':''}" onclick="sec('${k}')">${a}${y?'<span class="yakinda">yakında</span>':''}</button>`).join('');
-  $('#icerik').innerHTML=({ozet:ozet,kartlar:kartlarS,ekstreler:ekstrelerS}[sekme]||yakinda)();
+  $('#icerik').innerHTML=({ozet:ozet,kartlar:kartlarS,ekstreler:ekstrelerS,krediler:kredilerS}[sekme]||yakinda)();
 }
 function sec(k){sekme=k;try{localStorage.setItem('fk_sekme',k)}catch(e){}ciz()}
 
 function ozet(){
   const o=D.ozet;
-  if(!D.kartlar.length)return `<div class="kutu bos"><h2>Henüz kart yok</h2><p>Başlamak için kredi kartlarınızı ekleyin: banka, limit, hesap kesim ve son ödeme günü.</p><button class="btn" onclick="kartAc()">+ İlk kartı ekle</button></div>`;
+  if(!D.kartlar.length&&!D.krediler.length)return `<div class="kutu bos"><h2>Henüz kart yok</h2><p>Başlamak için kredi kartlarınızı ekleyin: banka, limit, hesap kesim ve son ödeme günü.</p><button class="btn" onclick="kartAc()">+ İlk kartı ekle</button></div>`;
   const cls=o.doluluk>=80?'tehlike':o.doluluk>=60?'uyari':'';
   const yak=D.yaklasan.slice(0,8);
   const bankalar={};D.kartlar.filter(k=>k.aktif!==false).forEach(k=>{(bankalar[k.banka]=bankalar[k.banka]||{l:0,b:0,n:0});bankalar[k.banka].l+=k.limit||0;bankalar[k.banka].b+=k.guncel_borc||0;bankalar[k.banka].n++});
@@ -149,18 +175,23 @@ function ozet(){
     <div class="kutu tile"><div class="etk">Toplam kart limiti</div><div class="deger rakam">${tl(o.toplam_limit)}</div><div class="alt">${o.kart_sayisi} kart · ${o.banka_sayisi} banka</div></div>
     <div class="kutu tile"><div class="etk">Toplam kart borcu</div><div class="deger rakam">${tl(o.toplam_borc)}</div><div class="cubuk"><i class="${cls}" style="width:${Math.min(o.doluluk,100)}%"></i></div><div class="alt">Limitin %${o.doluluk}'i dolu</div></div>
     <div class="kutu tile"><div class="etk">Kullanılabilir limit</div><div class="deger rakam">${tl(o.kullanilabilir)}</div></div>
-    <div class="kutu tile"><div class="etk">30 gün içinde ödenecek</div><div class="deger rakam">${tl(o.otuz_gun_odeme)}</div><div class="alt">Kart ekstreleri</div></div>
+    <div class="kutu tile"><div class="etk">30 gün içinde ödenecek</div><div class="deger rakam">${tl(o.otuz_gun_odeme)}</div><div class="alt">${o.kredi_sayisi?'Kart ekstreleri + kredi taksitleri':'Kart ekstreleri'}</div></div>
   </div>
+  ${o.kredi_sayisi?`<div class="izgara ozet">
+    <div class="kutu tile"><div class="etk">Kalan kredi borcu</div><div class="deger rakam">${tl(o.kredi_kalan)}</div><div class="alt">${o.kredi_sayisi} açık kredi · kalan taksitlerin toplamı</div></div>
+    <div class="kutu tile"><div class="etk">Kalan anapara</div><div class="deger rakam">${tl(o.kredi_anapara)}</div><div class="alt">Erken kapatmada yaklaşık tutar</div></div>
+    <div class="kutu tile"><div class="etk">Aylık kredi taksitleri</div><div class="deger rakam">${tl(o.kredi_aylik)}</div></div>
+  </div>`:''}
   ${guvenlikSatir()}
   <div class="izgara iki">
-    <div class="kutu"><div class="baslik"><h3>Yaklaşan kart ödemeleri</h3></div>
-      ${yak.length?`<ul class="liste">${yak.map(y=>{const k=kartBul(y.kart_id),d=new Date(y.tarih+'T00:00');return `<li>
+    <div class="kutu"><div class="baslik"><h3>Yaklaşan ödemeler</h3></div>
+      ${yak.length?`<ul class="liste">${yak.map(y=>{const k=y.kredi_id?null:kartBul(y.kart_id),c=y.kredi_id?krediBul(y.kredi_id):null,d=new Date(y.tarih+'T00:00');return `<li>
         <div class="tarih"><b>${d.getDate()}</b><span>${d.toLocaleDateString('tr-TR',{month:'short'})}</span></div>
-        <div class="dolgu"><div class="ad">${kartAd(k)}</div><div class="soluk" style="font-size:13px">${y.kaynak==='tahmin'?'Ekstre girilmedi, güncel borç gösteriliyor':'Asgari '+tl(y.asgari)}</div></div>
+        <div class="dolgu"><div class="ad">${c?krediAd(c):kartAd(k)}</div><div class="soluk" style="font-size:13px">${c?`Kredi taksidi ${c.hesap.odenen+1}/${c.vade}`:y.kaynak==='tahmin'?'Ekstre girilmedi, güncel borç gösteriliyor':'Asgari '+tl(y.asgari)}</div></div>
         <div class="sagr"><div class="rakam" style="font-weight:600">${tl(y.tutar)}</div>${kalanRozet(gunKalan(y.tarih))}</div></li>`}).join('')}</ul>`:'<p class="soluk">Yaklaşan ödeme yok.</p>'}
     </div>
     <div class="kutu"><div class="baslik"><h3>Bankalara göre</h3></div>
-      <ul class="liste">${Object.entries(bankalar).sort((a,b)=>b[1].b-a[1].b).map(([b,v])=>`<li><span class="nokta" style="background:${BANKALAR[b]||BANKALAR['Diğer']}"></span>
+      ${Object.keys(bankalar).length?'':'<p class="soluk">Kart yok.</p>'}<ul class="liste">${Object.entries(bankalar).sort((a,b)=>b[1].b-a[1].b).map(([b,v])=>`<li><span class="nokta" style="background:${BANKALAR[b]||BANKALAR['Diğer']}"></span>
         <div class="dolgu"><div class="ad">${esc(b)}</div><div class="cubuk" style="margin-top:6px"><i style="width:${v.l?Math.min(v.b/v.l*100,100):0}%;background:${BANKALAR[b]||BANKALAR['Diğer']}"></i></div></div>
         <div class="sagr rakam"><div style="font-weight:600">${tl(v.b)}</div><div class="soluk" style="font-size:12px">/ ${tl(v.l)} · ${v.n} kart</div></div></li>`).join('')}</ul>
     </div>
@@ -199,6 +230,30 @@ function ekstrelerS(){
     :`<div class="bos">Henüz ekstre girilmedi. Banka dökümü yükleme bir sonraki adımda gelecek; şimdilik ekstreyi elle girebilirsiniz.</div>`}</div>`;
 }
 
+function kredilerS(){
+  const kr=D.krediler,o=D.ozet;
+  if(!kr.length)return `<div class="baslik"><h2>Krediler</h2></div><div class="kutu bos"><h2>Henüz kredi yok</h2><p>Banka, çekilen tutar, vade, aylık taksit ve ilk taksit tarihini girin; kalan borç ve taksitler kendiliğinden hesaplanır.</p><button class="btn" onclick="krediAc()">+ İlk krediyi ekle</button></div>`;
+  const sirali=[...kr].sort((a,b)=>(!!a.hesap.kalan_taksit===!!b.hesap.kalan_taksit)?(a.hesap.sonraki||'').localeCompare(b.hesap.sonraki||''):(a.hesap.kalan_taksit?-1:1));
+  return `<div class="baslik"><h2>Krediler</h2><button class="btn" onclick="krediAc()">+ Kredi ekle</button></div>
+  <div class="izgara ozet">
+    <div class="kutu tile"><div class="etk">Kalan kredi borcu</div><div class="deger rakam">${tl(o.kredi_kalan)}</div><div class="alt">${o.kredi_sayisi} açık kredi</div></div>
+    <div class="kutu tile"><div class="etk">Kalan anapara</div><div class="deger rakam">${tl(o.kredi_anapara)}</div><div class="alt">Erken kapatmada yaklaşık tutar</div></div>
+    <div class="kutu tile"><div class="etk">Aylık toplam taksit</div><div class="deger rakam">${tl(o.kredi_aylik)}</div></div>
+  </div>
+  <div class="izgara kartlar">${sirali.map(krediKutu).join('')}</div>`}
+function krediKutu(c){const h=c.hesap,yuz=Math.round(h.odenen/c.vade*100),bitti=!h.kalan_taksit;
+  return `<div class="kutu kk ${bitti?'pasif':''}"><span class="serit" style="background:${BANKALAR[c.banka]||BANKALAR['Diğer']}"></span>
+    <div class="ust2"><div><div style="font-weight:650">${esc(c.ad||c.tur)}</div><div class="soluk" style="font-size:13px">${esc(c.banka)} · ${esc(c.tur)} · ${esc(c.sahip)}</div></div>
+      ${bitti?'<span class="rozet yesil">Bitti</span>':kalanRozet(gunKalan(h.sonraki))}</div>
+    <div class="rak rakam"><span>Taksit <b>${tl(h.taksit)}</b></span><span class="soluk">${h.odenen}/${c.vade} ödendi</span></div>
+    <div class="cubuk"><i style="width:${yuz}%"></i></div>
+    <div class="gunler"><div><div class="soluk">Sıradaki taksit</div><b>${bitti?'–':tarihY(h.sonraki)}</b></div>
+      <div><div class="soluk">Kalan borç</div><b class="rakam">${tl(h.kalan_odeme)}</b><div class="soluk">${h.kalan_taksit} taksit</div></div>
+      <div><div class="soluk">Çekilen tutar</div><b class="rakam">${c.tutar?tl(c.tutar):'–'}</b>${c.faiz?`<div class="soluk">Aylık %${String(c.faiz).replace('.',',')}</div>`:''}</div>
+      <div><div class="soluk">Bitiş</div><b>${tarihY(h.bitis)}</b>${h.toplam_faiz!=null?`<div class="soluk">Toplam faiz ${tl(h.toplam_faiz)}</div>`:''}</div></div>
+    ${c.not?`<div class="soluk" style="font-size:13px;margin-top:10px">${esc(c.not)}</div>`:''}
+    <div class="islem"><button class="btn ikincil" onclick="krediAc('${c.id}')">Düzenle</button></div></div>`}
+
 function yakinda(){const a=SEKME.find(s=>s[0]===sekme)[1];
   const m={odemeler:'Kira, vergi, SGK, tedarikçi, kredi taksitleri gibi kart dışı ödemeler burada tarih sırasıyla görünecek.',plan:'Sevgililer Günü 2027\'ye kadar aylık hedefler ve gerçekleşen rakamlar.',yatirim:'Makine, stok, reklam gibi yatırımların tutarı ve geri dönüşü.'}[sekme];
   return `<div class="kutu yakinda-kutu"><h2>${a}</h2><p class="soluk">${m}</p><p class="soluk">Kartlar bölümü oturduktan sonra sırayla eklenecek.</p></div>`}
@@ -215,6 +270,19 @@ kartF.addEventListener('submit',async e=>{if(e.submitter&&e.submitter.value!=='k
   const r=await fetch('/api/kart',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(g)});
   if(!r.ok){$('#kartHata').textContent=(await r.json()).detail||'Kaydedilemedi';return}$('#kartD').close();yukle()});
 $('#kartSil').onclick=async()=>{if(!confirm('Kart ve bu karta ait ekstreler silinsin mi?'))return;await fetch('/api/kart/'+kartF.dataset.id,{method:'DELETE'});$('#kartD').close();yukle()};
+
+// ---- kredi formu
+const krF=$('#krF');
+krF.banka.innerHTML=Object.keys(BANKALAR).map(b=>`<option>${b}</option>`).join('');
+function krediAc(id){const c=id?krediBul(id):{};krF.reset();krF.dataset.id=id||'';$('#krHata').textContent='';
+  $('#krBaslik').textContent=id?'Krediyi düzenle':'Kredi ekle';$('#krSil').style.display=id?'':'none';
+  ['banka','tur','sahip','ad','tutar','faiz','vade','taksit','ilk_taksit','odenen_taksit','not'].forEach(a=>{if(c[a]!=null&&c[a]!=='')krF[a].value=c[a]});
+  krF.kapali.value=c.kapali?'1':'0';$('#krD').showModal()}
+krF.addEventListener('submit',async e=>{if(e.submitter&&e.submitter.value!=='kaydet')return;e.preventDefault();
+  const g=Object.fromEntries(new FormData(krF));g.kapali=g.kapali==='1';if(krF.dataset.id)g.id=krF.dataset.id;
+  const r=await fetch('/api/kredi',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(g)});
+  if(!r.ok){$('#krHata').textContent=(await r.json()).detail||'Kaydedilemedi';return}$('#krD').close();yukle()});
+$('#krSil').onclick=async()=>{if(!confirm('Kredi silinsin mi?'))return;await fetch('/api/kredi/'+krF.dataset.id,{method:'DELETE'});$('#krD').close();yukle()};
 
 // ---- ekstre formu
 const ekF=$('#ekF');
