@@ -1,0 +1,21 @@
+:root{--zemin:#f4f2ee;--kart:#fff;--yazi:#1d1b18;--soluk:#6f6a62;--cizgi:#e4dfd6;--vurgu:#0f5c4d;--vurgu2:#e7f1ee;--kirmizi:#b3261e;--kirmizi2:#fbe9e7;--sari:#8a5a00;--sari2:#fff3d6;--yesil:#1e7a3c;--yesil2:#e5f4ea;--golge:0 1px 2px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.04)}
+@media (prefers-color-scheme:dark){:root{--zemin:#141312;--kart:#1e1c1a;--yazi:#efebe4;--soluk:#a39d93;--cizgi:#34302b;--vurgu:#4fb39b;--vurgu2:#17302a;--kirmizi:#f08a80;--kirmizi2:#3a1d1a;--sari:#f0c060;--sari2:#382c12;--yesil:#6fcf8f;--yesil2:#16301f;--golge:none}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--zemin);color:var(--yazi);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;font-weight:650;letter-spacing:-.01em}
+button,input,select,textarea{font:inherit;color:inherit}
+input,select,textarea{width:100%;padding:9px 11px;border:1px solid var(--cizgi);border-radius:9px;background:var(--kart)}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--vurgu);outline-offset:-1px}
+label{display:block;font-size:13px;color:var(--soluk);margin-bottom:4px}
+.btn{border:0;border-radius:9px;padding:9px 15px;background:var(--vurgu);color:#fff;font-weight:600;cursor:pointer}
+.btn.ikincil{background:transparent;color:var(--yazi);border:1px solid var(--cizgi)}
+.btn.tehlike{background:transparent;color:var(--kirmizi);border:1px solid var(--cizgi)}
+.btn:disabled{opacity:.5;cursor:default}
+.kutu{background:var(--kart);border:1px solid var(--cizgi);border-radius:14px;padding:18px;box-shadow:var(--golge)}
+.soluk{color:var(--soluk)}
+.rakam{font-variant-numeric:tabular-nums}
+.hata{color:var(--kirmizi);font-size:14px;min-height:20px;margin-top:8px}
+.ortala{min-height:100vh;display:grid;place-items:center;padding:16px}
+.giris{width:100%;max-width:360px;text-align:center}
+.giris .logo{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--vurgu);font-weight:700;margin-bottom:6px}
+.kod{font-size:28px;letter-spacing:.4em;text-align:center;padding:12px;font-variant-numeric:tabular-nums}

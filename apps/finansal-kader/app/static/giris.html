@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Finansal Kader · Giriş</title><link rel="stylesheet" href="/statik/stil.css"></head>
+<body><div class="ortala"><form class="kutu giris" id="f">
+  <div class="logo">Finansal Kader</div>
+  <h2 style="margin-bottom:6px">Giriş</h2>
+  <p class="soluk" style="margin:0 0 16px">Google Authenticator'daki 6 haneli kodu yazın.</p>
+  <input class="kod" id="kod" inputmode="numeric" autocomplete="one-time-code" maxlength="6" autofocus placeholder="••••••">
+  <div class="hata" id="hata"></div>
+  <button class="btn" style="width:100%;margin-top:6px">Giriş yap</button>
+</form></div>
+<script>
+const kod=document.getElementById('kod'),hata=document.getElementById('hata');
+let mesgul=false;
+async function gonder(e){e&&e.preventDefault();if(mesgul||kod.value.length!==6)return;mesgul=true;hata.textContent='';
+  const r=await fetch('/api/giris',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kod:kod.value})});
+  mesgul=false;if(r.ok)location.href='/';else{hata.textContent=(await r.json()).hata||'Hata';kod.value='';kod.focus()}}
+document.getElementById('f').onsubmit=gonder;
+kod.oninput=()=>{kod.value=kod.value.replace(/\D/g,'');if(kod.value.length===6)gonder()};
+</script></body></html>

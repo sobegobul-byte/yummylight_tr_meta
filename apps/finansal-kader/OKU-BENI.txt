@@ -1,0 +1,11 @@
+FINANSAL KADER v0.1
+===================
+1) baslat.bat dosyasina cift tiklayin. Ilk acilista Python paketleri kurulur (1-2 dk).
+2) Tarayici http://localhost:8102 adresinde acilir.
+3) Ilk seferde QR kod cikar: telefonda Google Authenticator > + > QR kodu tarayin,
+   cikan 6 haneli kodu yazin. Bundan sonra panele sadece bu kodla girilir.
+4) Kartlar sekmesinden kartlarinizi ekleyin.
+
+Veriler: veri\finans.json (her gun veri\yedek\ altina otomatik yedek alinir)
+Authenticator anahtari: veri\guvenlik.json  -> bu dosyayi kimseyle paylasmayin.
+Telefonu kaybederseniz: veri\guvenlik.json dosyasini silip baslat.bat ile yeniden kurulum yapin.

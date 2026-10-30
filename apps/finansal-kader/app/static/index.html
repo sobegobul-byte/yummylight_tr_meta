@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Finansal Kader</title><link rel="stylesheet" href="/statik/stil.css">
+<style>
+header{position:sticky;top:0;z-index:5;background:var(--zemin);border-bottom:1px solid var(--cizgi)}
+.ust{max-width:1180px;margin:0 auto;padding:14px 16px 0;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ust .logo{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--vurgu);font-weight:700}
+.ust .sag{margin-left:auto;display:flex;gap:8px;align-items:center}
+nav{max-width:1180px;margin:0 auto;padding:0 16px;display:flex;gap:2px;overflow-x:auto}
+nav button{background:none;border:0;padding:12px 12px 10px;border-bottom:2px solid transparent;color:var(--soluk);cursor:pointer;white-space:nowrap;font-weight:550}
+nav button.secili{color:var(--yazi);border-color:var(--vurgu)}
+nav button .yakinda{font-size:11px;color:var(--soluk);margin-left:4px}
+main{max-width:1180px;margin:0 auto;padding:20px 16px 60px}
+.baslik{display:flex;align-items:center;gap:10px;margin:0 0 12px;flex-wrap:wrap}
+.baslik .btn{margin-left:auto}
+.izgara{display:grid;gap:12px}
+.izgara>*{min-width:0}
+html,body{overflow-x:hidden}
+.ozet{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:22px}
+.tile .etk{font-size:13px;color:var(--soluk)}
+.tile .deger{font-size:24px;font-weight:650;margin-top:4px}
+.tile .alt{font-size:13px;color:var(--soluk);margin-top:2px}
+.cubuk{height:6px;border-radius:4px;background:var(--cizgi);overflow:hidden;margin-top:10px}
+.cubuk i{display:block;height:100%;background:var(--vurgu);border-radius:4px}
+.cubuk i.uyari{background:var(--sari)}.cubuk i.tehlike{background:var(--kirmizi)}
+.iki{grid-template-columns:1.25fr 1fr;align-items:start}
+@media (max-width:820px){.iki{grid-template-columns:1fr}}
+.liste{list-style:none;margin:0;padding:0}
+.liste li{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--cizgi)}
+.liste li:first-child{border-top:0}
+.tarih{width:52px;text-align:center;flex:none;border-radius:9px;background:var(--vurgu2);padding:5px 0;line-height:1.1}
+.tarih b{display:block;font-size:18px}.tarih span{font-size:11px;text-transform:uppercase;color:var(--soluk)}
+.dolgu{flex:1;min-width:0}.dolgu .ad{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sagr{text-align:right;flex:none}
+.rozet{display:inline-block;font-size:12px;padding:2px 8px;border-radius:20px;font-weight:600;background:var(--vurgu2);color:var(--vurgu)}
+.rozet.sari{background:var(--sari2);color:var(--sari)}.rozet.kirmizi{background:var(--kirmizi2);color:var(--kirmizi)}
+.rozet.yesil{background:var(--yesil2);color:var(--yesil)}.rozet.gri{background:var(--cizgi);color:var(--soluk)}
+.banka{margin-bottom:22px}
+.banka h3{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:16px}
+.nokta{width:10px;height:10px;border-radius:50%;flex:none}
+.kartlar{grid-template-columns:repeat(auto-fill,minmax(290px,1fr))}
+.kk{position:relative;overflow:hidden}
+.kk .serit{position:absolute;inset:0 auto 0 0;width:5px}
+.kk .ust2{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.kk .no{font-variant-numeric:tabular-nums;letter-spacing:.08em;color:var(--soluk);font-size:14px}
+.kk .rak{display:flex;justify-content:space-between;margin-top:12px;font-size:14px}
+.kk .gunler{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;font-size:13px}
+.kk .gunler>div{background:var(--zemin);border-radius:8px;padding:7px 9px}
+.kk .islem{display:flex;gap:6px;margin-top:12px}
+.kk .islem .btn{padding:6px 10px;font-size:13px}
+.kk.pasif{opacity:.55}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-weight:600;color:var(--soluk);font-size:12px;text-transform:uppercase;letter-spacing:.04em;padding:8px 10px;border-bottom:1px solid var(--cizgi)}
+td{padding:10px;border-bottom:1px solid var(--cizgi)}
+td.r,th.r{text-align:right}
+.tablo{overflow-x:auto}
+.bos{text-align:center;padding:40px 16px;color:var(--soluk)}
+.bos .btn{margin-top:12px}
+dialog{border:0;border-radius:16px;padding:0;background:var(--kart);color:var(--yazi);width:min(560px,calc(100vw - 32px));box-shadow:0 20px 60px rgba(0,0,0,.25)}
+dialog::backdrop{background:rgba(0,0,0,.4)}
+dialog form{padding:20px}
+.alanlar{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.alanlar .tam{grid-column:1/-1}
+@media (max-width:520px){.alanlar{grid-template-columns:1fr}}
+.dugmeler{display:flex;gap:8px;justify-content:flex-end}
+.ipucu{font-size:12px;color:var(--soluk);margin-top:3px}
+.yakinda-kutu{max-width:560px}
+.surum{position:fixed;left:10px;bottom:8px;font-size:11px;color:var(--soluk)}
+</style></head>
+<body>
+<header>
+  <div class="ust"><span class="logo">Finansal Kader</span>
+    <div class="sag"><a class="btn ikincil" href="/api/yedek" style="text-decoration:none;font-size:13px;padding:6px 10px">Yedek indir</a>
+      <button class="btn ikincil" style="font-size:13px;padding:6px 10px" onclick="cikis()">Çıkış</button></div></div>
+  <nav id="nav"></nav>
+</header>
+<main id="icerik"></main>
+<div class="surum" id="surum"></div>
+
+<dialog id="kartD"><form method="dialog" id="kartF">
+  <h2 id="kartBaslik">Kart ekle</h2>
+  <div class="alanlar">
+    <div><label>Banka</label><select name="banka" required></select></div>
+    <div><label>Kart adı</label><input name="kart_adi" placeholder="Bonus, World, Axess…"></div>
+    <div><label>Kart türü</label><select name="tur">
+      <option>Bireysel kredi kartı</option><option>Ticari kredi kartı</option><option>Ek kart</option><option>Sanal kart</option></select></div>
+    <div><label>Kimin adına</label><select name="sahip"><option>Şahsi</option><option>Şirket</option></select></div>
+    <div><label>Son 4 hane</label><input name="son4" inputmode="numeric" maxlength="4" placeholder="1234">
+      <div class="ipucu">Kart numarasının tamamı girilmez.</div></div>
+    <div><label>Limit (TL)</label><input name="limit" inputmode="decimal" placeholder="50.000"></div>
+    <div><label>Hesap kesim günü</label><input name="kesim_gunu" type="number" min="1" max="31" placeholder="Ayın kaçı"></div>
+    <div><label>Son ödeme günü</label><input name="son_odeme_gunu" type="number" min="1" max="31" placeholder="Boşsa kesim + 10 gün"></div>
+    <div><label>Güncel borç (TL)</label><input name="guncel_borc" inputmode="decimal" placeholder="0"></div>
+    <div><label>Durum</label><select name="aktif"><option value="1">Kullanımda</option><option value="0">Kapalı / kullanılmıyor</option></select></div>
+    <div class="tam"><label>Not</label><input name="not" placeholder="Örn. Meta reklamları bu karttan"></div>
+  </div>
+  <div class="hata" id="kartHata"></div>
+  <div class="dugmeler"><button class="btn tehlike" type="button" id="kartSil" style="margin-right:auto">Sil</button>
+    <button class="btn ikincil" value="iptal" formnovalidate>Vazgeç</button><button class="btn" id="kartKaydet" value="kaydet">Kaydet</button></div>
+</form></dialog>
+
+<dialog id="ekD"><form method="dialog" id="ekF">
+  <h2 id="ekBaslik">Ekstre gir</h2>
+  <div class="alanlar">
+    <div class="tam"><label>Kart</label><select name="kart_id" required></select></div>
+    <div><label>Hesap kesim tarihi</label><input name="kesim_tarihi" type="date" required></div>
+    <div><label>Son ödeme tarihi</label><input name="son_odeme_tarihi" type="date" required></div>
+    <div><label>Dönem borcu (TL)</label><input name="toplam" inputmode="decimal" required placeholder="12.450,90"></div>
+    <div><label>Asgari ödeme (TL)</label><input name="asgari" inputmode="decimal" placeholder="4.980,36"></div>
+    <div><label>Ödenen (TL)</label><input name="odenen" inputmode="decimal" placeholder="0"></div>
+    <div><label>Not</label><input name="not"></div>
+  </div>
+  <div class="hata" id="ekHata"></div>
+  <div class="dugmeler"><button class="btn tehlike" type="button" id="ekSil" style="margin-right:auto">Sil</button>
+    <button class="btn ikincil" value="iptal" formnovalidate>Vazgeç</button><button class="btn" value="kaydet">Kaydet</button></div>
+</form></dialog>
+
+<script>
+const BANKALAR={"Ziraat Bankası":"#e30a17","Türkiye İş Bankası":"#0a4ea2","Garanti BBVA":"#00a650","Yapı Kredi":"#004990","Akbank":"#e2001a","QNB":"#5a0a6e","Halkbank":"#005baa","VakıfBank":"#f5b400","DenizBank":"#0071bc","Enpara":"#6c2c91","TEB":"#00843d","ING":"#ff6200","Kuveyt Türk":"#00754a","Albaraka":"#a3195b","Şekerbank":"#0f7a3b","Fibabanka":"#00539b","Odeabank":"#6e2c8f","HSBC":"#db0011","Diğer":"#7a746b"};
+const SEKME=[["ozet","Özet"],["kartlar","Kartlar"],["ekstreler","Ekstreler"],["odemeler","Gelecek ödemeler",1],["plan","Yol planı",1],["yatirim","Yatırımlar",1]];
+let D=null, sekme=(()=>{try{return localStorage.getItem('fk_sekme')||'ozet'}catch(e){return 'ozet'}})();
+const $=s=>document.querySelector(s);
+const tl=n=>(n==null?'–':new Intl.NumberFormat('tr-TR',{minimumFractionDigits:0,maximumFractionDigits:2}).format(n)+' ₺');
+const tarihY=s=>s?new Date(s+'T00:00').toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'}):'–';
+const gunKalan=s=>Math.round((new Date(s+'T00:00')-new Date(D.bugun+'T00:00'))/864e5);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const kartBul=id=>D.kartlar.find(k=>k.id===id)||{};
+const kartAd=k=>esc(k.banka)+(k.kart_adi?' · '+esc(k.kart_adi):'')+(k.son4?' <span class="soluk">•'+esc(k.son4)+'</span>':'');
+const renk=k=>BANKALAR[k.banka]||BANKALAR['Diğer'];
+function kalanRozet(g){if(g<0)return `<span class="rozet kirmizi">${-g} gün geçti</span>`;if(g===0)return '<span class="rozet kirmizi">Bugün</span>';
+  if(g<=3)return `<span class="rozet sari">${g} gün</span>`;return `<span class="rozet gri">${g} gün</span>`}
+const DURUM={odendi:['Ödendi','yesil'],bekliyor:['Bekliyor','sari'],kismi:['Kısmen ödendi','sari'],gecikti:['Gecikti','kirmizi'],asgari_odendi:['Asgari ödendi','gri'],tahmini:['Tahmini','gri']};
+const durumR=d=>`<span class="rozet ${DURUM[d][1]}">${DURUM[d][0]}</span>`;
+
+async function yukle(){const r=await fetch('/api/durum');if(r.status===401){location.href='/giris';return}D=await r.json();$('#surum').textContent='v'+D.surum;ciz()}
+function ciz(){
+  $('#nav').innerHTML=SEKME.map(([k,a,y])=>`<button class="${k===sekme?'secili':''}" onclick="sec('${k}')">${a}${y?'<span class="yakinda">yakında</span>':''}</button>`).join('');
+  $('#icerik').innerHTML=({ozet:ozet,kartlar:kartlarS,ekstreler:ekstrelerS}[sekme]||yakinda)();
+}
+function sec(k){sekme=k;try{localStorage.setItem('fk_sekme',k)}catch(e){}ciz()}
+
+function ozet(){
+  const o=D.ozet;
+  if(!D.kartlar.length)return `<div class="kutu bos"><h2>Henüz kart yok</h2><p>Başlamak için kredi kartlarınızı ekleyin: banka, limit, hesap kesim ve son ödeme günü.</p><button class="btn" onclick="kartAc()">+ İlk kartı ekle</button></div>`;
+  const cls=o.doluluk>=80?'tehlike':o.doluluk>=60?'uyari':'';
+  const yak=D.yaklasan.slice(0,8);
+  const bankalar={};D.kartlar.filter(k=>k.aktif!==false).forEach(k=>{(bankalar[k.banka]=bankalar[k.banka]||{l:0,b:0,n:0});bankalar[k.banka].l+=k.limit||0;bankalar[k.banka].b+=k.guncel_borc||0;bankalar[k.banka].n++});
+  return `<div class="izgara ozet">
+    <div class="kutu tile"><div class="etk">Toplam kart limiti</div><div class="deger rakam">${tl(o.toplam_limit)}</div><div class="alt">${o.kart_sayisi} kart · ${o.banka_sayisi} banka</div></div>
+    <div class="kutu tile"><div class="etk">Toplam kart borcu</div><div class="deger rakam">${tl(o.toplam_borc)}</div><div class="cubuk"><i class="${cls}" style="width:${Math.min(o.doluluk,100)}%"></i></div><div class="alt">Limitin %${o.doluluk}'i dolu</div></div>
+    <div class="kutu tile"><div class="etk">Kullanılabilir limit</div><div class="deger rakam">${tl(o.kullanilabilir)}</div></div>
+    <div class="kutu tile"><div class="etk">30 gün içinde ödenecek</div><div class="deger rakam">${tl(o.otuz_gun_odeme)}</div><div class="alt">Kart ekstreleri</div></div>
+  </div>
+  ${guvenlikSatir()}
+  <div class="izgara iki">
+    <div class="kutu"><div class="baslik"><h3>Yaklaşan kart ödemeleri</h3></div>
+      ${yak.length?`<ul class="liste">${yak.map(y=>{const k=kartBul(y.kart_id),d=new Date(y.tarih+'T00:00');return `<li>
+        <div class="tarih"><b>${d.getDate()}</b><span>${d.toLocaleDateString('tr-TR',{month:'short'})}</span></div>
+        <div class="dolgu"><div class="ad">${kartAd(k)}</div><div class="soluk" style="font-size:13px">${y.kaynak==='tahmin'?'Ekstre girilmedi, güncel borç gösteriliyor':'Asgari '+tl(y.asgari)}</div></div>
+        <div class="sagr"><div class="rakam" style="font-weight:600">${tl(y.tutar)}</div>${kalanRozet(gunKalan(y.tarih))}</div></li>`}).join('')}</ul>`:'<p class="soluk">Yaklaşan ödeme yok.</p>'}
+    </div>
+    <div class="kutu"><div class="baslik"><h3>Bankalara göre</h3></div>
+      <ul class="liste">${Object.entries(bankalar).sort((a,b)=>b[1].b-a[1].b).map(([b,v])=>`<li><span class="nokta" style="background:${BANKALAR[b]||BANKALAR['Diğer']}"></span>
+        <div class="dolgu"><div class="ad">${esc(b)}</div><div class="cubuk" style="margin-top:6px"><i style="width:${v.l?Math.min(v.b/v.l*100,100):0}%;background:${BANKALAR[b]||BANKALAR['Diğer']}"></i></div></div>
+        <div class="sagr rakam"><div style="font-weight:600">${tl(v.b)}</div><div class="soluk" style="font-size:12px">/ ${tl(v.l)} · ${v.n} kart</div></div></li>`).join('')}</ul>
+    </div>
+  </div>`;
+}
+
+function guvenlikSatir(){const g=D.guvenlik||{};if(!g.onceki_giris&&!g.hatali_24s)return '';
+  const o=g.onceki_giris;return `<p class="soluk" style="font-size:13px;margin:-10px 0 18px">${o?'Önceki giriş: '+new Date(o.zaman).toLocaleString('tr-TR',{dateStyle:'medium',timeStyle:'short'})+' · '+esc(o.ip):''}${g.hatali_24s?` · <span class="rozet ${g.hatali_24s>=5?'kirmizi':'sari'}">Son 24 saatte ${g.hatali_24s} yanlış kod denemesi</span>`:''}</p>`}
+function kartlarS(){
+  if(!D.kartlar.length)return ozet();
+  const gr={};D.kartlar.forEach(k=>(gr[k.banka]=gr[k.banka]||[]).push(k));
+  return `<div class="baslik"><h2>Kartlar</h2><button class="btn" onclick="kartAc()">+ Kart ekle</button></div>`+
+  Object.keys(gr).sort((a,b)=>a.localeCompare(b,'tr')).map(b=>`<section class="banka"><h3><span class="nokta" style="background:${BANKALAR[b]||BANKALAR['Diğer']}"></span>${esc(b)} <span class="soluk" style="font-weight:400;font-size:14px">${gr[b].length} kart</span></h3>
+    <div class="izgara kartlar">${gr[b].map(kartKutu).join('')}</div></section>`).join('');
+}
+function kartKutu(k){
+  const yuz=k.limit?Math.min((k.guncel_borc||0)/k.limit*100,100):0,t=k.takvim||{};
+  return `<div class="kutu kk ${k.aktif===false?'pasif':''}"><span class="serit" style="background:${renk(k)}"></span>
+    <div class="ust2"><div><div style="font-weight:650">${esc(k.kart_adi||k.banka)}</div><div class="soluk" style="font-size:13px">${esc(k.tur||'')} · ${esc(k.sahip||'')}${k.aktif===false?' · kapalı':''}</div></div>
+      <div class="no">${k.son4?'•••• '+esc(k.son4):''}</div></div>
+    <div class="rak rakam"><span>Borç <b>${tl(k.guncel_borc||0)}</b></span><span class="soluk">Limit ${tl(k.limit||0)}</span></div>
+    <div class="cubuk"><i class="${yuz>=80?'tehlike':yuz>=60?'uyari':''}" style="width:${yuz}%"></i></div>
+    <div class="gunler"><div><div class="soluk">Hesap kesim</div>${k.kesim_gunu?`<b>Her ayın ${k.kesim_gunu}'i</b><div class="soluk">Sıradaki: ${tarihY(t.sonraki_kesim)}</div>`:'<b>Girilmedi</b>'}</div>
+      <div><div class="soluk">Son ödeme</div>${k.kesim_gunu?`<b>${k.son_odeme_gunu?`Her ayın ${k.son_odeme_gunu}'i`:'Kesim + 10 gün'}</b><div class="soluk">Sıradaki: ${tarihY(t.sonraki_odeme)}</div>`:'<b>–</b>'}</div></div>
+    ${k.not?`<div class="soluk" style="font-size:13px;margin-top:10px">${esc(k.not)}</div>`:''}
+    <div class="islem"><button class="btn ikincil" onclick="kartAc('${k.id}')">Düzenle</button><button class="btn ikincil" onclick="ekAc(null,'${k.id}')">Ekstre gir</button></div></div>`;
+}
+
+function ekstrelerS(){
+  const ek=D.ekstreler;
+  return `<div class="baslik"><h2>Ekstreler</h2><button class="btn" onclick="ekAc()" ${D.kartlar.length?'':'disabled'}>+ Ekstre gir</button></div>
+  <div class="kutu" style="padding:6px 8px">${ek.length?`<div class="tablo"><table><thead><tr><th>Kart</th><th>Kesim</th><th>Son ödeme</th><th class="r">Dönem borcu</th><th class="r">Asgari</th><th class="r">Ödenen</th><th>Durum</th><th></th></tr></thead><tbody>
+    ${ek.map(e=>`<tr><td>${kartAd(kartBul(e.kart_id))}</td><td>${tarihY(e.kesim_tarihi)}</td><td>${tarihY(e.son_odeme_tarihi)}</td>
+      <td class="r rakam">${tl(e.toplam)}</td><td class="r rakam">${tl(e.asgari)}</td><td class="r rakam">${tl(e.odenen)}</td><td>${durumR(e.durum)}</td>
+      <td class="r"><button class="btn ikincil" style="padding:4px 10px;font-size:13px" onclick="ekAc('${e.id}')">Düzenle</button></td></tr>`).join('')}</tbody></table></div>`
+    :`<div class="bos">Henüz ekstre girilmedi. Banka dökümü yükleme bir sonraki adımda gelecek; şimdilik ekstreyi elle girebilirsiniz.</div>`}</div>`;
+}
+
+function yakinda(){const a=SEKME.find(s=>s[0]===sekme)[1];
+  const m={odemeler:'Kira, vergi, SGK, tedarikçi, kredi taksitleri gibi kart dışı ödemeler burada tarih sırasıyla görünecek.',plan:'Sevgililer Günü 2027\'ye kadar aylık hedefler ve gerçekleşen rakamlar.',yatirim:'Makine, stok, reklam gibi yatırımların tutarı ve geri dönüşü.'}[sekme];
+  return `<div class="kutu yakinda-kutu"><h2>${a}</h2><p class="soluk">${m}</p><p class="soluk">Kartlar bölümü oturduktan sonra sırayla eklenecek.</p></div>`}
+
+// ---- kart formu
+const kartF=$('#kartF');
+kartF.banka.innerHTML=Object.keys(BANKALAR).map(b=>`<option>${b}</option>`).join('');
+function kartAc(id){const k=id?kartBul(id):{};kartF.reset();kartF.dataset.id=id||'';$('#kartHata').textContent='';
+  $('#kartBaslik').textContent=id?'Kartı düzenle':'Kart ekle';$('#kartSil').style.display=id?'':'none';
+  ['banka','kart_adi','tur','sahip','son4','limit','kesim_gunu','son_odeme_gunu','guncel_borc','not'].forEach(a=>{if(k[a]!=null&&k[a]!=='')kartF[a].value=k[a]});
+  kartF.aktif.value=k.aktif===false?'0':'1';$('#kartD').showModal()}
+kartF.addEventListener('submit',async e=>{if(e.submitter&&e.submitter.value!=='kaydet')return;e.preventDefault();
+  const g=Object.fromEntries(new FormData(kartF));g.aktif=g.aktif==='1';if(kartF.dataset.id)g.id=kartF.dataset.id;
+  const r=await fetch('/api/kart',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(g)});
+  if(!r.ok){$('#kartHata').textContent=(await r.json()).detail||'Kaydedilemedi';return}$('#kartD').close();yukle()});
+$('#kartSil').onclick=async()=>{if(!confirm('Kart ve bu karta ait ekstreler silinsin mi?'))return;await fetch('/api/kart/'+kartF.dataset.id,{method:'DELETE'});$('#kartD').close();yukle()};
+
+// ---- ekstre formu
+const ekF=$('#ekF');
+function ekAc(id,kartId){const e=id?D.ekstreler.find(x=>x.id===id):{};ekF.reset();ekF.dataset.id=id||'';$('#ekHata').textContent='';
+  ekF.kart_id.innerHTML=D.kartlar.map(k=>`<option value="${k.id}">${esc(k.banka)}${k.kart_adi?' · '+esc(k.kart_adi):''}${k.son4?' •'+esc(k.son4):''}</option>`).join('');
+  $('#ekBaslik').textContent=id?'Ekstreyi düzenle':'Ekstre gir';$('#ekSil').style.display=id?'':'none';
+  const kid=e.kart_id||kartId||D.kartlar[0].id;ekF.kart_id.value=kid;
+  if(id){['kesim_tarihi','son_odeme_tarihi','toplam','asgari','odenen','not'].forEach(a=>{if(e[a]!=null)ekF[a].value=e[a]})}else tarihOner();
+  $('#ekD').showModal()}
+function tarihOner(){const k=kartBul(ekF.kart_id.value);if(!k.kesim_gunu)return;
+  // en son gecmis kesim tarihi ve ona ait son odeme
+  const b=new Date(D.bugun+'T00:00');let y=b.getFullYear(),m=b.getMonth();const gun=(y,m,g)=>new Date(y,m,Math.min(g,new Date(y,m+1,0).getDate()));
+  let kes=gun(y,m,k.kesim_gunu);if(kes>b)kes=gun(y,m-1,k.kesim_gunu);
+  let od;if(k.son_odeme_gunu){od=gun(kes.getFullYear(),kes.getMonth()+(k.son_odeme_gunu>kes.getDate()?0:1),k.son_odeme_gunu)}else{od=new Date(kes);od.setDate(od.getDate()+10)}
+  const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  ekF.kesim_tarihi.value=iso(kes);ekF.son_odeme_tarihi.value=iso(od)}
+ekF.kart_id.onchange=()=>{if(!ekF.dataset.id)tarihOner()};
+ekF.addEventListener('submit',async e=>{if(e.submitter&&e.submitter.value!=='kaydet')return;e.preventDefault();
+  const g=Object.fromEntries(new FormData(ekF));if(ekF.dataset.id)g.id=ekF.dataset.id;
+  const r=await fetch('/api/ekstre',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(g)});
+  if(!r.ok){$('#ekHata').textContent=(await r.json()).detail||'Kaydedilemedi';return}$('#ekD').close();yukle()});
+$('#ekSil').onclick=async()=>{if(!confirm('Ekstre silinsin mi?'))return;await fetch('/api/ekstre/'+ekF.dataset.id,{method:'DELETE'});$('#ekD').close();yukle()};
+
+async function cikis(){await fetch('/api/cikis',{method:'POST'});location.href='/giris'}
+yukle();
+</script></body></html>

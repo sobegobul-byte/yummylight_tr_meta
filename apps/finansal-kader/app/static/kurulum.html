@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Finansal Kader · Kurulum</title><link rel="stylesheet" href="/statik/stil.css"></head>
+<body><div class="ortala"><form class="kutu giris" id="f" style="max-width:400px">
+  <div class="logo">Finansal Kader</div>
+  <h2 style="margin-bottom:6px">İlk kurulum</h2>
+  <p class="soluk" style="margin:0 0 12px;text-align:left">1. Telefonda <b>Google Authenticator</b>'ı açın, <b>+</b> &gt; <b>QR kodu tarayın</b>.<br>
+  2. Uygulamada çıkan 6 haneli kodu aşağıya yazın.<br>Bu ekran bir kez görünür; sonra panele sadece bu kodla girilir.</p>
+  <img id="qr" alt="QR kod" style="width:220px;height:220px;background:#fff;border-radius:10px;padding:6px">
+  <input class="kod" id="kod" inputmode="numeric" maxlength="6" placeholder="••••••" style="margin-top:12px">
+  <div class="hata" id="hata"></div>
+  <button class="btn" style="width:100%;margin-top:6px">Onayla</button>
+</form></div>
+<script>
+const A=new URLSearchParams(location.search).get('anahtar')||'';document.getElementById('qr').src='/kurulum/qr.svg?anahtar='+encodeURIComponent(A);
+const kod=document.getElementById('kod'),hata=document.getElementById('hata');
+document.getElementById('f').onsubmit=async e=>{e.preventDefault();hata.textContent='';
+  const r=await fetch('/api/kurulum',{method:'POST',headers:{'Content-Type':'application/json','X-Kurulum-Anahtari':A},body:JSON.stringify({kod:kod.value})});
+  if(r.ok)location.href='/';else hata.textContent=(await r.json()).hata||'Hata'};
+kod.oninput=()=>{kod.value=kod.value.replace(/\D/g,'')};
+</script></body></html>
