@@ -65,6 +65,16 @@ def hesapla(f: dict, kartlar: list, ekstreler: list, krediler: list, odeme_olay:
                              "aylik": h["taksit"] * len(vadesi_gecen) * g, "birikmis": birikmis,
                              "gun": (bugun - vadesi_gecen[0]).days, "durum": "gecikti", "eksik_oran": not g})
 
+    # --- eksi hesap (KMH): negatif bakiyeye aylik faiz + KKDF/BSMV
+    for h in f.get("hesaplar", []):
+        if (h.get("bakiye") or 0) >= 0:
+            continue
+        r = (h.get("faiz") or 0) / 100
+        borc = -h["bakiye"]
+        kalemler.append({"kaynak": "kmh", "ad": (h.get("banka") or "") + " · " + (h.get("ad") or "Eksi hesap"), "borc": borc,
+                         "oran": h.get("faiz"), "aylik": borc * r * kv, "birikmis": 0, "gun": 0, "durum": "normal",
+                         "eksik_oran": not r})
+
     # --- geciken vergi / SGK
     vg = a["vergi_gecikme"] / 100
     for o in odeme_olay:

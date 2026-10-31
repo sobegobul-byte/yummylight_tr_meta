@@ -30,7 +30,7 @@ KOK = Path(__file__).resolve().parent.parent
 VERI = KOK / "veri"
 VERI.mkdir(exist_ok=True)
 STATIK = Path(__file__).resolve().parent / "static"
-SURUM = "0.6.1"
+SURUM = "0.6.2"
 
 GUVENLIK = VERI / "guvenlik.json"
 FINANS = VERI / "finans.json"
@@ -285,7 +285,7 @@ def _sayi(v, varsayilan=0.0) -> float:
     s = str(v).strip().replace("₺", "").replace("TL", "").replace(" ", "")
     if "," in s:                       # 12.500,50 -> 12500.50
         s = s.replace(".", "").replace(",", ".")
-    elif re.fullmatch(r"\d{1,3}(\.\d{3})+", s):   # 62.300 -> 62300 (binlik nokta)
+    elif re.fullmatch(r"-?\d{1,3}(\.\d{3})+", s):   # 62.300 / -18.500 -> binlik nokta
         s = s.replace(".", "")
     try:
         return float(s)
@@ -556,6 +556,8 @@ async def hesap_kaydet(req: Request):
             h[a] = str(g[a] or "").strip()
     if "kmh_limit" in g:
         h["kmh_limit"] = round(_sayi(g["kmh_limit"]), 2)
+    if "faiz" in g:
+        h["faiz"] = round(_sayi(g["faiz"]), 4) if g["faiz"] not in (None, "") else None
     if "bakiye" in g:
         if eski is None or _sayi(g["bakiye"]) != eski.get("bakiye"):
             h["guncelleme"] = date.today().isoformat()
@@ -863,7 +865,7 @@ async def ice_aktar(req: Request):
         for a in ("ad", "banka", "tur", "sahip", "not"):
             if a in gh:
                 h[a] = str(gh[a] or "").strip()
-        for a in ("bakiye", "kmh_limit"):
+        for a in ("bakiye", "kmh_limit", "faiz"):
             if a in gh:
                 h[a] = round(_sayi(gh[a]), 2)
         h["guncelleme"] = gh.get("guncelleme") or date.today().isoformat()
