@@ -64,6 +64,12 @@ dialog form{padding:20px}
 @media (max-width:520px){.alanlar{grid-template-columns:1fr}}
 .dugmeler{display:flex;gap:8px;justify-content:flex-end}
 .ipucu{font-size:12px;color:var(--soluk);margin-top:3px}
+dialog.genis{width:min(980px,calc(100vw - 24px))}
+.isl td{vertical-align:top}.isl input,.isl select{padding:5px 8px;font-size:13px;min-width:120px}
+.isl .acik{max-width:260px}.isl .alt2{font-size:12px;color:var(--soluk)}
+.cipler{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.cip{border:1px solid var(--cizgi);border-radius:10px;padding:6px 10px;font-size:13px}.cip b{display:block;font-size:15px}
+.arti{color:var(--yesil)}
+@media (max-width:620px){.isl thead{display:none}.isl tr{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:10px 0;border-bottom:1px solid var(--cizgi)}.isl td{border:0!important;padding:0!important}.isl td.genis2{grid-column:1/-1}.isl input,.isl select{width:100%}}
 .yakinda-kutu{max-width:560px}
 .eksi{color:var(--kirmizi)}
 .ay-baslik{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--soluk);font-weight:650;margin:14px 0 2px;display:flex;justify-content:space-between}
@@ -177,6 +183,10 @@ dialog form{padding:20px}
     <button class="btn ikincil" value="iptal" formnovalidate>Vazgeç</button><button class="btn" value="kaydet">Kaydet</button></div>
 </form></dialog>
 
+<dialog id="islD" class="genis"><div style="padding:20px" id="islIc"></div></dialog>
+<input type="file" id="iceDosya" accept=".json,application/json" hidden>
+<datalist id="katListe"></datalist>
+
 <dialog id="ekD"><form method="dialog" id="ekF">
   <h2 id="ekBaslik">Ekstre gir</h2>
   <div class="alanlar">
@@ -282,12 +292,13 @@ function kartKutu(k){
 
 function ekstrelerS(){
   const ek=D.ekstreler;
-  return `<div class="baslik"><h2>Ekstreler</h2><button class="btn" onclick="ekAc()" ${D.kartlar.length?'':'disabled'}>+ Ekstre gir</button></div>
-  <div class="kutu" style="padding:6px 8px">${ek.length?`<div class="tablo"><table><thead><tr><th>Kart</th><th>Kesim</th><th>Son ödeme</th><th class="r">Dönem borcu</th><th class="r">Asgari</th><th class="r">Ödenen</th><th>Durum</th><th></th></tr></thead><tbody>
+  return `<div class="baslik"><h2>Ekstreler</h2><button class="btn ikincil" style="margin-left:auto" onclick="$('#iceDosya').click()" title="Hazırlanmış ekstre dosyasını (JSON) yükle">Dosyadan içe aktar</button><button class="btn" style="margin-left:0" onclick="ekAc()" ${D.kartlar.length?'':'disabled'}>+ Ekstre gir</button></div>
+  <div class="kutu" style="padding:6px 8px">${ek.length?`<div class="tablo"><table><thead><tr><th>Kart</th><th>Kesim</th><th>Son ödeme</th><th class="r">Dönem borcu</th><th class="r">Asgari</th><th class="r">Ödenen</th><th>Durum</th><th>İşlemler</th><th></th></tr></thead><tbody>
     ${ek.map(e=>`<tr><td>${kartAd(kartBul(e.kart_id))}</td><td>${tarihY(e.kesim_tarihi)}</td><td>${tarihY(e.son_odeme_tarihi)}</td>
       <td class="r rakam">${tl(e.toplam)}</td><td class="r rakam">${tl(e.asgari)}</td><td class="r rakam">${tl(e.odenen)}</td><td>${durumR(e.durum)}</td>
+      <td><button class="btn ikincil" style="padding:4px 10px;font-size:13px" onclick="islAc('${e.id}')">${e.ozet.adet?e.ozet.adet+' işlem':'+ İşlem'}</button>${e.ozet.faiz_vergi?`<div class="soluk eksi" style="font-size:12px;margin-top:3px">faiz+vergi ${tl(e.ozet.faiz_vergi)}</div>`:''}</td>
       <td class="r"><button class="btn ikincil" style="padding:4px 10px;font-size:13px" onclick="ekAc('${e.id}')">Düzenle</button></td></tr>`).join('')}</tbody></table></div>`
-    :`<div class="bos">Henüz ekstre girilmedi. Banka dökümü yükleme bir sonraki adımda gelecek; şimdilik ekstreyi elle girebilirsiniz.</div>`}</div>`;
+    :`<div class="bos">Henüz ekstre girilmedi. Ekstreyi elle girebilir ya da hazırlanmış ekstre dosyasını "Dosyadan içe aktar" ile yükleyebilirsin.</div>`}</div>`;
 }
 
 function kredilerS(){
@@ -372,6 +383,7 @@ function faizS(){const z=D.faiz,a=z.ayarlar,y=v=>!v?'–':'%'+String(v).replace(
     <div class="kutu tile"><div class="etk">Şu an işleyen aylık faiz</div><div class="deger rakam ${z.aylik_yuk?'eksi':''}">${tl(z.aylik_yuk)}</div><div class="alt">Kredilerin bu ayki faiz payı + gecikmeler + tam ödenmeyen ekstreler</div></div>
     <div class="kutu tile"><div class="etk">Gecikmelerden birikmiş</div><div class="deger rakam ${z.gecikme_birikmis?'eksi':''}">${tl(z.gecikme_birikmis)}</div><div class="alt">Bugüne kadar, tahmini</div></div>
     <div class="kutu tile"><div class="etk">Kartlar tam ödenmezse</div><div class="deger rakam">${tl(z.kart_risk)}</div><div class="alt">aylık ek faiz (vergiler dahil)</div></div>
+    <div class="kutu tile"><div class="etk">Son ekstrelerde ödenen faiz</div><div class="deger rakam ${D.ozet.ekstre_faiz?'eksi':''}">${tl(D.ozet.ekstre_faiz)}</div><div class="alt">Faiz + KKDF + BSMV + ücret, ekstrede yazan gerçek tutar</div></div>
     <div class="kutu tile"><div class="etk">Kredilerde kalan faiz</div><div class="deger rakam">${tl(z.kredi_kalan_faiz)}</div><div class="alt">Vade sonuna kadar ödenecek faiz</div></div>
   </div>
   ${z.eksik_oran?`<p class="uyari-satir">${z.eksik_oran} kalemde faiz oranı girilmemiş, bu yüzden faizleri 0 görünüyor. Oranlar kart ekstresinde ve kredi ödeme planında yazar; Kartlar ve Krediler'de "Düzenle"den girebilirsin.</p>`:''}
@@ -392,6 +404,65 @@ async function ayarKaydet(){const g=Object.fromEntries(new FormData($('#ayF')));
 function yakinda(){const a=SEKME.find(s=>s[0]===sekme)[1];
   const m={odemeler:'Kira, vergi, SGK, tedarikçi, kredi taksitleri gibi kart dışı ödemeler burada tarih sırasıyla görünecek.',plan:'Sevgililer Günü 2027\'ye kadar aylık hedefler ve gerçekleşen rakamlar.',yatirim:'Makine, stok, reklam gibi yatırımların tutarı ve geri dönüşü.'}[sekme];
   return `<div class="kutu yakinda-kutu"><h2>${a}</h2><p class="soluk">${m}</p><p class="soluk">Kartlar bölümü oturduktan sonra sırayla eklenecek.</p></div>`}
+
+// ---- ekstre islemleri
+const TUR={harcama:'Harcama',taksit:'Taksit',odeme:'Ödeme',iade:'İade',faiz:'Faiz',vergi:'Vergi (KKDF/BSMV)',ucret:'Ücret',nakit:'Nakit avans'};
+const TURRENK={odeme:'yesil',iade:'yesil',faiz:'kirmizi',vergi:'kirmizi',ucret:'kirmizi',taksit:'sari',nakit:'kirmizi',harcama:''};
+const KATLAR=['Market','Yemek','Akaryakıt','Online alışveriş','Online ödeme (aracı firma)','Reklam','E-ticaret altyapı','Yazılım / yapay zeka','Abonelik','Telefon / internet','Fatura','Kargo','Hammadde / üretim','Sigorta','Vergi / harç','SGK / Bağ-Kur','Sağlık','Giyim','Ev','Araç','Eğitim','Kişisel','Kart faizi','Faiz vergisi','Banka ücreti'];
+$('#katListe').innerHTML=KATLAR.map(k=>`<option value="${k}">`).join('');
+let islAcik=null;
+function islAc(eid){islAcik=eid;const e=D.ekstreler.find(x=>x.id===eid);if(!e){$('#islD').close();return}const z=e.ozet,k=kartBul(e.kart_id);
+  const kat=Object.entries(z.kategoriler).sort((a,b)=>b[1]-a[1]);
+  $('#islIc').innerHTML=`<div class="baslik" style="margin:0"><div><h2>${kartAd(k)}</h2><div class="soluk" style="font-size:13px">Kesim ${tarihY(e.kesim_tarihi)} · Son ödeme ${tarihY(e.son_odeme_tarihi)} · ${durumR(e.durum)}</div></div>
+      <button class="btn ikincil" onclick="$('#islD').close()">Kapat</button></div>
+    <div class="cipler">
+      ${e.devreden!=null?`<div class="cip">Önceki dönemden devreden<b class="rakam">${tl(e.devreden)}</b></div>`:''}
+      <div class="cip">Harcama + taksit<b class="rakam">${tl(z.harcama)}</b></div>
+      <div class="cip">Faiz + vergi + ücret<b class="rakam ${z.faiz_vergi?'eksi':''}">${tl(z.faiz_vergi)}</b></div>
+      <div class="cip">Yapılan ödeme<b class="rakam arti">${tl(z.odeme)}</b></div>
+      ${z.iade?`<div class="cip">İade<b class="rakam arti">${tl(z.iade)}</b></div>`:''}
+      <div class="cip">Dönem borcu<b class="rakam">${tl(e.toplam)}</b><span class="soluk">asgari ${tl(e.asgari)}</span></div>
+    </div>
+    ${z.faiz_vergi&&e.devreden?`<p class="uyari-satir">Bu dönem ${tl(z.faiz_vergi)} faiz ve vergi ödedin. Sebebi önceki ekstrenin tamamının ödenmemesi: kalan borca alışveriş faizi işliyor, üstüne %30 KKDF+BSMV ekleniyor. Dönem borcu tam ödenirse bir sonraki ekstrede bu kalem çıkmaz.</p>`:''}
+    ${kat.length?`<div class="soluk" style="font-size:13px;margin-bottom:6px">Harcamaların tahmini dağılımı: ${kat.map(([a,v])=>`<b style="color:var(--yazi)">${esc(a)}</b> ${tl(v)}`).join(' · ')}</div>`:''}
+    <div class="tablo"><table class="isl"><thead><tr><th>Tarih</th><th>Açıklama</th><th>Tür</th><th>Kaynak / kategori</th><th>Ne için?</th><th class="r">Tutar</th><th></th></tr></thead><tbody>
+    ${(e.islemler||[]).map(i=>`<tr><td class="rakam" style="white-space:nowrap">${i.tarih?new Date(i.tarih+'T00:00').toLocaleDateString('tr-TR'):'–'}</td>
+      <td class="acik genis2">${esc(i.aciklama)}${i.taksit||i.bilgi?`<div class="alt2">${[i.taksit?esc(i.taksit)+' taksit':'',esc(i.bilgi||'')].filter(Boolean).join(' · ')}</div>`:''}${i.kart_son4?`<div class="alt2">•${esc(i.kart_son4)}</div>`:''}</td>
+      <td><select onchange="islGuncelle('${i.id}',{tur:this.value})">${Object.entries(TUR).map(([v,a])=>`<option value="${v}" ${v===i.tur?'selected':''}>${a}</option>`).join('')}</select></td>
+      <td><input list="katListe" value="${esc(i.kategori||'')}" placeholder="${esc(i.tahmin||'Seç ya da yaz')}" onchange="islGuncelle('${i.id}',{kategori:this.value})">${!i.kategori&&i.tahmin?'<div class="alt2">tahmin</div>':''}</td>
+      <td class="genis2"><input value="${esc(i.not||'')}" placeholder="ör. işyeri kasko, kişisel" onchange="islGuncelle('${i.id}',{not:this.value})"></td>
+      <td class="r rakam ${i.tutar<0?'arti':(TURRENK[i.tur]==='kirmizi'?'eksi':'')}" style="white-space:nowrap">${i.tutar<0?'+'+tl(-i.tutar):tl(i.tutar)}</td>
+      <td class="r"><button class="btn tehlike" style="padding:3px 8px;font-size:12px" onclick="islSil('${i.id}')" title="Sil">✕</button></td></tr>`).join('')}
+    </tbody></table></div>
+    ${(e.islemler||[]).length?'':'<div class="bos" style="padding:20px">Bu ekstrede işlem yok. Aşağıdan ekleyebilirsin.</div>'}
+    ${z.taksitler.length?`<h3 style="margin:18px 0 6px">Taksitli alışverişler</h3><div class="tablo"><table><thead><tr><th>Alışveriş</th><th class="r">Aylık taksit</th><th>Durum</th><th class="r">Kalan</th></tr></thead><tbody>
+      ${z.taksitler.map(t=>`<tr><td>${esc(t.aciklama)}${t.kategori?`<div class="soluk" style="font-size:12px">${esc(t.kategori)}</div>`:''}</td><td class="r rakam">${tl(t.taksit)}</td>
+        <td>${t.iptal?'<span class="rozet gri">İade edildi, iptal olmuş olabilir</span>':`${t.kacinci}/${t.toplam}`}</td>
+        <td class="r rakam">${t.iptal?'–':t.kalan_taksit?`${tl(t.kalan_tutar)}<div class="soluk" style="font-size:12px">${t.kalan_taksit} taksit daha</div>`:'<span class="rozet yesil">Son taksit</span>'}</td></tr>`).join('')}
+      </tbody></table></div><p class="soluk" style="font-size:13px">Önümüzdeki ekstrelere gelecek taksit yükü: <b style="color:var(--yazi)">${tl(z.taksit_kalan)}</b>${z.taksit_aylik?` (ayda yaklaşık ${tl(z.taksit_aylik)})`:''}</p>`:''}
+    <form class="kutu" id="islF" style="margin-top:14px;padding:12px"><b style="font-size:14px">İşlem ekle</b>
+      <div class="alanlar" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr));margin:10px 0">
+        <div><label>Tarih</label><input name="tarih" type="date" value="${e.kesim_tarihi}"></div>
+        <div style="grid-column:span 2"><label>Açıklama</label><input name="aciklama" required placeholder="Ekstrede yazan"></div>
+        <div><label>Tutar (TL)</label><input name="tutar" inputmode="decimal" required placeholder="1.250,00"></div>
+        <div><label>Taksit</label><input name="taksit" placeholder="ör. 3/6"></div>
+        <div><label>Tür</label><select name="tur"><option value="">Kendin bul</option>${Object.entries(TUR).map(([v,a])=>`<option value="${v}">${a}</option>`).join('')}</select></div>
+        <div><label>Ne için?</label><input name="not"></div>
+      </div><div class="hata" id="islHata" style="min-height:0"></div><button class="btn">Ekle</button></form>`;
+  $('#islF').onsubmit=async ev=>{ev.preventDefault();const g=Object.fromEntries(new FormData(ev.target));if(!g.tur)delete g.tur;
+    const r=await fetch('/api/islem',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ekstre_id:eid,...g})});
+    if(!r.ok){$('#islHata').textContent=(await r.json()).detail||'Kaydedilemedi';return}await islYenile()};
+  if(!$('#islD').open)$('#islD').showModal()}
+async function islYenile(){await yukle();islAc(islAcik)}
+async function islGuncelle(id,g){await fetch('/api/islem',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ekstre_id:islAcik,id,...g})});
+  if('tur' in g||'kategori' in g)await islYenile();else yukleSessiz()}
+async function yukleSessiz(){const r=await fetch('/api/durum');if(r.ok){D=await r.json();ciz()}}
+async function islSil(id){if(!confirm('İşlem silinsin mi?'))return;await fetch(`/api/islem/${islAcik}/${id}`,{method:'DELETE'});await islYenile()}
+$('#iceDosya').onchange=async ev=>{const d=ev.target.files[0];ev.target.value='';if(!d)return;let g;
+  try{g=JSON.parse(await d.text())}catch(e){alert('Dosya okunamadı (JSON değil).');return}
+  const r=await fetch('/api/ice-aktar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(g)});const c=await r.json();
+  if(!r.ok){alert(c.detail||'İçe aktarılamadı');return}
+  alert(`Yüklendi: ${c.kart_yeni} yeni kart, ${c.kart_guncel} kart güncellendi, ${c.ekstre_yeni+c.ekstre_guncel} ekstre, ${c.islem} işlem.`);yukle()};
 
 // ---- kart formu
 const kartF=$('#kartF');

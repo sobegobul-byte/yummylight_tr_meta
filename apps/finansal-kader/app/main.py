@@ -22,6 +22,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Redirect
 from fastapi.staticfiles import StaticFiles
 
 from . import faiz as fz
+from . import islemler as isl
 from . import odemeler as od
 from . import totp
 
@@ -29,7 +30,7 @@ KOK = Path(__file__).resolve().parent.parent
 VERI = KOK / "veri"
 VERI.mkdir(exist_ok=True)
 STATIK = Path(__file__).resolve().parent / "static"
-SURUM = "0.5"
+SURUM = "0.6"
 
 GUVENLIK = VERI / "guvenlik.json"
 FINANS = VERI / "finans.json"
@@ -620,7 +621,7 @@ def durum():
     f = _finans()
     bugun = date.today()
     kartlar = [dict(k, takvim=_takvim(k, bugun)) for k in f["kartlar"]]
-    ekstreler = sorted((dict(e, durum=_ekstre_durum(e, bugun)) for e in f["ekstreler"]),
+    ekstreler = sorted((dict(e, durum=_ekstre_durum(e, bugun), ozet=isl.ozet(e)) for e in f["ekstreler"]),
                        key=lambda e: e.get("son_odeme_tarihi") or "", reverse=True)
     aktif = [k for k in kartlar if k.get("aktif", True)]
     limit = sum(k.get("limit") or 0 for k in aktif)
@@ -665,6 +666,11 @@ def durum():
                         and o["durum"] != "odendi"), None)
         odeme_kalemleri.append(dict(k, aylik=round(od.aylik_esdeger(k), 2), sonraki=sonraki["tarih"] if sonraki else None))
     aktif_odeme = [k for k in odeme_kalemleri if k.get("aktif", True)]
+    # her kartin en son ekstresi: gerceklesen faiz+vergi ve kalan taksit yuku
+    son_ekstre = {}
+    for e in ekstreler:
+        if e["kart_id"] not in son_ekstre or e["kesim_tarihi"] > son_ekstre[e["kart_id"]]["kesim_tarihi"]:
+            son_ekstre[e["kart_id"]] = e
     return {
         "surum": SURUM, "bugun": bugun.isoformat(), "guvenlik": _guvenlik_ozet(), "kartlar": kartlar, "ekstreler": ekstreler, "krediler": krediler, "yaklasan": yaklasan,
         "odemeler": odeme_kalemleri, "odeme_takvim": odeme_olay, "hesaplar": f["hesaplar"],
@@ -681,7 +687,10 @@ def durum():
                  "tutarsiz": sum(1 for k in aktif_odeme if not k.get("tutar")),
                  "kredi_sayisi": len(acik), "kredi_kalan": round(sum(k["hesap"]["kalan_odeme"] for k in acik), 2),
                  "kredi_anapara": round(sum(k["hesap"]["kalan_anapara"] for k in acik), 2),
-                 "kredi_aylik": round(sum(k["hesap"]["taksit"] for k in acik), 2)},
+                 "kredi_aylik": round(sum(k["hesap"]["taksit"] for k in acik), 2),
+                 "ekstre_faiz": round(sum(e["ozet"]["faiz_vergi"] for e in son_ekstre.values()), 2),
+                 "taksit_kalan": round(sum(e["ozet"]["taksit_kalan"] for e in son_ekstre.values()), 2),
+                 "taksit_aylik": round(sum(e["ozet"]["taksit_aylik"] for e in son_ekstre.values()), 2)},
     }
 
 
@@ -728,6 +737,7 @@ async def ekstre_kaydet(req: Request):
     eski = next((x for x in f["ekstreler"] if x["id"] == g.get("id")), None) if g.get("id") else None
     if eski:
         e["id"] = eski["id"]
+        e["islemler"] = eski.get("islemler", [])
         f["ekstreler"][f["ekstreler"].index(eski)] = e
     else:
         e["id"] = "e" + secrets.token_hex(4)
@@ -747,6 +757,106 @@ def ekstre_sil(eid: str):
     f["ekstreler"] = [e for e in f["ekstreler"] if e["id"] != eid]
     _kaydet(f)
     return {"tamam": True}
+
+
+def _ekstre_bul(f: dict, eid: str) -> dict:
+    e = next((x for x in f["ekstreler"] if x["id"] == eid), None)
+    if not e:
+        raise HTTPException(404, "Ekstre bulunamadı")
+    return e
+
+
+@app.post("/api/islem")
+async def islem_kaydet(req: Request):
+    """Ekstreye islem ekle ya da var olanin notunu/kategorisini/turunu duzelt."""
+    g = await req.json()
+    f = _finans()
+    e = _ekstre_bul(f, g.get("ekstre_id"))
+    liste = e.setdefault("islemler", [])
+    eski = next((i for i in liste if i["id"] == g.get("id")), None) if g.get("id") else None
+    if not eski and not str(g.get("aciklama") or "").strip():
+        raise HTTPException(400, "Açıklama gerekli")
+    i = isl.temizle(g, eski, _sayi)
+    if eski:
+        liste[liste.index(eski)] = i
+    else:
+        i["id"] = "i" + secrets.token_hex(4)
+        liste.append(i)
+    liste.sort(key=lambda x: x.get("tarih") or "")
+    _kaydet(f)
+    return {"tamam": True, "id": i["id"]}
+
+
+@app.delete("/api/islem/{eid}/{iid}")
+def islem_sil(eid: str, iid: str):
+    f = _finans()
+    e = _ekstre_bul(f, eid)
+    e["islemler"] = [i for i in e.get("islemler", []) if i["id"] != iid]
+    _kaydet(f)
+    return {"tamam": True}
+
+
+@app.post("/api/ice-aktar")
+async def ice_aktar(req: Request):
+    """Hazirlanmis dosyadan kart + ekstre + islem yukler.
+    Kart banka + son 4 haneye gore eslesir (yoksa eklenir), ekstre kart + kesim tarihine gore eslesir.
+    Islemlere yazilmis 'Ne için' notlari ve elle secilen kategoriler korunur."""
+    g = await req.json()
+    if not isinstance(g, dict) or not isinstance(g.get("kartlar", []), list):
+        raise HTTPException(400, "Dosya biçimi tanınmadı")
+    f = _finans()
+    sonuc = {"kart_yeni": 0, "kart_guncel": 0, "ekstre_yeni": 0, "ekstre_guncel": 0, "islem": 0}
+    for gk in g.get("kartlar", []):
+        son4 = "".join(c for c in str(gk.get("son4") or "") if c.isdigit())[-4:]
+        kart = next((k for k in f["kartlar"] if k["banka"] == gk.get("banka") and k.get("son4") == son4), None)
+        ekstreler = gk.pop("ekstreler", []) or []
+        temiz = _kart_temizle(gk, kart)
+        if kart:
+            f["kartlar"][f["kartlar"].index(kart)] = temiz
+            sonuc["kart_guncel"] += 1
+        else:
+            temiz["id"] = "k" + secrets.token_hex(4)
+            temiz["eklenme"] = date.today().isoformat()
+            f["kartlar"].append(temiz)
+            sonuc["kart_yeni"] += 1
+        kart = temiz
+        for ge in ekstreler:
+            try:
+                date.fromisoformat(ge.get("kesim_tarihi") or "")
+                date.fromisoformat(ge.get("son_odeme_tarihi") or "")
+            except ValueError:
+                raise HTTPException(400, "Ekstre tarihleri eksik")
+            eski = next((x for x in f["ekstreler"] if x["kart_id"] == kart["id"] and x["kesim_tarihi"] == ge["kesim_tarihi"]), None)
+            e = dict(eski or {"id": "e" + secrets.token_hex(4)})
+            e.update({"kart_id": kart["id"], "kesim_tarihi": ge["kesim_tarihi"], "son_odeme_tarihi": ge["son_odeme_tarihi"],
+                      "toplam": round(_sayi(ge.get("toplam")), 2), "asgari": round(_sayi(ge.get("asgari")), 2),
+                      "not": str(ge.get("not") or e.get("not") or "").strip()})
+            if "odenen" in ge or not eski:
+                e["odenen"] = round(_sayi(ge.get("odenen")), 2)
+            for a in ("devreden", "donem_harcama", "donem_faiz", "donem_odeme", "kullanilabilir", "nakit_limit"):
+                if a in ge:
+                    e[a] = round(_sayi(ge[a]), 2)
+            eski_isl = {(i.get("tarih"), i.get("aciklama"), i.get("tutar")): i for i in (eski or {}).get("islemler", [])}
+            yeni = []
+            for gi in ge.get("islemler", []):
+                i = isl.temizle(gi, None, _sayi)
+                o = eski_isl.get((i.get("tarih"), i.get("aciklama"), i.get("tutar")))
+                i["id"] = o["id"] if o else "i" + secrets.token_hex(4)
+                if o and o.get("not"):          # panelde yazilan not dosyadakinden onceliklidir
+                    i["not"] = o["not"]
+                if o and o.get("kategori") and not gi.get("kategori"):
+                    i["kategori"] = o["kategori"]
+                yeni.append(i)
+            e["islemler"] = sorted(yeni, key=lambda x: x.get("tarih") or "")
+            sonuc["islem"] += len(yeni)
+            if eski:
+                f["ekstreler"][f["ekstreler"].index(eski)] = e
+                sonuc["ekstre_guncel"] += 1
+            else:
+                f["ekstreler"].append(e)
+                sonuc["ekstre_yeni"] += 1
+    _kaydet(f)
+    return {"tamam": True, **sonuc}
 
 
 @app.get("/api/yedek")
