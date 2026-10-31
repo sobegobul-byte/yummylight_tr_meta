@@ -437,7 +437,7 @@ function islAc(eid){islAcik=eid;const e=D.ekstreler.find(x=>x.id===eid);if(!e){$
     ${(e.islemler||[]).length?'':'<div class="bos" style="padding:20px">Bu ekstrede işlem yok. Aşağıdan ekleyebilirsin.</div>'}
     ${z.taksitler.length?`<h3 style="margin:18px 0 6px">Taksitli alışverişler</h3><div class="tablo"><table><thead><tr><th>Alışveriş</th><th class="r">Aylık taksit</th><th>Durum</th><th class="r">Kalan</th></tr></thead><tbody>
       ${z.taksitler.map(t=>`<tr><td>${esc(t.aciklama)}${t.kategori?`<div class="soluk" style="font-size:12px">${esc(t.kategori)}</div>`:''}</td><td class="r rakam">${tl(t.taksit)}</td>
-        <td>${t.iptal?'<span class="rozet gri">İade edildi, iptal olmuş olabilir</span>':`${t.kacinci}/${t.toplam}`}</td>
+        <td>${t.iptal?'<span class="rozet gri">Her ay iade ediliyor, net yük yok</span>':`${t.kacinci}/${t.toplam}`}</td>
         <td class="r rakam">${t.iptal?'–':t.kalan_taksit?`${tl(t.kalan_tutar)}<div class="soluk" style="font-size:12px">${t.kalan_taksit} taksit daha</div>`:'<span class="rozet yesil">Son taksit</span>'}</td></tr>`).join('')}
       </tbody></table></div><p class="soluk" style="font-size:13px">Önümüzdeki ekstrelere gelecek taksit yükü: <b style="color:var(--yazi)">${tl(z.taksit_kalan)}</b>${z.taksit_aylik?` (ayda yaklaşık ${tl(z.taksit_aylik)})`:''}</p>`:''}
     <form class="kutu" id="islF" style="margin-top:14px;padding:12px"><b style="font-size:14px">İşlem ekle</b>
