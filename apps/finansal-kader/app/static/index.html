@@ -151,7 +151,9 @@ dialog.genis{width:min(980px,calc(100vw - 24px))}
     <div><label>Banka</label><select name="banka"></select></div>
     <div><label>Tür</label><select name="tur"><option>Vadesiz</option><option>Vadeli</option><option>Kasa</option><option>Döviz</option><option>Diğer</option></select></div>
     <div><label>Kimin adına</label><select name="sahip"><option>Şirket</option><option>Şahsi</option></select></div>
-    <div class="tam"><label>Güncel bakiye (TL)</label><input name="bakiye" inputmode="decimal" required placeholder="0"></div>
+    <div><label>Güncel bakiye (TL)</label><input name="bakiye" inputmode="decimal" required placeholder="0"><div class="ipucu">Eksi hesap kullanılıyorsa eksi yaz: -2.500</div></div>
+    <div><label>Esnek / eksi hesap limiti (TL)</label><input name="kmh_limit" inputmode="decimal" placeholder="0"></div>
+    <div class="tam"><label>Not</label><input name="not"></div>
   </div>
   <div class="hata" id="hsHata"></div>
   <div class="dugmeler"><button class="btn tehlike" type="button" id="hsSil" style="margin-right:auto">Sil</button>
@@ -371,7 +373,9 @@ function nakitS(){
   <div class="izgara ozet">${['30','60','90'].map(g=>`<div class="kutu tile"><div class="etk">${g} gün içinde çıkacak</div><div class="deger rakam">${tl(p[g].cikis)}</div><div class="alt">Sonra kalan: <b class="${p[g].kalan<0?'eksi':''}">${tl(p[g].kalan)}</b></div></div>`).join('')}</div>
   <div class="izgara kartlar">${D.hesaplar.map(h=>`<div class="kutu kk"><span class="serit" style="background:${BANKALAR[h.banka]||BANKALAR['Diğer']}"></span>
     <div class="ust2"><div><div style="font-weight:650">${esc(h.ad||h.banka)}</div><div class="soluk" style="font-size:13px">${esc(h.banka||'')} · ${esc(h.tur||'')} · ${esc(h.sahip||'')}</div></div></div>
-    <div class="deger rakam" style="font-size:22px;font-weight:650;margin-top:10px">${tl(h.bakiye||0)}</div>
+    <div class="deger rakam ${h.bakiye<0?'eksi':''}" style="font-size:22px;font-weight:650;margin-top:10px">${tl(h.bakiye||0)}</div>
+    ${h.kmh_limit?`<div class="soluk" style="font-size:13px">Esnek hesap limiti ${tl(h.kmh_limit)}${h.bakiye<0?` · kullanılan <b class="eksi">${tl(-h.bakiye)}</b>`:' · kullanılmıyor'}</div>`:''}
+    ${h.not?`<div class="soluk" style="font-size:13px">${esc(h.not)}</div>`:''}
     <div class="soluk" style="font-size:13px">Güncelleme: ${tarihY(h.guncelleme)}</div>
     <div class="islem"><button class="btn ikincil" onclick="hesapAc('${h.id}')">Bakiyeyi güncelle</button></div></div>`).join('')}</div>`}
 
@@ -462,7 +466,7 @@ $('#iceDosya').onchange=async ev=>{const d=ev.target.files[0];ev.target.value=''
   try{g=JSON.parse(await d.text())}catch(e){alert('Dosya okunamadı (JSON değil).');return}
   const r=await fetch('/api/ice-aktar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(g)});const c=await r.json();
   if(!r.ok){alert(c.detail||'İçe aktarılamadı');return}
-  alert(`Yüklendi: ${c.kart_yeni} yeni kart, ${c.kart_guncel} kart güncellendi, ${c.ekstre_yeni+c.ekstre_guncel} ekstre, ${c.islem} işlem.`);yukle()};
+  alert(`Yüklendi: ${c.kart_yeni} yeni kart, ${c.kart_guncel} kart güncellendi, ${c.ekstre_yeni+c.ekstre_guncel} ekstre, ${c.islem} işlem${c.hesap?', '+c.hesap+' hesap':''}.`);yukle()};
 
 // ---- kart formu
 const kartF=$('#kartF');
@@ -505,7 +509,7 @@ const hsF=$('#hsF');
 hsF.banka.innerHTML=['Kasa (nakit)',...Object.keys(BANKALAR)].map(b=>`<option>${b}</option>`).join('');
 function hesapAc(id){const h=id?D.hesaplar.find(x=>x.id===id):{};hsF.reset();hsF.dataset.id=id||'';$('#hsHata').textContent='';
   $('#hsBaslik').textContent=id?'Hesabı güncelle':'Hesap ekle';$('#hsSil').style.display=id?'':'none';
-  ['ad','banka','tur','sahip','bakiye'].forEach(a=>{if(h[a]!=null&&h[a]!=='')hsF[a].value=h[a]});$('#hsD').showModal()}
+  ['ad','banka','tur','sahip','bakiye','kmh_limit','not'].forEach(a=>{if(h[a]!=null&&h[a]!=='')hsF[a].value=h[a]});$('#hsD').showModal()}
 hsF.addEventListener('submit',async e=>{if(e.submitter&&e.submitter.value!=='kaydet')return;e.preventDefault();
   const g=Object.fromEntries(new FormData(hsF));if(hsF.dataset.id)g.id=hsF.dataset.id;
   const r=await fetch('/api/hesap',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(g)});

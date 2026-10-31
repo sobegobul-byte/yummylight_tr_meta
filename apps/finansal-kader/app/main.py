@@ -30,7 +30,7 @@ KOK = Path(__file__).resolve().parent.parent
 VERI = KOK / "veri"
 VERI.mkdir(exist_ok=True)
 STATIK = Path(__file__).resolve().parent / "static"
-SURUM = "0.6"
+SURUM = "0.6.1"
 
 GUVENLIK = VERI / "guvenlik.json"
 FINANS = VERI / "finans.json"
@@ -551,9 +551,11 @@ async def hesap_kaydet(req: Request):
     f = _finans()
     eski = next((h for h in f["hesaplar"] if h["id"] == g.get("id")), None) if g.get("id") else None
     h = dict(eski or {})
-    for a in ("ad", "banka", "tur", "sahip"):
+    for a in ("ad", "banka", "tur", "sahip", "not"):
         if a in g:
             h[a] = str(g[a] or "").strip()
+    if "kmh_limit" in g:
+        h["kmh_limit"] = round(_sayi(g["kmh_limit"]), 2)
     if "bakiye" in g:
         if eski is None or _sayi(g["bakiye"]) != eski.get("bakiye"):
             h["guncelleme"] = date.today().isoformat()
@@ -855,6 +857,21 @@ async def ice_aktar(req: Request):
             else:
                 f["ekstreler"].append(e)
                 sonuc["ekstre_yeni"] += 1
+    for gh in g.get("hesaplar", []) or []:
+        eski = next((h for h in f["hesaplar"] if h.get("banka") == gh.get("banka") and h.get("ad") == gh.get("ad")), None)
+        h = dict(eski or {"id": "h" + secrets.token_hex(4)})
+        for a in ("ad", "banka", "tur", "sahip", "not"):
+            if a in gh:
+                h[a] = str(gh[a] or "").strip()
+        for a in ("bakiye", "kmh_limit"):
+            if a in gh:
+                h[a] = round(_sayi(gh[a]), 2)
+        h["guncelleme"] = gh.get("guncelleme") or date.today().isoformat()
+        if eski:
+            f["hesaplar"][f["hesaplar"].index(eski)] = h
+        else:
+            f["hesaplar"].append(h)
+        sonuc["hesap"] = sonuc.get("hesap", 0) + 1
     _kaydet(f)
     return {"tamam": True, **sonuc}
 
